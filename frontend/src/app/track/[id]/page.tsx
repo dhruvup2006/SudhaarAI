@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, use } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { CategoryBadge } from '@/components/CategoryBadge';
@@ -46,11 +47,13 @@ interface GrievanceData {
 export default function TicketTrackPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const ticketId = resolvedParams.id;
+  const router = useRouter();
 
   const [ticket, setTicket] = useState<GrievanceData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
+  const [searchIdInput, setSearchIdInput] = useState('');
 
   const fetchTicket = async () => {
     setLoading(true);
@@ -87,10 +90,16 @@ export default function TicketTrackPage({ params }: { params: Promise<{ id: stri
     window.print();
   };
 
-  // Timeline step helper
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!searchIdInput.trim()) return;
+    const formatted = searchIdInput.trim().toUpperCase();
+    router.push(`/track/${formatted}`);
+  };
+
+  // 3-Step Department Timeline (REMOVED AI Classified Step 2 as requested)
   const steps = [
     { title: 'Grievance Registered', key: 'Submitted', desc: 'Recorded in national portal database' },
-    { title: 'AI Classified & Auto-Routed', key: 'Classified', desc: 'Dispatched to departmental officer desk' },
     { title: 'Field Action In Progress', key: 'In Progress', desc: 'On-site inspection & repair team deployed' },
     { title: 'Resolution Verified & Closed', key: 'Resolved', desc: 'Repair completed & SLA closed' }
   ];
@@ -99,11 +108,11 @@ export default function TicketTrackPage({ params }: { params: Promise<{ id: stri
     if (!ticket) return 'upcoming';
     const statusOrder: Record<string, number> = {
       'Submitted': 1,
-      'Classified': 2,
-      'In Progress': 3,
-      'Resolved': 4
+      'Classified': 1,
+      'In Progress': 2,
+      'Resolved': 3
     };
-    const currentLevel = statusOrder[ticket.status] || 2;
+    const currentLevel = statusOrder[ticket.status] || 1;
     const stepLevel = statusOrder[stepKey] || 1;
 
     if (currentLevel > stepLevel) return 'completed';
@@ -115,9 +124,33 @@ export default function TicketTrackPage({ params }: { params: Promise<{ id: stri
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-amber-500 selection:text-white">
       <Navbar />
 
-      <main className="flex-1 py-10 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full">
-        {/* Navigation & Action Bar */}
-        <div className="mb-6 flex items-center justify-between">
+      <main className="flex-1 py-10 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full space-y-6">
+        
+        {/* Top Search & Track Input Bar */}
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-lg">
+          <form onSubmit={handleSearchSubmit} className="flex flex-col sm:flex-row items-center gap-3">
+            <div className="relative flex-1 w-full">
+              <Search className="w-4 h-4 text-amber-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={searchIdInput}
+                onChange={(e) => setSearchIdInput(e.target.value)}
+                placeholder="Enter Grievance Reference ID (e.g. SUD-19002)..."
+                className="w-full pl-10 pr-4 py-2.5 bg-slate-950 text-white placeholder-slate-500 text-xs rounded-xl border border-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono tracking-wider uppercase"
+              />
+            </div>
+            <button
+              type="submit"
+              className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-extrabold text-xs transition-all flex items-center justify-center space-x-1.5 shrink-0 cursor-pointer shadow-md"
+            >
+              <Search className="w-3.5 h-3.5 text-slate-950" />
+              <span>Track Grievance</span>
+            </button>
+          </form>
+        </div>
+
+        {/* Navigation & Action Controls Bar */}
+        <div className="flex items-center justify-between">
           <Link
             href="/"
             className="text-xs font-bold text-slate-300 hover:text-white flex items-center space-x-2 transition-colors"
@@ -132,7 +165,7 @@ export default function TicketTrackPage({ params }: { params: Promise<{ id: stri
               className="text-xs font-bold text-slate-200 hover:text-white flex items-center space-x-1.5 bg-slate-900 px-3.5 py-2 rounded-xl border border-slate-800 shadow-sm transition-colors cursor-pointer"
             >
               <Printer className="w-3.5 h-3.5" />
-              <span>Print Official Record</span>
+              <span>Print Record</span>
             </button>
             <button
               onClick={fetchTicket}
@@ -147,14 +180,14 @@ export default function TicketTrackPage({ params }: { params: Promise<{ id: stri
         {loading ? (
           <div className="bg-slate-900 border border-slate-800 rounded-3xl p-12 text-center space-y-4 shadow-xl">
             <RefreshCw className="w-8 h-8 text-amber-400 animate-spin mx-auto" />
-            <p className="text-sm font-semibold text-slate-300">Connecting to Municipal Grievance Server...</p>
+            <p className="text-sm font-semibold text-slate-300">Connecting to Municipal Database Server...</p>
           </div>
         ) : error ? (
           <div className="bg-slate-900 border border-red-500/30 rounded-3xl p-10 text-center space-y-4 shadow-xl">
             <AlertCircle className="w-12 h-12 text-red-500 mx-auto" />
             <h2 className="text-xl font-bold text-white">Grievance Record Not Found</h2>
             <p className="text-xs text-slate-400 max-w-md mx-auto">{error}</p>
-            <div className="pt-2">
+            <div className="pt-2 flex justify-center gap-3">
               <Link
                 href="/report"
                 className="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs inline-block transition-colors shadow-md"
@@ -204,7 +237,7 @@ export default function TicketTrackPage({ params }: { params: Promise<{ id: stri
               </div>
             </div>
 
-            {/* Timeline UI */}
+            {/* Timeline UI (3 Steps - AI Classified Removed) */}
             <div className="bg-slate-900/90 backdrop-blur-xl rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-xl space-y-6">
               <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center space-x-2 border-b border-slate-800 pb-3">
                 <Clock className="w-4 h-4 text-amber-400" />
