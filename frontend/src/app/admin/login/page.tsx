@@ -131,12 +131,12 @@ export default function OfficerLoginPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-amber-500 selection:text-white relative overflow-hidden">
-      {/* Background Image with Dark Vignette Overlay */}
+      {/* Full Resolution Vivid Background Image */}
       <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40 mix-blend-luminosity pointer-events-none z-0"
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat pointer-events-none z-0"
         style={{ backgroundImage: `url('/login-bg.jpg')` }}
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/70 pointer-events-none z-0" />
+      <div className="absolute inset-0 bg-slate-950/30 backdrop-blur-[2px] pointer-events-none z-0" />
 
       <Navbar />
 
