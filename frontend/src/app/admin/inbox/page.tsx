@@ -95,6 +95,14 @@ export default function AdminInboxPage() {
     fetchGrievances();
   }, [search, selectedCategory, selectedUrgency, selectedStatus]);
 
+  // Strict Department Access Filter for Officer Role
+  const displayedGrievances = grievances.filter((item) => {
+    if (userSession?.role === 'officer' && userSession.category) {
+      return item.category.toLowerCase() === userSession.category.toLowerCase();
+    }
+    return true;
+  });
+
   const handleUpdateStatus = async (newStatus: string) => {
     if (!selectedTicket) return;
     setUpdatingStatus(true);
@@ -171,7 +179,12 @@ export default function AdminInboxPage() {
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="w-full px-3.5 py-2.5 bg-slate-950 text-white text-xs rounded-xl border border-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 appearance-none font-medium transition-all cursor-pointer"
+            disabled={userSession?.role === 'officer'}
+            className={`w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 appearance-none font-semibold transition-all ${
+              userSession?.role === 'officer' 
+                ? 'bg-slate-950/90 text-amber-300 cursor-not-allowed opacity-90' 
+                : 'bg-slate-950 text-white cursor-pointer'
+            }`}
           >
             <option value="All" className="bg-slate-900 text-slate-300">All Department Categories</option>
             <option value="Roads" className="bg-slate-900 text-white">Public Works (Roads)</option>
@@ -238,14 +251,14 @@ export default function AdminInboxPage() {
                     Connecting to municipal database queue...
                   </td>
                 </tr>
-              ) : grievances.length === 0 ? (
+              ) : displayedGrievances.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="py-16 text-center text-slate-400 font-medium">
                     No grievance records match current filter parameters.
                   </td>
                 </tr>
               ) : (
-                grievances.map((item) => (
+                displayedGrievances.map((item) => (
                   <tr
                     key={item.id}
                     onClick={() => setSelectedTicket(item)}
