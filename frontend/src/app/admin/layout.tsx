@@ -69,6 +69,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const isOfficer = userSession.role === 'officer';
 
+  // Bypass layout header/sidebar on /admin/login to prevent double headers
+  if (pathname === '/admin/login') {
+    return <>{children}</>;
+  }
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-amber-500 selection:text-white">
       

@@ -259,33 +259,6 @@ export default function TicketTrackPage({ params }: { params: Promise<{ id: stri
               </div>
             </div>
 
-            {/* AI Diagnostics Audit Card */}
-            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-3 shadow-xl">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
-                <div className="flex items-center space-x-2">
-                  <Sparkles className="w-4 h-4 text-amber-400" />
-                  <h3 className="text-xs font-bold text-amber-400 uppercase tracking-wider">
-                    Automated AI Routing Diagnostics
-                  </h3>
-                </div>
-                <span className="px-2.5 py-1 text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded-full uppercase tracking-wider">
-                  {(ticket.ai_confidence * 100).toFixed(0)}% Match Precision
-                </span>
-              </div>
-
-              <p className="text-xs text-slate-300 leading-relaxed bg-slate-950 p-3.5 rounded-xl border border-slate-800 font-mono">
-                {ticket.ai_reasoning || "Matched key signals indicating routing to relevant municipal engineering team."}
-              </p>
-
-              <div className="flex flex-wrap items-center justify-between text-xs text-slate-400 pt-1 gap-2">
-                <span>Assigned Dept: <strong className="text-white">{ticket.department}</strong></span>
-                {ticket.detected_language && (
-                  <span>Language Detected: <strong className="text-amber-400 uppercase">{ticket.detected_language}</strong></span>
-                )}
-                <span>Created: {new Date(ticket.created_at).toLocaleString()}</span>
-              </div>
-            </div>
-
             {/* Citizen Statement & Visual Evidence */}
             <div className="bg-slate-900/90 backdrop-blur-xl rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-xl space-y-4">
               <h3 className="text-xs font-bold text-white uppercase tracking-wider border-b border-slate-800 pb-2.5 flex items-center space-x-2">

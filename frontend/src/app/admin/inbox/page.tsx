@@ -365,25 +365,6 @@ export default function AdminInboxPage() {
               </p>
             </div>
 
-            {/* AI Diagnostics Banner */}
-            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2 text-xs font-bold text-amber-400">
-                  <Sparkles className="w-4 h-4 text-amber-400" />
-                  <span>AI Automated Category & Routing Diagnostic</span>
-                </div>
-                <span className="text-[10px] font-bold text-emerald-300 bg-emerald-500/20 px-2.5 py-0.5 rounded-full border border-emerald-500/30">
-                  {(selectedTicket.ai_confidence * 100).toFixed(0)}% Confidence Match
-                </span>
-              </div>
-              <p className="text-xs text-slate-300 leading-relaxed font-mono bg-slate-900 p-3 rounded-xl border border-slate-800">
-                {selectedTicket.ai_reasoning || "Automatic classification algorithm evaluated issue parameters."}
-              </p>
-              <p className="text-xs text-slate-300 font-bold pt-1">
-                Designated Authority: <span className="text-white font-semibold">{selectedTicket.department}</span>
-              </p>
-            </div>
-
             {/* Description & Photo */}
             <div className="space-y-3">
               <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Citizen Full Statement</h4>
