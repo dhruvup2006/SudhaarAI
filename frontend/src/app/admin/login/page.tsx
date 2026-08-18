@@ -4,246 +4,229 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Navbar } from '@/components/Navbar';
-import { Footer } from '@/components/Footer';
 import { 
-  ShieldAlert, 
   Lock, 
   User, 
   Building2, 
   Eye, 
   EyeOff, 
   ArrowRight, 
-  CheckCircle2, 
+  ShieldCheck, 
+  Building, 
+  Sparkles, 
+  KeyRound, 
+  ShieldAlert,
   AlertCircle,
-  KeyRound,
-  ShieldCheck,
-  Building,
-  Sparkles,
-  Cpu,
-  BadgeCheck,
-  Headphones,
-  Globe,
-  Activity
+  Shield,
+  UserCheck
 } from 'lucide-react';
 
 export default function OfficerLoginPage() {
   const router = useRouter();
   
+  // Tab state: 'officer' | 'admin'
+  const [activeTab, setActiveTab] = useState<'officer' | 'admin'>('officer');
+
+  // Officer Form Fields
   const [officerId, setOfficerId] = useState('');
-  const [password, setPassword] = useState('');
-  const [department, setDepartment] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(true);
+  const [officerPassword, setOfficerPassword] = useState('');
+  const [selectedDept, setSelectedDept] = useState('');
   
+  // Admin Form Fields
+  const [adminId, setAdminId] = useState('');
+  const [adminPassword, setAdminPassword] = useState('');
+
+  const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const departmentsList = [
-    { code: 'PWD', name: 'Public Works Department (PWD - Roads & Bridges)' },
-    { code: 'JAL', name: 'Municipal Jal Board (Water Supply & Sewerage)' },
-    { code: 'SWM', name: 'Swachh Bharat & Sanitation Board (Waste Collection)' },
-    { code: 'PWR', name: 'State Electricity Distribution Corp (Power Board)' },
-    { code: 'SAF', name: 'Public Safety & Emergency Management' },
+  const departmentOptions = [
+    { name: 'Public Works Department (PWD)', category: 'Roads', code: 'PWD' },
+    { name: 'Municipal Jal Board', category: 'Water', code: 'JAL' },
+    { name: 'Swachh Bharat & Sanitation Board', category: 'Sanitation', code: 'SWM' },
+    { name: 'State Electricity Board', category: 'Electricity', code: 'PWR' },
   ];
 
-  const handleQuickFill = () => {
+  const handleOfficerQuickFill = () => {
     setOfficerId('OFF-8492');
-    setPassword('GovtOfficer2026#');
-    setDepartment('Public Works Department (PWD - Roads & Bridges)');
+    setOfficerPassword('Officer2026#');
+    setSelectedDept('Roads');
+    setErrorMessage('');
+  };
+
+  const handleAdminQuickFill = () => {
+    setAdminId('ADMIN-001');
+    setAdminPassword('AdminMaster2026#');
     setErrorMessage('');
   };
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!officerId.trim()) {
-      setErrorMessage('Please enter your Official Officer Login ID.');
-      return;
-    }
-    if (!password.trim()) {
-      setErrorMessage('Please enter your account password.');
-      return;
-    }
-    if (!department) {
-      setErrorMessage('Please select your assigned municipal department.');
-      return;
-    }
-
     setErrorMessage('');
-    setIsSubmitting(true);
 
-    setTimeout(() => {
-      try {
-        localStorage.setItem('sudhaar_officer_session', JSON.stringify({
-          officerId: officerId.trim(),
-          department: department,
-          loggedInAt: new Date().toISOString()
-        }));
-      } catch (e) {
-        console.error(e);
+    if (activeTab === 'officer') {
+      if (!officerId.trim()) {
+        setErrorMessage('Please enter your Officer Login ID.');
+        return;
       }
-      setIsSubmitting(false);
-      router.push('/admin/inbox');
-    }, 900);
+      if (!officerPassword.trim()) {
+        setErrorMessage('Please enter your account password.');
+        return;
+      }
+      if (!selectedDept) {
+        setErrorMessage('Please select your assigned department.');
+        return;
+      }
+
+      setIsSubmitting(true);
+
+      const deptObj = departmentOptions.find(d => d.category === selectedDept) || departmentOptions[0];
+
+      setTimeout(() => {
+        try {
+          localStorage.setItem('sudhaar_user', JSON.stringify({
+            role: 'officer',
+            officerId: officerId.trim(),
+            department: deptObj.name,
+            category: deptObj.category,
+            loggedInAt: new Date().toISOString()
+          }));
+        } catch (e) {
+          console.error(e);
+        }
+        setIsSubmitting(false);
+        router.push('/admin/inbox');
+      }, 700);
+
+    } else {
+      // Admin Tab Login
+      if (!adminId.trim()) {
+        setErrorMessage('Please enter your System Admin ID.');
+        return;
+      }
+      if (!adminPassword.trim()) {
+        setErrorMessage('Please enter the Admin Master Security Key.');
+        return;
+      }
+
+      setIsSubmitting(true);
+
+      setTimeout(() => {
+        try {
+          localStorage.setItem('sudhaar_user', JSON.stringify({
+            role: 'admin',
+            officerId: adminId.trim(),
+            department: 'All Departments (System Admin)',
+            category: 'All',
+            loggedInAt: new Date().toISOString()
+          }));
+        } catch (e) {
+          console.error(e);
+        }
+        setIsSubmitting(false);
+        router.push('/admin/inbox');
+      }, 700);
+    }
   };
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-amber-500 selection:text-white relative overflow-hidden">
       <Navbar />
 
-      {/* Ambient Radial Gradient Background Elements */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-amber-500/10 rounded-full blur-3xl pointer-events-none z-0" />
-      <div className="absolute bottom-10 right-10 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none z-0" />
+      {/* Ambient Lighting Elements */}
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-3xl pointer-events-none z-0" />
+      <div className="absolute bottom-10 right-10 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl pointer-events-none z-0" />
 
-      <main className="flex-1 py-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto w-full flex items-center justify-center relative z-10">
+      <main className="flex-1 py-12 px-4 sm:px-6 lg:px-8 max-w-xl mx-auto w-full flex flex-col items-center justify-center relative z-10">
         
-        {/* Split Screen Enterprise Card */}
-        <div className="w-full bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-3xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 min-h-[620px]">
-          
-          {/* LEFT PANEL: Executive Portal Showcase */}
-          <div className="lg:col-span-5 bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 p-8 sm:p-10 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-800 relative">
-            <div className="absolute inset-0 bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:16px_16px] opacity-20 pointer-events-none" />
-
-            <div className="relative z-10 space-y-6">
-              {/* Emblem / Portal Badge */}
-              <div className="flex items-center space-x-3.5">
-                <div className="w-12 h-12 rounded-xl bg-slate-950 p-1 border border-amber-500/40 shadow-lg flex items-center justify-center shrink-0">
-                  <img src="/logo.png" alt="सुधार-AI Logo" className="w-full h-full object-contain" />
-                </div>
-                <div className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-extrabold uppercase tracking-wider">
-                  <Building className="w-3.5 h-3.5 text-amber-400" />
-                  <span>State Municipal Administration</span>
-                </div>
-              </div>
-
-              <div>
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight leading-tight">
-                  Central Grievance Dispatch & SLA Resolution Engine
-                </h2>
-                <p className="text-xs sm:text-sm text-slate-400 mt-3 leading-relaxed">
-                  Authorized Municipal Nodal Officers portal for real-time grievance review, automated AI routing verification, field engineer assignment, and SLA tracking.
-                </p>
-              </div>
-
-              {/* Portal Live Highlights List */}
-              <div className="space-y-3 pt-2">
-                <div className="flex items-start space-x-3 p-3 rounded-xl bg-slate-800/50 border border-slate-700/60">
-                  <Cpu className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-                  <div>
-                    <h4 className="text-xs font-bold text-slate-200">AI NLP Auto-Classification</h4>
-                    <p className="text-[11px] text-slate-400">Instant multi-language translation and department keyword matching.</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-3 p-3 rounded-xl bg-slate-800/50 border border-slate-700/60">
-                  <Activity className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-                  <div>
-                    <h4 className="text-xs font-bold text-slate-200">Real-Time SLA Priority Tracking</h4>
-                    <p className="text-[11px] text-slate-400">Urgency detection ensures high-risk civic hazards receive immediate priority.</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-3 p-3 rounded-xl bg-slate-800/50 border border-slate-700/60">
-                  <BadgeCheck className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
-                  <div>
-                    <h4 className="text-xs font-bold text-slate-200">Official Audit Trail</h4>
-                    <p className="text-[11px] text-slate-400">Complete historical logging for departmental accountability.</p>
-                  </div>
-                </div>
-              </div>
+        {/* Top Portal Header */}
+        <div className="text-center space-y-3 mb-8">
+          <div className="inline-flex items-center space-x-3 bg-slate-900 border border-slate-800 p-2.5 px-4 rounded-2xl shadow-lg">
+            <div className="w-9 h-9 rounded-xl bg-slate-950 p-1 border border-amber-500/40 shrink-0">
+              <img src="/logo.png" alt="SudhaarAI Logo" className="w-full h-full object-contain" />
             </div>
-
-            {/* Bottom Security Footer */}
-            <div className="relative z-10 pt-6 border-t border-slate-800 flex items-center justify-between text-slate-400 text-xs">
-              <div className="flex items-center space-x-2">
-                <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                <span className="text-[11px]">256-Bit SSL Encrypted Portal</span>
-              </div>
-              <span className="text-[10px] font-mono text-slate-500 uppercase">v2.4 Government Build</span>
+            <div className="text-left">
+              <span className="text-sm font-extrabold text-white tracking-tight">सुधार-AI Portal Authentication</span>
+              <span className="block text-[10px] text-amber-400 font-bold uppercase tracking-wider">Official Officer & Admin Access</span>
             </div>
           </div>
 
-          {/* RIGHT PANEL: Officer Authentication Form */}
-          <div className="lg:col-span-7 p-8 sm:p-12 flex flex-col justify-center bg-slate-900/60 relative">
-            <div className="max-w-md mx-auto w-full space-y-6">
-              
-              {/* Login Title */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-extrabold text-amber-400 uppercase tracking-widest flex items-center gap-1.5">
-                    <KeyRound className="w-4 h-4 text-amber-400" />
-                    <span>Nodal Officer Authentication</span>
-                  </span>
-                  <button
-                    type="button"
-                    onClick={handleQuickFill}
-                    className="text-[11px] font-bold text-amber-400 hover:text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 px-2.5 py-1 rounded-md border border-amber-500/30 transition-all flex items-center gap-1 cursor-pointer"
-                  >
-                    <Sparkles className="w-3 h-3" />
-                    <span>Auto-Fill Demo Credentials</span>
-                  </button>
-                </div>
-                <h3 className="text-2xl font-bold text-white tracking-tight">
-                  Sign in to your Officer Account
-                </h3>
-                <p className="text-xs text-slate-400 mt-1">
-                  Enter your credentials and select your municipal department to continue.
-                </p>
-              </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            Sign In to Control Center
+          </h1>
+          <p className="text-xs text-slate-400 max-w-md mx-auto">
+            Select your portal authorization type below to manage grievance queues.
+          </p>
+        </div>
 
-              {/* Error Alert */}
-              {errorMessage && (
-                <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-xs font-semibold flex items-center space-x-2.5 shadow-sm animate-fade-in">
-                  <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
-                  <span>{errorMessage}</span>
-                </div>
-              )}
+        {/* Auth Container Card */}
+        <div className="w-full bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 relative overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600" />
 
-              {/* Form */}
-              <form onSubmit={handleLogin} className="space-y-4">
-                
-                {/* Officer ID Input */}
-                <div>
-                  <label className="block text-xs font-bold text-slate-300 uppercase mb-1.5 tracking-wider">
-                    Officer Login ID / Govt Email <span className="text-amber-400">*</span>
-                  </label>
-                  <div className="relative">
-                    <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                    <input
-                      type="text"
-                      value={officerId}
-                      onChange={(e) => setOfficerId(e.target.value)}
-                      placeholder="e.g. OFF-8492 or officer@pwd.gov.in"
-                      className="w-full pl-10 pr-4 py-3 bg-slate-950/80 text-white text-xs rounded-xl border border-slate-700/80 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 font-mono transition-all placeholder-slate-500 shadow-inner"
-                    />
-                  </div>
-                </div>
+          {/* 2-Tab Navigation Bar */}
+          <div className="grid grid-cols-2 gap-2 bg-slate-950 p-1.5 rounded-2xl border border-slate-800">
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab('officer');
+                setErrorMessage('');
+              }}
+              className={`py-3 px-4 rounded-xl text-xs font-extrabold flex items-center justify-center space-x-2 transition-all cursor-pointer ${
+                activeTab === 'officer'
+                  ? 'bg-amber-500 text-slate-950 shadow-lg font-bold'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-900'
+              }`}
+            >
+              <UserCheck className="w-4 h-4" />
+              <span>Department Officer</span>
+            </button>
 
-                {/* Password Input */}
-                <div>
-                  <label className="block text-xs font-bold text-slate-300 uppercase mb-1.5 tracking-wider">
-                    Account Password <span className="text-amber-400">*</span>
-                  </label>
-                  <div className="relative">
-                    <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••••••"
-                      className="w-full pl-10 pr-10 py-3 bg-slate-950/80 text-white text-xs rounded-xl border border-slate-700/80 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 font-mono transition-all placeholder-slate-500 shadow-inner"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
-                    >
-                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                </div>
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab('admin');
+                setErrorMessage('');
+              }}
+              className={`py-3 px-4 rounded-xl text-xs font-extrabold flex items-center justify-center space-x-2 transition-all cursor-pointer ${
+                activeTab === 'admin'
+                  ? 'bg-amber-500 text-slate-950 shadow-lg font-bold'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-900'
+              }`}
+            >
+              <Shield className="w-4 h-4" />
+              <span>System Administrator</span>
+            </button>
+          </div>
 
-                {/* Department Dropdown */}
+          {/* Quick-Fill Demo Button */}
+          <div className="flex items-center justify-between text-xs pt-1 border-b border-slate-800 pb-4">
+            <span className="text-slate-400 font-medium">
+              {activeTab === 'officer' ? 'Department Nodal Officer Portal' : 'Full Command System Admin Portal'}
+            </span>
+            <button
+              type="button"
+              onClick={activeTab === 'officer' ? handleOfficerQuickFill : handleAdminQuickFill}
+              className="text-[11px] font-bold text-amber-400 hover:text-amber-300 bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/30 transition-colors flex items-center space-x-1 cursor-pointer"
+            >
+              <Sparkles className="w-3 h-3 text-amber-400" />
+              <span>Auto-Fill Demo Credentials</span>
+            </button>
+          </div>
+
+          {/* Error Message Alert */}
+          {errorMessage && (
+            <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-xs font-semibold flex items-center space-x-2.5 shadow-sm animate-fade-in">
+              <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+              <span>{errorMessage}</span>
+            </div>
+          )}
+
+          {/* LOGIN FORM */}
+          <form onSubmit={handleLogin} className="space-y-4">
+            
+            {activeTab === 'officer' ? (
+              /* DEPARTMENT OFFICER TAB FORM */
+              <>
                 <div>
                   <label className="block text-xs font-bold text-slate-300 uppercase mb-1.5 tracking-wider">
                     Assigned Municipal Department <span className="text-amber-400">*</span>
@@ -251,61 +234,132 @@ export default function OfficerLoginPage() {
                   <div className="relative">
                     <Building2 className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                     <select
-                      value={department}
-                      onChange={(e) => setDepartment(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 bg-slate-950/80 text-white text-xs rounded-xl border border-slate-700/80 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 font-medium transition-all cursor-pointer"
+                      value={selectedDept}
+                      onChange={(e) => setSelectedDept(e.target.value)}
+                      className="w-full pl-10 pr-4 py-3 bg-slate-950 text-white text-xs rounded-xl border border-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 font-semibold transition-all cursor-pointer"
                     >
-                      <option value="" className="bg-slate-900 text-slate-400">-- Select Assigned Department --</option>
-                      {departmentsList.map((dept) => (
-                        <option key={dept.code} value={dept.name} className="bg-slate-900 text-white">
-                          {dept.name}
+                      <option value="" className="bg-slate-900 text-slate-400">-- Select Your Assigned Department --</option>
+                      {departmentOptions.map((dept) => (
+                        <option key={dept.category} value={dept.category} className="bg-slate-900 text-white">
+                          {dept.name} ({dept.category})
                         </option>
                       ))}
                     </select>
                   </div>
                 </div>
 
-                {/* Checkbox & Helpdesk */}
-                <div className="flex items-center justify-between text-xs pt-1">
-                  <label className="flex items-center space-x-2 text-slate-300 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={rememberMe}
-                      onChange={(e) => setRememberMe(e.target.checked)}
-                      className="rounded border-slate-700 text-amber-500 focus:ring-amber-500 bg-slate-950"
-                    />
-                    <span>Remember officer session</span>
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 uppercase mb-1.5 tracking-wider">
+                    Officer Login ID / Email <span className="text-amber-400">*</span>
                   </label>
-
-                  <div className="flex items-center space-x-1 text-slate-400 text-[11px]">
-                    <Headphones className="w-3.5 h-3.5 text-amber-400" />
-                    <span>Helpline: <strong className="text-slate-200">1800-11-7834</strong></span>
+                  <div className="relative">
+                    <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      value={officerId}
+                      onChange={(e) => setOfficerId(e.target.value)}
+                      placeholder="e.g. OFF-8492"
+                      className="w-full pl-10 pr-4 py-3 bg-slate-950 text-white text-xs rounded-xl border border-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono transition-all placeholder-slate-600"
+                    />
                   </div>
                 </div>
 
-                {/* Submit Button */}
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full py-3.5 px-5 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-extrabold text-sm transition-all flex items-center justify-center space-x-2 shadow-lg shadow-amber-500/20 active:scale-95 disabled:opacity-50 mt-4 cursor-pointer"
-                >
-                  {isSubmitting ? (
-                    <span>Authenticating Officer Account...</span>
-                  ) : (
-                    <>
-                      <span>Secure Login to Dashboard</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </>
-                  )}
-                </button>
-              </form>
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 uppercase mb-1.5 tracking-wider">
+                    Officer Password <span className="text-amber-400">*</span>
+                  </label>
+                  <div className="relative">
+                    <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      value={officerPassword}
+                      onChange={(e) => setOfficerPassword(e.target.value)}
+                      placeholder="••••••••••••"
+                      className="w-full pl-10 pr-10 py-3 bg-slate-950 text-white text-xs rounded-xl border border-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono transition-all placeholder-slate-600"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+              </>
+            ) : (
+              /* SYSTEM ADMIN TAB FORM */
+              <>
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 uppercase mb-1.5 tracking-wider">
+                    System Administrator ID <span className="text-amber-400">*</span>
+                  </label>
+                  <div className="relative">
+                    <Shield className="w-4 h-4 text-amber-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      value={adminId}
+                      onChange={(e) => setAdminId(e.target.value)}
+                      placeholder="e.g. ADMIN-001"
+                      className="w-full pl-10 pr-4 py-3 bg-slate-950 text-white text-xs rounded-xl border border-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono transition-all placeholder-slate-600"
+                    />
+                  </div>
+                </div>
 
-            </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 uppercase mb-1.5 tracking-wider">
+                    Master Admin Security Key <span className="text-amber-400">*</span>
+                  </label>
+                  <div className="relative">
+                    <KeyRound className="w-4 h-4 text-amber-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      value={adminPassword}
+                      onChange={(e) => setAdminPassword(e.target.value)}
+                      placeholder="••••••••••••"
+                      className="w-full pl-10 pr-10 py-3 bg-slate-950 text-white text-xs rounded-xl border border-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono transition-all placeholder-slate-600"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full py-3.5 px-5 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-extrabold text-sm transition-all flex items-center justify-center space-x-2 shadow-lg shadow-amber-500/20 active:scale-95 disabled:opacity-50 mt-4 cursor-pointer"
+            >
+              {isSubmitting ? (
+                <span>Authenticating Credentials...</span>
+              ) : (
+                <>
+                  <span>Login to {activeTab === 'officer' ? 'Officer Dashboard' : 'System Admin Console'}</span>
+                  <ArrowRight className="w-4 h-4 text-slate-950" />
+                </>
+              )}
+            </button>
+          </form>
+
+          {/* Security Badge */}
+          <div className="pt-4 border-t border-slate-800 flex items-center justify-between text-slate-500 text-[11px]">
+            <span className="flex items-center gap-1">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              256-Bit Encrypted Session
+            </span>
+            <span>Government Portal v2.4</span>
           </div>
-        </div>
-      </main>
 
-      <Footer />
+        </div>
+
+      </main>
     </div>
   );
 }

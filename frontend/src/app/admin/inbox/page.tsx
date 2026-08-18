@@ -18,7 +18,8 @@ import {
   ExternalLink,
   ShieldCheck,
   Building,
-  Sparkles
+  Sparkles,
+  ImageOff
 } from 'lucide-react';
 
 interface Grievance {
@@ -50,6 +51,24 @@ export default function AdminInboxPage() {
   // Modal State
   const [selectedTicket, setSelectedTicket] = useState<Grievance | null>(null);
   const [updatingStatus, setUpdatingStatus] = useState(false);
+
+  // User session state
+  const [userSession, setUserSession] = useState<{ role?: string; department?: string; category?: string } | null>(null);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('sudhaar_user');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        setUserSession(parsed);
+        if (parsed.role === 'officer' && parsed.category) {
+          setSelectedCategory(parsed.category);
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
 
   const fetchGrievances = async () => {
     setLoading(true);
@@ -119,6 +138,19 @@ export default function AdminInboxPage() {
           <span>Refresh Database Queue</span>
         </button>
       </div>
+
+      {/* Officer Department Lock Notice Banner */}
+      {userSession?.role === 'officer' && (
+        <div className="bg-amber-500/10 border border-amber-500/30 p-4 rounded-2xl flex items-center justify-between text-xs text-amber-300 font-bold shadow-md">
+          <div className="flex items-center space-x-2.5">
+            <Building className="w-4 h-4 text-amber-400 shrink-0" />
+            <span>Assigned Department Filter: Displaying grievances routed to <strong>{userSession.category}</strong> ({userSession.department}) only.</span>
+          </div>
+          <span className="px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 text-[10px] uppercase font-extrabold border border-amber-500/40">
+            Officer Department View
+          </span>
+        </div>
+      )}
 
       {/* Filter Control Bar */}
       <div className="bg-slate-900 border border-slate-800 p-4 rounded-2xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 shadow-lg">
@@ -329,16 +361,21 @@ export default function AdminInboxPage() {
                 {selectedTicket.description}
               </p>
 
-              {selectedTicket.photo_url && (
-                <div>
-                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Attached Photo Evidence</h4>
+              <div>
+                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Attached Photo Evidence</h4>
+                {selectedTicket.photo_url ? (
                   <img
                     src={selectedTicket.photo_url}
                     alt="Citizen evidence"
                     className="w-full max-h-56 object-cover rounded-2xl border border-slate-800 shadow-md"
                   />
-                </div>
-              )}
+                ) : (
+                  <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 text-slate-400 text-xs font-medium flex items-center space-x-2.5">
+                    <ImageOff className="w-5 h-5 text-slate-500 shrink-0" />
+                    <span>No photo evidence uploaded by citizen</span>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Status Update Control */}

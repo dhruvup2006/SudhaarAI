@@ -791,7 +791,7 @@ export default function ReportPage() {
               <div className="space-y-2 text-xs text-slate-300">
                 <p><span className="font-bold text-white">Description:</span> {description || 'Not provided'}</p>
                 <p><span className="font-bold text-white">Location:</span> {location || 'Not provided'}</p>
-                <p><span className="font-bold text-white">Photo Evidence:</span> {photoPreview ? 'Attached' : 'Mock photo will be auto-attached'}</p>
+                <p><span className="font-bold text-white">Photo Evidence:</span> {photoPreview ? 'Attached' : 'No photo uploaded'}</p>
                 <p><span className="font-bold text-white">Target Department:</span> {livePrediction.category} ({livePrediction.urgency} SLA Priority)</p>
               </div>
             </div>

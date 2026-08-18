@@ -60,7 +60,7 @@ async def create_grievance(payload: schemas.GrievanceCreate, db: Session = Depen
         original_text=payload.description,    # Raw text as typed by citizen
         detected_language=detected_lang,      # Detected language code (e.g. 'hi')
         location=payload.location,
-        photo_url=payload.photo_url or "https://images.unsplash.com/photo-1584467735871-8e85353a8413?w=600&auto=format&fit=crop&q=80",
+        photo_url=payload.photo_url or None,
         category=classification["category"],
         urgency=classification["urgency"],
         status="Classified",

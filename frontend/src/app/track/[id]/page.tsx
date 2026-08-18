@@ -21,7 +21,8 @@ import {
   Building,
   Sparkles,
   Search,
-  FileText
+  FileText,
+  ImageOff
 } from 'lucide-react';
 
 interface GrievanceData {
@@ -307,16 +308,21 @@ export default function TicketTrackPage({ params }: { params: Promise<{ id: stri
                 </p>
               </div>
 
-              {ticket.photo_url && (
-                <div className="pt-2">
-                  <span className="text-xs font-bold text-slate-300 block mb-2">Submitted Photo Evidence:</span>
+              <div className="pt-2">
+                <span className="text-xs font-bold text-slate-300 block mb-2">Submitted Photo Evidence:</span>
+                {ticket.photo_url ? (
                   <img
                     src={ticket.photo_url}
                     alt="Ticket Evidence"
                     className="w-full max-h-80 object-cover rounded-xl border border-slate-800 shadow-md"
                   />
-                </div>
-              )}
+                ) : (
+                  <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 text-slate-400 text-xs font-medium flex items-center space-x-2.5">
+                    <ImageOff className="w-5 h-5 text-slate-500 shrink-0" />
+                    <span>No photo evidence was attached by citizen.</span>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}
