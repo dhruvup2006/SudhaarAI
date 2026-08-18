@@ -9,25 +9,24 @@ interface UrgencyBadgeProps {
 export const UrgencyBadge: React.FC<UrgencyBadgeProps> = ({ urgency, size = 'md' }) => {
   const norm = urgency.toLowerCase();
 
-  let styleClass = "bg-emerald-500/10 text-emerald-400 border-emerald-500/30";
+  let styleClass = "bg-emerald-50 text-emerald-800 border-emerald-300 font-semibold";
   let Icon = Info;
-  let pulseEffect = "";
 
   if (norm === 'high') {
-    styleClass = "bg-rose-500/20 text-rose-400 border-rose-500/40 shadow-sm shadow-rose-900/30";
+    styleClass = "bg-red-50 text-red-800 border-red-300 font-bold";
     Icon = AlertTriangle;
-    pulseEffect = "animate-pulse";
   } else if (norm === 'medium') {
-    styleClass = "bg-amber-500/15 text-amber-300 border-amber-500/30";
+    styleClass = "bg-amber-50 text-amber-800 border-amber-300 font-semibold";
     Icon = Clock;
   }
 
-  const sizeClass = size === 'sm' ? 'px-2 py-0.5 text-xs' : size === 'lg' ? 'px-3 py-1.5 text-sm font-semibold' : 'px-2.5 py-1 text-xs font-medium';
+  const sizeClass = size === 'sm' ? 'px-2 py-0.5 text-xs' : size === 'lg' ? 'px-3 py-1.5 text-sm' : 'px-2.5 py-1 text-xs';
 
   return (
-    <span className={`inline-flex items-center rounded-full border ${styleClass} ${sizeClass}`}>
-      <Icon className={`w-3.5 h-3.5 mr-1 ${pulseEffect}`} />
+    <span className={`inline-flex items-center rounded-md border ${styleClass} ${sizeClass}`}>
+      <Icon className="w-3.5 h-3.5 mr-1 shrink-0" />
       {urgency} Priority
     </span>
   );
 };
+
