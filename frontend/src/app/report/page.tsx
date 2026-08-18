@@ -216,25 +216,71 @@ export default function ReportPage() {
     setInterimTranscript('');
   };
 
-  // Detect GPS Location
+  // Enhanced Reverse Geocoding + Geolocation Permission Handler
   const handleDetectLocation = () => {
     if (!navigator.geolocation) {
       setErrorMessage('Geolocation is not supported by your browser.');
       return;
     }
+    
     setIsLocating(true);
     setErrorMessage('');
+
+    const options: PositionOptions = {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0
+    };
+
     navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const lat = position.coords.latitude.toFixed(4);
-        const lng = position.coords.longitude.toFixed(4);
-        setLocation(`GPS Coordinates: ${lat}, ${lng} (Near Sector 4 Municipal Office)`);
-        setIsLocating(false);
+      async (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        const coordsStr = `GPS: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+
+        try {
+          // Reverse geocoding via public BigDataCloud Client API
+          const res = await fetch(
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`
+          );
+          if (res.ok) {
+            const data = await res.json();
+            const locality = data.locality || data.city || data.principalSubdivision || '';
+            const district = data.localityInfo?.administrative?.find((a: any) => a.adminLevel === 6 || a.adminLevel === 5)?.name || '';
+            const road = data.localityInfo?.informative?.find((i: any) => i.description === 'road' || i.name)?.name || '';
+            const state = data.principalSubdivision || '';
+            const country = data.countryName || '';
+
+            const parts = [road, locality, district, state, country].filter(Boolean);
+            const fullAddress = parts.length > 0 ? parts.join(', ') : `${locality}, ${state}`;
+
+            if (fullAddress.trim()) {
+              setLocation(`${fullAddress} (${coordsStr})`);
+            } else {
+              setLocation(coordsStr);
+            }
+          } else {
+            setLocation(coordsStr);
+          }
+        } catch (e) {
+          setLocation(coordsStr);
+        } finally {
+          setIsLocating(false);
+        }
       },
       (error) => {
         setIsLocating(false);
-        setErrorMessage('Unable to auto-detect GPS location. Please enter your location address manually.');
-      }
+        if (error.code === error.PERMISSION_DENIED) {
+          setErrorMessage('Location access was denied. Please allow location permissions in your browser site settings and try again.');
+        } else if (error.code === error.POSITION_UNAVAILABLE) {
+          setErrorMessage('Location information is unavailable. Please enter your location address manually.');
+        } else if (error.code === error.TIMEOUT) {
+          setErrorMessage('Location request timed out. Please try clicking Auto-Detect GPS Location again.');
+        } else {
+          setErrorMessage('Could not detect location: ' + error.message);
+        }
+      },
+      options
     );
   };
 
@@ -699,16 +745,20 @@ export default function ReportPage() {
                   type="button"
                   onClick={handleDetectLocation}
                   disabled={isLocating}
-                  className="px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 text-xs font-bold flex items-center space-x-1.5 transition-all"
+                  className={`relative group shrink-0 px-4 py-2.5 rounded-xl font-extrabold text-xs flex items-center space-x-2 transition-all shadow-md active:scale-95 cursor-pointer ${
+                    isLocating
+                      ? 'bg-amber-600 text-white cursor-wait border border-amber-500 shadow-amber-500/20 ring-4 ring-amber-500/30'
+                      : 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 border border-amber-400 hover:shadow-lg hover:shadow-amber-500/20'
+                  }`}
                 >
                   {isLocating ? (
                     <>
-                      <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-600" />
-                      <span>Detecting GPS...</span>
+                      <Loader2 className="w-4 h-4 animate-spin text-white" />
+                      <span>Requesting Location Permission & GPS...</span>
                     </>
                   ) : (
                     <>
-                      <Crosshair className="w-3.5 h-3.5 text-amber-600" />
+                      <Crosshair className="w-4 h-4 text-slate-950 group-hover:rotate-45 transition-transform duration-300" />
                       <span>📍 Auto-Detect GPS Location</span>
                     </>
                   )}
