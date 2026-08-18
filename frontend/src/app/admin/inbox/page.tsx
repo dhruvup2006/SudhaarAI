@@ -17,13 +17,16 @@ import {
   AlertTriangle,
   ExternalLink,
   ShieldCheck,
-  Building
+  Building,
+  Sparkles
 } from 'lucide-react';
 
 interface Grievance {
   id: string;
   title: string;
   description: string;
+  original_text?: string;
+  detected_language?: string;
   location: string;
   photo_url?: string;
   category: string;
@@ -98,32 +101,36 @@ export default function AdminInboxPage() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* Header Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-900">Department Grievance Inbox</h1>
-          <p className="text-xs text-slate-600">Central queue of incoming citizen complaints automatically prioritized by AI urgency and SLA rules.</p>
+          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-extrabold uppercase tracking-wider mb-2">
+            <Building className="w-3.5 h-3.5 text-amber-400" />
+            <span>Nodal Officer Dispatch Desk</span>
+          </div>
+          <h1 className="text-2xl font-extrabold text-white tracking-tight">Department Grievance Queue</h1>
+          <p className="text-xs text-slate-400 mt-1">Centralized incoming complaints prioritized by AI SLA rules and automated multi-lingual keyword analysis.</p>
         </div>
 
         <button
           onClick={fetchGrievances}
-          className="px-4 py-2 rounded bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center space-x-1.5 self-start sm:self-auto shadow-sm"
+          className="px-5 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 text-xs font-extrabold flex items-center space-x-2 self-start sm:self-auto shadow-md transition-all cursor-pointer"
         >
-          <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-          <span>Refresh Database</span>
+          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          <span>Refresh Database Queue</span>
         </button>
       </div>
 
       {/* Filter Control Bar */}
-      <div className="gov-card p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 bg-white">
+      <div className="bg-slate-900 border border-slate-800 p-4 rounded-2xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 shadow-lg">
         {/* Search */}
         <div className="relative">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search Reference ID or keyword..."
-            className="w-full pl-9 pr-3 py-2 bg-slate-50 text-slate-900 placeholder-slate-400 text-xs rounded border border-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono"
+            className="w-full pl-10 pr-4 py-2.5 bg-slate-950 text-white placeholder-slate-500 text-xs rounded-xl border border-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono transition-all"
           />
         </div>
 
@@ -132,16 +139,16 @@ export default function AdminInboxPage() {
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="w-full px-3 py-2 bg-slate-50 text-slate-900 text-xs rounded border border-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500 appearance-none font-semibold"
+            className="w-full px-3.5 py-2.5 bg-slate-950 text-white text-xs rounded-xl border border-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 appearance-none font-medium transition-all cursor-pointer"
           >
-            <option value="All">All Department Categories</option>
-            <option value="Roads">Public Works (Roads)</option>
-            <option value="Water">Jal Board (Water)</option>
-            <option value="Sanitation">Sanitation & Waste</option>
-            <option value="Electricity">Electricity & Power</option>
-            <option value="Public Safety">Public Safety</option>
+            <option value="All" className="bg-slate-900 text-slate-300">All Department Categories</option>
+            <option value="Roads" className="bg-slate-900 text-white">Public Works (Roads)</option>
+            <option value="Water" className="bg-slate-900 text-white">Jal Board (Water)</option>
+            <option value="Sanitation" className="bg-slate-900 text-white">Sanitation & Waste</option>
+            <option value="Electricity" className="bg-slate-900 text-white">Electricity & Power</option>
+            <option value="Public Safety" className="bg-slate-900 text-white">Public Safety</option>
           </select>
-          <ChevronDown className="w-3.5 h-3.5 text-slate-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
         </div>
 
         {/* Urgency Filter */}
@@ -149,14 +156,14 @@ export default function AdminInboxPage() {
           <select
             value={selectedUrgency}
             onChange={(e) => setSelectedUrgency(e.target.value)}
-            className="w-full px-3 py-2 bg-slate-50 text-slate-900 text-xs rounded border border-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500 appearance-none font-semibold"
+            className="w-full px-3.5 py-2.5 bg-slate-950 text-white text-xs rounded-xl border border-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 appearance-none font-medium transition-all cursor-pointer"
           >
-            <option value="All">All Priority Levels</option>
-            <option value="High">High Priority SLA</option>
-            <option value="Medium">Medium Priority SLA</option>
-            <option value="Low">Low Priority SLA</option>
+            <option value="All" className="bg-slate-900 text-slate-300">All Priority Levels</option>
+            <option value="High" className="bg-slate-900 text-white">High Priority SLA</option>
+            <option value="Medium" className="bg-slate-900 text-white">Medium Priority SLA</option>
+            <option value="Low" className="bg-slate-900 text-white">Low Priority SLA</option>
           </select>
-          <ChevronDown className="w-3.5 h-3.5 text-slate-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
         </div>
 
         {/* Status Filter */}
@@ -164,44 +171,44 @@ export default function AdminInboxPage() {
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="w-full px-3 py-2 bg-slate-50 text-slate-900 text-xs rounded border border-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500 appearance-none font-semibold"
+            className="w-full px-3.5 py-2.5 bg-slate-950 text-white text-xs rounded-xl border border-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 appearance-none font-medium transition-all cursor-pointer"
           >
-            <option value="All">All Status Flags</option>
-            <option value="Submitted">Lodged (Submitted)</option>
-            <option value="Classified">AI Classified</option>
-            <option value="In Progress">Field Work In Progress</option>
-            <option value="Resolved">Resolved & Verified</option>
+            <option value="All" className="bg-slate-900 text-slate-300">All Status Flags</option>
+            <option value="Submitted" className="bg-slate-900 text-white">Submitted (Pending Review)</option>
+            <option value="Classified" className="bg-slate-900 text-white">AI Classified</option>
+            <option value="In Progress" className="bg-slate-900 text-white">Field Work In Progress</option>
+            <option value="Resolved" className="bg-slate-900 text-white">Resolved & Verified</option>
           </select>
-          <ChevronDown className="w-3.5 h-3.5 text-slate-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
         </div>
       </div>
 
       {/* Data Table */}
-      <div className="gov-card overflow-hidden bg-white shadow-sm">
+      <div className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-900 text-[11px] font-bold text-amber-400 uppercase tracking-wider border-b border-slate-800">
-                <th className="py-3 px-4">Reference ID</th>
-                <th className="py-3 px-4">Grievance Summary</th>
-                <th className="py-3 px-4">Priority SLA</th>
-                <th className="py-3 px-4">Dept Category</th>
-                <th className="py-3 px-4">Assigned Body</th>
-                <th className="py-3 px-4">Current Status</th>
-                <th className="py-3 px-4 text-right">Officer Action</th>
+              <tr className="bg-slate-950 text-[11px] font-extrabold text-amber-400 uppercase tracking-widest border-b border-slate-800">
+                <th className="py-4 px-5">Reference ID</th>
+                <th className="py-4 px-5">Grievance Summary</th>
+                <th className="py-4 px-5">Priority SLA</th>
+                <th className="py-4 px-5">Dept Category</th>
+                <th className="py-4 px-5">Assigned Nodal Body</th>
+                <th className="py-4 px-5">Current Status</th>
+                <th className="py-4 px-5 text-right">Officer Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-200 text-xs">
+            <tbody className="divide-y divide-slate-800/80 text-xs">
               {loading ? (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-slate-600 font-medium">
-                    <RefreshCw className="w-6 h-6 animate-spin mx-auto text-amber-600 mb-2" />
-                    Loading municipal database...
+                  <td colSpan={7} className="py-16 text-center text-slate-400 font-medium">
+                    <RefreshCw className="w-7 h-7 animate-spin mx-auto text-amber-400 mb-3" />
+                    Connecting to municipal database queue...
                   </td>
                 </tr>
               ) : grievances.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-slate-600 font-medium">
+                  <td colSpan={7} className="py-16 text-center text-slate-400 font-medium">
                     No grievance records match current filter parameters.
                   </td>
                 </tr>
@@ -210,45 +217,45 @@ export default function AdminInboxPage() {
                   <tr
                     key={item.id}
                     onClick={() => setSelectedTicket(item)}
-                    className="hover:bg-slate-50 cursor-pointer transition-colors"
+                    className="hover:bg-slate-850/60 cursor-pointer transition-colors"
                   >
-                    <td className="py-3.5 px-4 font-mono font-bold text-blue-900 whitespace-nowrap">
+                    <td className="py-4 px-5 font-mono font-extrabold text-amber-400 whitespace-nowrap">
                       {item.id}
                     </td>
-                    <td className="py-3.5 px-4 max-w-xs">
-                      <p className="font-bold text-slate-900 truncate">{item.title}</p>
-                      <p className="text-[11px] text-slate-500 truncate mt-0.5">{item.location}</p>
+                    <td className="py-4 px-5 max-w-xs">
+                      <p className="font-bold text-white truncate">{item.title}</p>
+                      <p className="text-[11px] text-slate-400 truncate mt-0.5">{item.location}</p>
                     </td>
-                    <td className="py-3.5 px-4 whitespace-nowrap">
+                    <td className="py-4 px-5 whitespace-nowrap">
                       <UrgencyBadge urgency={item.urgency} size="sm" />
                     </td>
-                    <td className="py-3.5 px-4 whitespace-nowrap">
+                    <td className="py-4 px-5 whitespace-nowrap">
                       <CategoryBadge category={item.category} size="sm" />
                     </td>
-                    <td className="py-3.5 px-4 text-slate-700 font-semibold truncate max-w-[180px]">
+                    <td className="py-4 px-5 text-slate-300 font-medium truncate max-w-[200px]">
                       {item.department}
                     </td>
-                    <td className="py-3.5 px-4 whitespace-nowrap">
-                      <span className={`px-2 py-0.5 text-[11px] font-bold rounded border ${
+                    <td className="py-4 px-5 whitespace-nowrap">
+                      <span className={`px-2.5 py-1 text-[11px] font-bold rounded-full border ${
                         item.status === 'Resolved'
-                          ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                          ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
                           : item.status === 'In Progress'
-                          ? 'bg-blue-50 text-blue-800 border-blue-300'
-                          : 'bg-amber-50 text-amber-900 border-amber-300'
+                          ? 'bg-blue-500/20 text-blue-300 border-blue-500/30'
+                          : 'bg-amber-500/20 text-amber-300 border-amber-500/30'
                       }`}>
                         {item.status}
                       </span>
                     </td>
-                    <td className="py-3.5 px-4 text-right whitespace-nowrap">
+                    <td className="py-4 px-5 text-right whitespace-nowrap">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           setSelectedTicket(item);
                         }}
-                        className="px-3 py-1 rounded bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-800 font-bold text-xs flex items-center space-x-1 ml-auto"
+                        className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold text-xs flex items-center space-x-1.5 ml-auto transition-all"
                       >
-                        <Eye className="w-3.5 h-3.5 text-amber-700" />
-                        <span>Inspect</span>
+                        <Eye className="w-3.5 h-3.5 text-amber-400" />
+                        <span>Inspect Ticket</span>
                       </button>
                     </td>
                   </tr>
@@ -259,75 +266,84 @@ export default function AdminInboxPage() {
         </div>
       </div>
 
-      {/* Ticket Detail Modal / Slide-Over */}
+      {/* Ticket Detail Modal */}
       {selectedTicket && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <div className="gov-card max-w-2xl w-full rounded-md border-t-4 border-amber-600 p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto bg-white shadow-2xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+          <div className="bg-slate-900 border border-slate-800 max-w-2xl w-full rounded-3xl p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto text-white shadow-2xl relative">
+            
             {/* Close Button */}
             <button
               onClick={() => setSelectedTicket(null)}
-              className="absolute top-6 right-6 p-2 rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900"
+              className="absolute top-6 right-6 p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
 
-            {/* Modal Title Header */}
+            {/* Modal Header */}
             <div>
-              <div className="flex items-center space-x-3 mb-2">
-                <span className="font-mono text-lg font-extrabold text-blue-900 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+              <div className="flex items-center space-x-3 mb-2.5">
+                <span className="font-mono text-lg font-extrabold text-amber-400 bg-amber-500/10 px-3 py-1 rounded-xl border border-amber-500/30">
                   {selectedTicket.id}
                 </span>
                 <UrgencyBadge urgency={selectedTicket.urgency} size="sm" />
                 <CategoryBadge category={selectedTicket.category} size="sm" />
               </div>
-              <h2 className="text-xl font-bold text-slate-900">{selectedTicket.title}</h2>
-              <p className="text-xs text-slate-600 mt-1 flex items-center space-x-1">
-                <MapPin className="w-3.5 h-3.5 text-amber-600" />
+              <h2 className="text-xl font-bold text-white tracking-tight">{selectedTicket.title}</h2>
+              <p className="text-xs text-slate-400 mt-1 flex items-center space-x-1">
+                <MapPin className="w-3.5 h-3.5 text-amber-400" />
                 <span>{selectedTicket.location}</span>
               </p>
             </div>
 
             {/* AI Diagnostics Banner */}
-            <div className="p-4 rounded bg-slate-50 border border-slate-200 space-y-2">
+            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
               <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2 text-xs font-bold text-slate-900">
-                  <ShieldCheck className="w-4 h-4 text-emerald-700" />
+                <div className="flex items-center space-x-2 text-xs font-bold text-amber-400">
+                  <Sparkles className="w-4 h-4 text-amber-400" />
                   <span>AI Automated Category & Routing Diagnostic</span>
                 </div>
-                <span className="text-[11px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                <span className="text-[10px] font-bold text-emerald-300 bg-emerald-500/20 px-2.5 py-0.5 rounded-full border border-emerald-500/30">
                   {(selectedTicket.ai_confidence * 100).toFixed(0)}% Confidence Match
                 </span>
               </div>
-              <p className="text-xs text-slate-700 leading-relaxed font-mono bg-white p-2.5 rounded border border-slate-200">
+              <p className="text-xs text-slate-300 leading-relaxed font-mono bg-slate-900 p-3 rounded-xl border border-slate-800">
                 {selectedTicket.ai_reasoning || "Automatic classification algorithm evaluated issue parameters."}
               </p>
-              <p className="text-xs text-slate-700 font-bold">
-                Designated Authority: <span className="text-slate-900">{selectedTicket.department}</span>
+              <p className="text-xs text-slate-300 font-bold pt-1">
+                Designated Authority: <span className="text-white font-semibold">{selectedTicket.department}</span>
               </p>
             </div>
 
             {/* Description & Photo */}
             <div className="space-y-3">
-              <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">Citizen Full Statement</h4>
-              <p className="text-xs text-slate-800 bg-slate-50 p-4 rounded border border-slate-200 leading-relaxed whitespace-pre-line">
+              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Citizen Full Statement</h4>
+              
+              {selectedTicket.original_text && selectedTicket.original_text !== selectedTicket.description && (
+                <div className="bg-amber-500/10 border border-amber-500/30 p-3 rounded-xl text-xs">
+                  <span className="font-bold text-amber-300 block mb-1">Original Text ({selectedTicket.detected_language || 'regional'}):</span>
+                  <p className="text-amber-100">{selectedTicket.original_text}</p>
+                </div>
+              )}
+
+              <p className="text-xs text-slate-200 bg-slate-950 p-4 rounded-2xl border border-slate-800 leading-relaxed whitespace-pre-line">
                 {selectedTicket.description}
               </p>
 
               {selectedTicket.photo_url && (
                 <div>
-                  <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Attached Photo Evidence</h4>
+                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Attached Photo Evidence</h4>
                   <img
                     src={selectedTicket.photo_url}
                     alt="Citizen evidence"
-                    className="w-full max-h-56 object-cover rounded border border-slate-300 shadow-sm"
+                    className="w-full max-h-56 object-cover rounded-2xl border border-slate-800 shadow-md"
                   />
                 </div>
               )}
             </div>
 
-            {/* Interactive Status Dropdown Control */}
-            <div className="pt-4 border-t border-slate-200 space-y-3">
-              <label className="block text-xs font-bold text-slate-900 uppercase tracking-wider">
+            {/* Status Update Control */}
+            <div className="pt-4 border-t border-slate-800 space-y-3">
+              <label className="block text-xs font-bold text-white uppercase tracking-wider">
                 Update Official Grievance Workflow Status
               </label>
               <div className="flex items-center space-x-3">
@@ -335,20 +351,20 @@ export default function AdminInboxPage() {
                   value={selectedTicket.status}
                   onChange={(e) => handleUpdateStatus(e.target.value)}
                   disabled={updatingStatus}
-                  className="flex-1 px-4 py-2.5 bg-slate-50 text-slate-900 text-xs font-bold rounded border border-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="flex-1 px-4 py-3 bg-slate-950 text-white text-xs font-bold rounded-xl border border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer"
                 >
-                  <option value="Submitted">Submitted (Pending Officer Review)</option>
-                  <option value="Classified">Classified (AI Dept Assigned)</option>
-                  <option value="In Progress">In Progress (Field Work Dispatch)</option>
+                  <option value="Submitted">Submitted (Pending Review)</option>
+                  <option value="Classified">Classified (AI Assigned)</option>
+                  <option value="In Progress">In Progress (Field Action Deployed)</option>
                   <option value="Resolved">Resolved (Work Complete & Verified)</option>
-                  <option value="Rejected">Rejected (Duplicate/Invalid Request)</option>
+                  <option value="Rejected">Rejected (Duplicate Request)</option>
                 </select>
 
                 <a
                   href={`/track/${selectedTicket.id}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-4 py-2.5 rounded bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center space-x-1"
+                  className="px-4 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold text-xs flex items-center space-x-1.5 transition-colors shrink-0"
                 >
                   <span>Public View</span>
                   <ExternalLink className="w-3.5 h-3.5 text-amber-400" />
@@ -361,4 +377,3 @@ export default function AdminInboxPage() {
     </div>
   );
 }
-
