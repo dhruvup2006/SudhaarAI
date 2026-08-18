@@ -4,17 +4,17 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Navbar } from '@/components/Navbar';
-import { 
-  Lock, 
-  User, 
-  Building2, 
-  Eye, 
-  EyeOff, 
-  ArrowRight, 
-  ShieldCheck, 
-  Building, 
-  Sparkles, 
-  KeyRound, 
+import {
+  Lock,
+  User,
+  Building2,
+  Eye,
+  EyeOff,
+  ArrowRight,
+  ShieldCheck,
+  Building,
+  Sparkles,
+  KeyRound,
   ShieldAlert,
   AlertCircle,
   Shield,
@@ -23,7 +23,7 @@ import {
 
 export default function OfficerLoginPage() {
   const router = useRouter();
-  
+
   // Tab state: 'officer' | 'admin'
   const [activeTab, setActiveTab] = useState<'officer' | 'admin'>('officer');
 
@@ -31,7 +31,7 @@ export default function OfficerLoginPage() {
   const [officerId, setOfficerId] = useState('');
   const [officerPassword, setOfficerPassword] = useState('');
   const [selectedDept, setSelectedDept] = useState('');
-  
+
   // Admin Form Fields
   const [adminId, setAdminId] = useState('');
   const [adminPassword, setAdminPassword] = useState('');
@@ -131,12 +131,12 @@ export default function OfficerLoginPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-amber-500 selection:text-white relative overflow-hidden">
-      {/* Full Resolution Vivid Background Image */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat pointer-events-none z-0"
+      {/* Background Image with Dark Vignette Overlay */}
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40 mix-blend-luminosity pointer-events-none z-0"
         style={{ backgroundImage: `url('/login-bg.jpg')` }}
       />
-      <div className="absolute inset-0 bg-slate-950/30 backdrop-blur-[2px] pointer-events-none z-0" />
+      <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/70 pointer-events-none z-0" />
 
       <Navbar />
 
@@ -145,7 +145,7 @@ export default function OfficerLoginPage() {
       <div className="absolute bottom-10 right-10 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl pointer-events-none z-0" />
 
       <main className="flex-1 py-12 px-4 sm:px-6 lg:px-8 max-w-xl mx-auto w-full flex flex-col items-center justify-center relative z-10">
-        
+
         {/* Top Portal Header */}
         <div className="text-center space-y-3 mb-8">
           <div className="inline-flex items-center space-x-3 bg-slate-900 border border-slate-800 p-2.5 px-4 rounded-2xl shadow-lg">
@@ -178,11 +178,10 @@ export default function OfficerLoginPage() {
                 setActiveTab('officer');
                 setErrorMessage('');
               }}
-              className={`py-3 px-4 rounded-xl text-xs font-extrabold flex items-center justify-center space-x-2 transition-all cursor-pointer ${
-                activeTab === 'officer'
+              className={`py-3 px-4 rounded-xl text-xs font-extrabold flex items-center justify-center space-x-2 transition-all cursor-pointer ${activeTab === 'officer'
                   ? 'bg-amber-500 text-slate-950 shadow-lg font-bold'
                   : 'text-slate-400 hover:text-white hover:bg-slate-900'
-              }`}
+                }`}
             >
               <UserCheck className="w-4 h-4" />
               <span>Department Officer</span>
@@ -194,11 +193,10 @@ export default function OfficerLoginPage() {
                 setActiveTab('admin');
                 setErrorMessage('');
               }}
-              className={`py-3 px-4 rounded-xl text-xs font-extrabold flex items-center justify-center space-x-2 transition-all cursor-pointer ${
-                activeTab === 'admin'
+              className={`py-3 px-4 rounded-xl text-xs font-extrabold flex items-center justify-center space-x-2 transition-all cursor-pointer ${activeTab === 'admin'
                   ? 'bg-amber-500 text-slate-950 shadow-lg font-bold'
                   : 'text-slate-400 hover:text-white hover:bg-slate-900'
-              }`}
+                }`}
             >
               <Shield className="w-4 h-4" />
               <span>System Administrator</span>
@@ -230,7 +228,7 @@ export default function OfficerLoginPage() {
 
           {/* LOGIN FORM */}
           <form onSubmit={handleLogin} className="space-y-4">
-            
+
             {activeTab === 'officer' ? (
               /* DEPARTMENT OFFICER TAB FORM */
               <>
