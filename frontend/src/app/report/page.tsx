@@ -327,9 +327,14 @@ export default function ReportPage() {
         <div className="bg-white rounded-2xl p-6 sm:p-8 mb-6 border border-slate-200 shadow-sm text-center relative overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-amber-500 via-orange-500 to-emerald-600" />
           
-          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-900 text-xs font-extrabold uppercase tracking-wider mb-3">
-            <Building className="w-3.5 h-3.5 text-amber-600" />
-            <span>Official Portal • AI Public Grievance Dispatch</span>
+          <div className="flex items-center justify-center space-x-3.5 mb-3">
+            <div className="w-12 h-12 rounded-xl bg-slate-950 p-1 border border-amber-500/40 shadow-md flex items-center justify-center shrink-0">
+              <img src="/logo.png" alt="सुधार-AI Logo" className="w-full h-full object-contain" />
+            </div>
+            <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-amber-900 text-xs font-extrabold uppercase tracking-wider">
+              <Building className="w-3.5 h-3.5 text-amber-600" />
+              <span>Official Portal • AI Public Grievance Dispatch</span>
+            </div>
           </div>
 
           <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">

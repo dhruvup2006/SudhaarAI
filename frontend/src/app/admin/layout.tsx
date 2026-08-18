@@ -50,12 +50,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="p-6 space-y-6">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded bg-amber-600 flex items-center justify-center border border-amber-400 shadow-md">
-              <ShieldAlert className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 rounded-xl bg-slate-950 p-1 border border-slate-700 shadow-md flex items-center justify-center shrink-0">
+              <img src="/logo.png" alt="सुधार-AI Logo" className="w-full h-full object-contain" />
             </div>
             <div>
               <span className="text-lg font-extrabold text-white tracking-tight">सुधार <span className="text-amber-400">AI</span></span>
-              <p className="text-[10px] text-amber-300 font-bold uppercase tracking-wider">Department Officer Console</p>
+              <p className="text-[10px] text-amber-300 font-bold uppercase tracking-wider">Officer Console</p>
             </div>
           </Link>
 

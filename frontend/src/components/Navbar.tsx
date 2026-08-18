@@ -60,19 +60,19 @@ export const Navbar: React.FC = () => {
       <div className="bg-slate-900 border-b border-slate-800 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Logo & National Emblem Emblem Box */}
+            {/* Logo & National Emblem Box */}
             <Link href="/" className="flex items-center space-x-3.5 group">
-              <div className="w-10 h-10 rounded-md bg-amber-600 flex items-center justify-center shadow-md border border-amber-500">
-                <ShieldAlert className="w-6 h-6 text-white" />
+              <div className="w-11 h-11 rounded-xl bg-slate-950 p-1 border border-slate-700/80 shadow-md flex items-center justify-center overflow-hidden shrink-0 group-hover:border-amber-500/50 transition-all">
+                <img src="/logo.png" alt="सुधार-AI Logo" className="w-full h-full object-contain" />
               </div>
               <div>
                 <div className="flex items-center space-x-2">
-                  <span className="text-xl font-bold tracking-tight text-white">सुधार <span className="text-amber-400">AI</span></span>
-                  <span className="px-2 py-0.5 text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded uppercase tracking-wider">
+                  <span className="text-xl font-extrabold tracking-tight text-white">सुधार <span className="text-amber-400">AI</span></span>
+                  <span className="px-2 py-0.5 text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-full uppercase tracking-wider">
                     Official Portal
                   </span>
                 </div>
-                <p className="text-[11px] text-slate-400 hidden sm:block">National Civic Grievance & AI Routing Platform</p>
+                <p className="text-[11px] text-slate-400 hidden sm:block font-medium">Empowering Growth Through Innovation</p>
               </div>
             </Link>
 

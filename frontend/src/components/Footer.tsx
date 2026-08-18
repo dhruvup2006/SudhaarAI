@@ -8,13 +8,13 @@ export const Footer: React.FC = () => {
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
         {/* About & Official Govt info */}
         <div className="space-y-4 md:col-span-2">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded bg-amber-600 flex items-center justify-center border border-amber-400">
-              <ShieldAlert className="w-5 h-5 text-white" />
+          <div className="flex items-center space-x-3.5">
+            <div className="w-11 h-11 rounded-xl bg-slate-950 p-1 border border-slate-700/80 shadow-md flex items-center justify-center shrink-0">
+              <img src="/logo.png" alt="सुधार-AI Logo" className="w-full h-full object-contain" />
             </div>
             <div>
-              <span className="text-lg font-bold text-white tracking-wide">सुधार AI (SudhaarAI)</span>
-              <span className="block text-[11px] text-amber-400 font-semibold uppercase">National Public Grievance Portal</span>
+              <span className="text-lg font-extrabold text-white tracking-wide">सुधार-AI (SudhaarAI)</span>
+              <span className="block text-[11px] text-amber-400 font-semibold uppercase tracking-wider">Empowering Growth Through Innovation • नवाचार द्वारा विकास को सशक्त बनाना</span>
             </div>
           </div>
           <p className="text-xs text-slate-300 max-w-md leading-relaxed">

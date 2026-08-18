@@ -106,9 +106,14 @@ export default function OfficerLoginPage() {
 
             <div className="relative z-10 space-y-6">
               {/* Emblem / Portal Badge */}
-              <div className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-extrabold uppercase tracking-wider">
-                <Building className="w-3.5 h-3.5 text-amber-400" />
-                <span>State Municipal Administration</span>
+              <div className="flex items-center space-x-3.5">
+                <div className="w-12 h-12 rounded-xl bg-slate-950 p-1 border border-amber-500/40 shadow-lg flex items-center justify-center shrink-0">
+                  <img src="/logo.png" alt="सुधार-AI Logo" className="w-full h-full object-contain" />
+                </div>
+                <div className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-extrabold uppercase tracking-wider">
+                  <Building className="w-3.5 h-3.5 text-amber-400" />
+                  <span>State Municipal Administration</span>
+                </div>
               </div>
 
               <div>

@@ -119,9 +119,14 @@ export default function LandingPage() {
               
               {/* Left Column: Portal Overview */}
               <div className="lg:col-span-7 space-y-6">
-                <div className="inline-flex items-center space-x-2 px-3 py-1 rounded bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-bold uppercase tracking-wider">
-                  <Building className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Centralized Grievance Redressal & Citizen Care</span>
+                <div className="flex items-center space-x-3.5">
+                  <div className="w-12 h-12 rounded-xl bg-slate-950 p-1 border border-amber-500/40 shadow-lg flex items-center justify-center shrink-0">
+                    <img src="/logo.png" alt="सुधार-AI Logo" className="w-full h-full object-contain" />
+                  </div>
+                  <div className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-bold uppercase tracking-wider">
+                    <Building className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Centralized Grievance Redressal & Citizen Care</span>
+                  </div>
                 </div>
 
                 <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
