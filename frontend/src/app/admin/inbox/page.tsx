@@ -19,7 +19,8 @@ import {
   ShieldCheck,
   Building,
   Sparkles,
-  ImageOff
+  ImageOff,
+  Trash2
 } from 'lucide-react';
 
 interface Grievance {
@@ -103,8 +104,32 @@ export default function AdminInboxPage() {
     return true;
   });
 
+  const handleCloseGrievance = async (ticketId: string) => {
+    if (!confirm(`Are you sure you want to CLOSE and remove grievance ${ticketId} from the portal?`)) {
+      return;
+    }
+    setUpdatingStatus(true);
+    try {
+      const res = await fetch(`http://127.0.0.1:8000/api/grievances/${ticketId}`, {
+        method: 'DELETE',
+      });
+      if (res.ok) {
+        setGrievances((prev) => prev.filter((g) => g.id !== ticketId));
+        setSelectedTicket(null);
+      }
+    } catch (err) {
+      console.error('Error closing grievance:', err);
+    } finally {
+      setUpdatingStatus(false);
+    }
+  };
+
   const handleUpdateStatus = async (newStatus: string) => {
     if (!selectedTicket) return;
+    if (newStatus === 'Closed') {
+      await handleCloseGrievance(selectedTicket.id);
+      return;
+    }
     setUpdatingStatus(true);
     try {
       const res = await fetch(`http://127.0.0.1:8000/api/grievances/${selectedTicket.id}`, {
@@ -407,8 +432,18 @@ export default function AdminInboxPage() {
                   <option value="Classified">Classified (AI Assigned)</option>
                   <option value="In Progress">In Progress (Field Action Deployed)</option>
                   <option value="Resolved">Resolved (Work Complete & Verified)</option>
-                  <option value="Rejected">Rejected (Duplicate Request)</option>
+                  <option value="Closed">Close Grievance (Remove from Portal)</option>
                 </select>
+
+                <button
+                  type="button"
+                  onClick={() => handleCloseGrievance(selectedTicket.id)}
+                  disabled={updatingStatus}
+                  className="px-4 py-3 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 font-bold text-xs flex items-center space-x-1.5 transition-all cursor-pointer shrink-0"
+                >
+                  <Trash2 className="w-3.5 h-3.5 text-red-400" />
+                  <span>Close & Remove</span>
+                </button>
 
                 <a
                   href={`/track/${selectedTicket.id}`}

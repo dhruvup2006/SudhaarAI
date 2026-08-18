@@ -135,6 +135,16 @@ def update_grievance(id: str, payload: schemas.GrievanceUpdate, db: Session = De
     db.refresh(grievance)
     return grievance
 
+@app.delete("/api/grievances/{id}")
+def delete_grievance(id: str, db: Session = Depends(get_db)):
+    grievance = db.query(models.Grievance).filter(models.Grievance.id == id.upper()).first()
+    if not grievance:
+        raise HTTPException(status_code=404, detail="Grievance ticket not found")
+    
+    db.delete(grievance)
+    db.commit()
+    return {"status": "success", "message": f"Grievance {id} permanently closed and removed from portal"}
+
 @app.get("/api/analytics")
 def get_analytics(db: Session = Depends(get_db)):
     grievances = db.query(models.Grievance).all()
