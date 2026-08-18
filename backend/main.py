@@ -10,6 +10,7 @@ import models
 import schemas
 from ai_engine import classify_grievance
 from seed import seed_db
+from utils.translator import translate_grievance
 
 # Create DB tables
 Base.metadata.create_all(bind=engine)
@@ -36,11 +37,16 @@ def read_root():
     return {"name": "SudhaarAI API", "status": "online", "version": "1.0.0"}
 
 @app.post("/api/grievances", response_model=schemas.GrievanceResponse)
-def create_grievance(payload: schemas.GrievanceCreate, db: Session = Depends(get_db)):
+async def create_grievance(payload: schemas.GrievanceCreate, db: Session = Depends(get_db)):
     ticket_id = f"SUD-{random.randint(10000, 99999)}"
     
-    # Run AI engine classification
-    classification = classify_grievance(payload.description, payload.location)
+    # 1. Translate incoming raw text to English
+    translation = await translate_grievance(payload.description)
+    translated_text = translation["translated_text"]
+    detected_lang = translation["detected_language"]
+
+    # 2. Run AI engine classification on translated English text
+    classification = classify_grievance(translated_text, payload.location)
     
     # Deriving title if default
     title = payload.title
@@ -50,7 +56,9 @@ def create_grievance(payload: schemas.GrievanceCreate, db: Session = Depends(get
     grievance = models.Grievance(
         id=ticket_id,
         title=title,
-        description=payload.description,
+        description=translated_text,          # Translated English text
+        original_text=payload.description,    # Raw text as typed by citizen
+        detected_language=detected_lang,      # Detected language code (e.g. 'hi')
         location=payload.location,
         photo_url=payload.photo_url or "https://images.unsplash.com/photo-1584467735871-8e85353a8413?w=600&auto=format&fit=crop&q=80",
         category=classification["category"],
@@ -87,6 +95,7 @@ def get_grievances(
         query = query.filter(
             (models.Grievance.title.ilike(search_fmt)) |
             (models.Grievance.description.ilike(search_fmt)) |
+            (models.Grievance.original_text.ilike(search_fmt)) |
             (models.Grievance.location.ilike(search_fmt)) |
             (models.Grievance.id.ilike(search_fmt))
         )

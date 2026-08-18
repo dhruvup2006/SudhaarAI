@@ -75,6 +75,8 @@ def seed_db():
                 id=ticket_id,
                 title=data["title"],
                 description=data["description"],
+                original_text=data["description"],
+                detected_language="en",
                 location=data["location"],
                 photo_url=data["photo_url"],
                 category=classification["category"],

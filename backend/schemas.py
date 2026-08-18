@@ -18,6 +18,8 @@ class GrievanceResponse(BaseModel):
     id: str
     title: str
     description: str
+    original_text: Optional[str] = None
+    detected_language: Optional[str] = "en"
     location: str
     photo_url: Optional[str] = None
     category: str

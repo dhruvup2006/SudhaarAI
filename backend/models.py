@@ -8,6 +8,8 @@ class Grievance(Base):
     id = Column(String, primary_key=True, index=True)
     title = Column(String, nullable=False, default="Civic Grievance")
     description = Column(Text, nullable=False)
+    original_text = Column(Text, nullable=True)
+    detected_language = Column(String, nullable=True, default="en")
     location = Column(String, nullable=False)
     photo_url = Column(String, nullable=True)
     category = Column(String, nullable=False, default="General")
