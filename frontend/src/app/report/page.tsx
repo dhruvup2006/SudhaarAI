@@ -29,8 +29,7 @@ import {
   Crosshair,
   AlertTriangle,
   RefreshCw,
-  Lock,
-  MessageSquare
+  Lock
 } from 'lucide-react';
 
 export default function ReportPage() {
@@ -93,7 +92,7 @@ export default function ReportPage() {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     
     if (!SpeechRecognition) {
-      setErrorMessage('Web Speech API is not supported in this browser. Please use Google Chrome, Microsoft Edge, or Brave, or select sample voice presets below.');
+      setErrorMessage('Web Speech API is not supported in this browser. Please use Google Chrome, Microsoft Edge, or Brave.');
       return;
     }
 
@@ -163,7 +162,7 @@ export default function ReportPage() {
         } else if (event.error === 'no-speech') {
           // Non-fatal transient warning
         } else {
-          setErrorMessage(`Voice recognition notice: ${event.error}. You can try speaking again or click sample presets.`);
+          setErrorMessage(`Voice recognition notice: ${event.error}. You can try speaking again.`);
         }
       };
 
@@ -203,16 +202,7 @@ export default function ReportPage() {
     }
   };
 
-  const handleSimulateVoice = (text: string) => {
-    if (isListening) stopListening();
-    setIsListening(true);
-    setInterimTranscript(text);
-    setTimeout(() => {
-      setDescription((prev) => (prev ? `${prev.trim()} ${text}` : text));
-      setIsListening(false);
-      setInterimTranscript('');
-    }, 850);
-  };
+
 
   const handleCopyText = () => {
     if (!description) return;
@@ -243,7 +233,7 @@ export default function ReportPage() {
       },
       (error) => {
         setIsLocating(false);
-        setErrorMessage('Unable to auto-detect GPS location. Please choose a sample address or type manually.');
+        setErrorMessage('Unable to auto-detect GPS location. Please enter your location address manually.');
       }
     );
   };
@@ -254,20 +244,7 @@ export default function ReportPage() {
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
-  // Mock Photos & Locations
-  const mockPhotos = [
-    { label: 'Pothole Issue', url: 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?w=600&auto=format&fit=crop&q=80' },
-    { label: 'Water Pipe Burst', url: 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?w=600&auto=format&fit=crop&q=80' },
-    { label: 'Garbage Dump', url: 'https://images.unsplash.com/photo-1530587191325-3db32d826c18?w=600&auto=format&fit=crop&q=80' },
-    { label: 'Broken Pole / Wire', url: 'https://images.unsplash.com/photo-1509391365360-2e959784a276?w=600&auto=format&fit=crop&q=80' }
-  ];
 
-  const sampleLocations = [
-    '5th Avenue & Oak Street, Ward 12',
-    '742 Evergreen Terrace, Sector 4',
-    'Central Market Square, Block B',
-    'Highland Avenue & 14th Street'
-  ];
 
   const getLivePreview = () => {
     const text = (description + ' ' + interimTranscript).toLowerCase();
@@ -319,7 +296,7 @@ export default function ReportPage() {
         title: `Civic Report - ${livePrediction.category}`,
         description: description.trim(),
         location: location.trim(),
-        photo_url: photoPreview || mockPhotos[0].url
+        photo_url: photoPreview || null
       };
 
       const res = await fetch('http://127.0.0.1:8000/api/grievances', {
@@ -594,36 +571,7 @@ export default function ReportPage() {
                 )}
               </div>
 
-              {/* Voice Preset Clips */}
-              <div className="mt-4">
-                <span className="text-xs font-bold text-slate-700 block mb-2 flex items-center space-x-1.5">
-                  <MessageSquare className="w-3.5 h-3.5 text-amber-600" />
-                  <span>Click a sample voice transcript for instant testing:</span>
-                </span>
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    onClick={() => handleSimulateVoice("Severe pothole on main road causing traffic block and tire damage near 5th Avenue.")}
-                    className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-amber-100 border border-slate-200 hover:border-amber-300 text-xs text-slate-800 font-medium transition-all shadow-2xs hover:shadow-xs active:scale-95"
-                  >
-                    🗣️ "Severe pothole on main road..."
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleSimulateVoice("Major underground water pipeline burst flooding the street near 742 Evergreen Terrace.")}
-                    className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-amber-100 border border-slate-200 hover:border-amber-300 text-xs text-slate-800 font-medium transition-all shadow-2xs hover:shadow-xs active:scale-95"
-                  >
-                    🗣️ "Major water pipeline burst..."
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleSimulateVoice("Overflowing garbage bin and stinking waste dump causing severe health hazard at market square.")}
-                    className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-amber-100 border border-slate-200 hover:border-amber-300 text-xs text-slate-800 font-medium transition-all shadow-2xs hover:shadow-xs active:scale-95"
-                  >
-                    🗣️ "Overflowing garbage dump..."
-                  </button>
-                </div>
-              </div>
+
             </div>
 
             {/* AI Automated Routing Live Box */}
@@ -712,27 +660,7 @@ export default function ReportPage() {
               </div>
             </div>
 
-            {/* Quick Mock Photo Samples */}
-            <div>
-              <span className="text-xs font-bold text-slate-700 block mb-2">Or pick a sample photo for testing:</span>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {mockPhotos.map((item, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => setPhotoPreview(item.url)}
-                    className={`p-2 rounded-xl border text-left flex items-center space-x-2.5 transition-all ${
-                      photoPreview === item.url 
-                        ? 'border-amber-500 bg-amber-50 ring-2 ring-amber-400/40 font-bold' 
-                        : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
-                    }`}
-                  >
-                    <img src={item.url} alt={item.label} className="w-10 h-10 rounded-lg object-cover shrink-0" />
-                    <span className="text-xs truncate">{item.label}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
+
 
             <div className="pt-4 flex items-center justify-between">
               <button
@@ -798,22 +726,7 @@ export default function ReportPage() {
               </div>
             </div>
 
-            {/* Quick Sample Location Pills */}
-            <div>
-              <span className="text-xs font-bold text-slate-700 block mb-2">Sample Ward Addresses:</span>
-              <div className="flex flex-wrap gap-2">
-                {sampleLocations.map((loc, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => setLocation(loc)}
-                    className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-amber-100 border border-slate-200 text-xs text-slate-800 font-medium transition-colors"
-                  >
-                    + {loc}
-                  </button>
-                ))}
-              </div>
-            </div>
+
 
             {/* Final Summary Card Before Submission */}
             <div className="p-5 rounded-xl bg-slate-900 text-white shadow-md border border-slate-800 space-y-3">
