@@ -17,8 +17,8 @@
   - Full AI diagnostic breakdown displaying category confidence score, matching keyword signals, assigned department, and photo evidence.
 
 ### 🤖 2. Backend & AI Classification Pipeline
-- **NLP Keyword & Signal Matcher**: Evaluates text descriptions and location details against multi-category dictionaries (`Roads`, `Water`, `Sanitation`, `Electricity`, `Public Safety`).
-- **Urgency Scoring Engine**: Scans for hazard indicators (`massive`, `flooding`, `live wire`, `fire`, `burst`, `emergency`) to assign `High`, `Medium`, or `Low` priority.
+- **Direct AI Semantic Triage Engine**: Uses LLM (Google Gemini) and deep zero-shot natural language context understanding to evaluate citizen complaints directly without relying on static manual keyword lists.
+- **Situational Urgency Analysis**: Evaluates hazard severity, structural damage, live risks, and public safety impact to assign `High`, `Medium`, or `Low` priority automatically.
 - **Automated Department Routing**: Directs complaints to specialized agencies:
   - 🛠️ **Roads**: *Public Works Department (PWD)*
   - 💧 **Water**: *Water Supply & Sewerage Board*
@@ -31,7 +31,7 @@
 - **Live Filtering**: Filter grievances by Category, Urgency level, Status, or Keyword Search.
 - **Ticket Detail Modal**: Inspect full citizen reports, view visual evidence, examine AI confidence scores, and update ticket status (`In Progress`, `Resolved`, `Rejected`).
 - **Analytics & SLA Console (`/admin/analytics`)**: Graphical breakdown of total grievance volume, department workloads, urgency ratios, and resolution velocity rates.
-- **AI Settings (`/admin/settings`)**: Configure confidence threshold sliders and manage high-urgency keyword triggers.
+- **AI Settings (`/admin/settings`)**: Configure confidence threshold sliders and direct AI hazard sensitivity rules.
 
 ---
 

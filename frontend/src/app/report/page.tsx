@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Navbar } from '@/components/Navbar';
-import { Footer } from '@/components/Footer';
 import { CategoryBadge } from '@/components/CategoryBadge';
 import { UrgencyBadge } from '@/components/UrgencyBadge';
 import { 
@@ -308,10 +307,22 @@ export default function RegisterGrievancePage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-amber-500 selection:text-white">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-amber-500 selection:text-white relative overflow-hidden">
+      {/* Fixed Background Image - Indian Flag Artwork */}
+      <div
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat opacity-80 pointer-events-none z-0"
+        style={{ backgroundImage: `url('/login-bg.jpg')` }}
+      />
+      {/* Vignette & Contrast Overlay */}
+      <div className="fixed inset-0 bg-gradient-to-b from-slate-950/85 via-slate-950/65 to-slate-950/90 pointer-events-none z-0" />
+
+      {/* Ambient Lighting Glows */}
+      <div className="fixed top-10 right-10 w-96 h-96 bg-orange-500/15 rounded-full blur-3xl pointer-events-none z-0" />
+      <div className="fixed bottom-10 left-10 w-96 h-96 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none z-0" />
+
       <Navbar />
 
-      <main className="flex-1 py-10 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full">
+      <main className="flex-1 py-10 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full relative z-10">
         {/* Header */}
         <div className="bg-slate-900/90 backdrop-blur-xl rounded-3xl p-6 sm:p-8 mb-6 border border-slate-800 shadow-2xl text-center relative overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-amber-500 via-orange-500 to-emerald-500" />
@@ -469,7 +480,7 @@ export default function RegisterGrievancePage() {
                       ) : (
                         <>
                           <Mic className="w-5 h-5 text-slate-950 group-hover:scale-110 transition-transform" />
-                          <span>🎙️ Record Voice Complaint</span>
+                          <span>Record Voice Complaint</span>
                         </>
                       )}
                     </button>
@@ -760,8 +771,6 @@ export default function RegisterGrievancePage() {
           </div>
         )}
       </main>
-
-      <Footer />
     </div>
   );
 }

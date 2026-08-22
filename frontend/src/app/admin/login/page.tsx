@@ -131,24 +131,25 @@ export default function OfficerLoginPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-amber-500 selection:text-white relative overflow-hidden">
-      {/* Background Image with Dark Vignette Overlay */}
+      {/* Background Image - Indian Flag Artwork */}
       <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40 mix-blend-luminosity pointer-events-none z-0"
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-85 pointer-events-none z-0"
         style={{ backgroundImage: `url('/login-bg.jpg')` }}
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/70 pointer-events-none z-0" />
+      {/* Subtle Vignette and Contrast Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/50 to-slate-950/90 pointer-events-none z-0" />
 
       <Navbar />
 
-      {/* Ambient Lighting Elements */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-3xl pointer-events-none z-0" />
-      <div className="absolute bottom-10 right-10 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl pointer-events-none z-0" />
+      {/* Ambient Tricolor Lighting Orbs */}
+      <div className="absolute top-10 right-10 w-96 h-96 bg-orange-500/15 rounded-full blur-3xl pointer-events-none z-0" />
+      <div className="absolute bottom-10 left-10 w-96 h-96 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none z-0" />
 
       <main className="flex-1 py-12 px-4 sm:px-6 lg:px-8 max-w-xl mx-auto w-full flex flex-col items-center justify-center relative z-10">
 
         {/* Top Portal Header */}
         <div className="text-center space-y-3 mb-8">
-          <div className="inline-flex items-center space-x-3 bg-slate-900 border border-slate-800 p-2.5 px-4 rounded-2xl shadow-lg">
+          <div className="inline-flex items-center space-x-3 bg-slate-900/90 backdrop-blur-md border border-slate-800 p-2.5 px-4 rounded-2xl shadow-xl">
             <div className="w-9 h-9 rounded-xl bg-slate-950 p-1 border border-amber-500/40 shrink-0">
               <img src="/logo.png" alt="SudhaarAI Logo" className="w-full h-full object-contain" />
             </div>
@@ -158,16 +159,16 @@ export default function OfficerLoginPage() {
             </div>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight drop-shadow-md">
             Sign In to Control Center
           </h1>
-          <p className="text-xs text-slate-400 max-w-md mx-auto">
+          <p className="text-xs text-slate-300 max-w-md mx-auto drop-shadow-sm font-medium">
             Select your portal authorization type below to manage grievance queues.
           </p>
         </div>
 
         {/* Auth Container Card */}
-        <div className="w-full bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 relative overflow-hidden">
+        <div className="w-full bg-slate-900/85 backdrop-blur-2xl border border-slate-800/80 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 relative overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600" />
 
           {/* 2-Tab Navigation Bar */}

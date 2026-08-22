@@ -77,35 +77,51 @@ export const Navbar: React.FC = () => {
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center space-x-1">
-              <Link
-                href="/"
-                className="px-3.5 py-2 text-sm font-medium text-slate-200 hover:text-white hover:bg-slate-800 rounded-md transition-colors"
-              >
-                Home Overview
-              </Link>
-              <Link
-                href="/report"
-                className="px-3.5 py-2 text-sm font-medium text-emerald-300 hover:text-emerald-200 hover:bg-slate-800 rounded-md transition-colors flex items-center space-x-1.5"
-              >
-                <PlusCircle className="w-4 h-4 text-emerald-400" />
-                <span>File Grievance</span>
-              </Link>
-              <Link
-                href="/track/SUD-94821"
-                className="px-3.5 py-2 text-sm font-medium text-slate-200 hover:text-white hover:bg-slate-800 rounded-md transition-colors flex items-center space-x-1.5"
-              >
-                <Search className="w-4 h-4 text-blue-400" />
-                <span>Track Complaint</span>
-              </Link>
-              <div className="h-5 w-px bg-slate-700 mx-2" />
-              <Link
-                href="/admin/login"
-                className="px-4 py-2 text-sm font-semibold text-amber-200 bg-amber-950/70 hover:bg-amber-900/80 border border-amber-600/50 rounded-md transition-all flex items-center space-x-2 shadow-sm"
-              >
-                <LayoutDashboard className="w-4 h-4 text-amber-400" />
-                <span>Department Officer Login</span>
-              </Link>
+            <nav className="hidden md:flex items-center space-x-2.5">
+              {/* Home Overview Button */}
+              <div className="w-fit h-fit inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-slate-700 via-slate-600 to-slate-700 p-[1px] shadow-sm transition-all hover:scale-[1.03]">
+                <Link
+                  href="/"
+                  className="px-3.5 py-2 text-xs font-bold text-slate-200 hover:text-white bg-slate-950 hover:bg-slate-900 rounded-[11px] transition-colors flex items-center space-x-1.5"
+                >
+                  <span>Home Overview</span>
+                </Link>
+              </div>
+
+              {/* File Grievance Button */}
+              <div className="w-fit h-fit inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 p-[1px] shadow-sm transition-all hover:scale-[1.03]">
+                <Link
+                  href="/report"
+                  className="px-3.5 py-2 text-xs font-extrabold text-emerald-300 hover:text-emerald-200 bg-slate-950 hover:bg-slate-900 rounded-[11px] transition-colors flex items-center space-x-1.5"
+                >
+                  <PlusCircle className="w-4 h-4 text-emerald-400" />
+                  <span>File Grievance</span>
+                </Link>
+              </div>
+
+              {/* Track Complaint Button */}
+              <div className="w-fit h-fit inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-blue-500 via-indigo-500 to-blue-600 p-[1px] shadow-sm transition-all hover:scale-[1.03]">
+                <Link
+                  href="/track/SUD-94821"
+                  className="px-3.5 py-2 text-xs font-extrabold text-blue-300 hover:text-blue-200 bg-slate-950 hover:bg-slate-900 rounded-[11px] transition-colors flex items-center space-x-1.5"
+                >
+                  <Search className="w-4 h-4 text-blue-400" />
+                  <span>Track Complaint</span>
+                </Link>
+              </div>
+
+              <div className="h-5 w-px bg-slate-800 mx-1" />
+
+              {/* Department Officer Login Button */}
+              <div className="w-fit h-fit inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 p-[1px] shadow-md transition-all hover:scale-[1.03]">
+                <Link
+                  href="/admin/login"
+                  className="px-4 py-2 text-xs font-extrabold text-amber-300 hover:text-amber-200 bg-slate-950 hover:bg-slate-900 rounded-[11px] transition-colors flex items-center space-x-2"
+                >
+                  <LayoutDashboard className="w-4 h-4 text-amber-400" />
+                  <span>Department Officer Login</span>
+                </Link>
+              </div>
             </nav>
 
             {/* Mobile Menu Toggle */}
@@ -121,35 +137,49 @@ export const Navbar: React.FC = () => {
 
           {/* Mobile Dropdown */}
           {mobileOpen && (
-            <div className="md:hidden py-3 border-t border-slate-800 space-y-1 bg-slate-900 px-2">
-              <Link
-                href="/"
-                onClick={() => setMobileOpen(false)}
-                className="block px-3 py-2 text-base font-medium text-slate-200 hover:bg-slate-800 rounded-md"
-              >
-                Home Overview
-              </Link>
-              <Link
-                href="/report"
-                onClick={() => setMobileOpen(false)}
-                className="block px-3 py-2 text-base font-medium text-emerald-400 hover:bg-slate-800 rounded-md"
-              >
-                File Grievance
-              </Link>
-              <Link
-                href="/track/SUD-94821"
-                onClick={() => setMobileOpen(false)}
-                className="block px-3 py-2 text-base font-medium text-blue-400 hover:bg-slate-800 rounded-md"
-              >
-                Track Complaint
-              </Link>
-              <Link
-                href="/admin/login"
-                onClick={() => setMobileOpen(false)}
-                className="block px-3 py-2 text-base font-semibold text-amber-300 bg-amber-950/80 border border-amber-700/60 rounded-md mt-2"
-              >
-                Department Officer Login
-              </Link>
+            <div className="md:hidden py-3 border-t border-slate-800 space-y-2.5 bg-slate-900 px-2">
+              <div className="w-full inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-slate-700 to-slate-600 p-[1px]">
+                <Link
+                  href="/"
+                  onClick={() => setMobileOpen(false)}
+                  className="w-full px-3 py-2 text-sm font-bold text-slate-200 bg-slate-950 rounded-[11px] text-center"
+                >
+                  Home Overview
+                </Link>
+              </div>
+
+              <div className="w-full inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 p-[1px]">
+                <Link
+                  href="/report"
+                  onClick={() => setMobileOpen(false)}
+                  className="w-full px-3 py-2 text-sm font-extrabold text-emerald-400 bg-slate-950 rounded-[11px] flex items-center justify-center space-x-2"
+                >
+                  <PlusCircle className="w-4 h-4 text-emerald-400" />
+                  <span>File Grievance</span>
+                </Link>
+              </div>
+
+              <div className="w-full inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 p-[1px]">
+                <Link
+                  href="/track/SUD-94821"
+                  onClick={() => setMobileOpen(false)}
+                  className="w-full px-3 py-2 text-sm font-extrabold text-blue-400 bg-slate-950 rounded-[11px] flex items-center justify-center space-x-2"
+                >
+                  <Search className="w-4 h-4 text-blue-400" />
+                  <span>Track Complaint</span>
+                </Link>
+              </div>
+
+              <div className="w-full inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 p-[1px]">
+                <Link
+                  href="/admin/login"
+                  onClick={() => setMobileOpen(false)}
+                  className="w-full px-3 py-2 text-sm font-extrabold text-amber-300 bg-slate-950 rounded-[11px] flex items-center justify-center space-x-2"
+                >
+                  <LayoutDashboard className="w-4 h-4 text-amber-400" />
+                  <span>Department Officer Login</span>
+                </Link>
+              </div>
             </div>
           )}
         </div>

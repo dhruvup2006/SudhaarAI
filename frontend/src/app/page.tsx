@@ -33,9 +33,28 @@ import {
   Share2
 } from 'lucide-react';
 
+interface AnalyticsData {
+  total_grievances: number;
+  resolved_count: number;
+  in_progress_count: number;
+  pending_count: number;
+  resolution_rate_percent: number;
+  by_category: Record<string, number>;
+  by_urgency: Record<string, number>;
+  by_status: Record<string, number>;
+}
+
 export default function LandingPage() {
   const [ticketIdInput, setTicketIdInput] = useState('');
+  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   const router = useRouter();
+
+  React.useEffect(() => {
+    fetch('http://127.0.0.1:8000/api/analytics')
+      .then((res) => res.json())
+      .then((data) => setAnalytics(data))
+      .catch((err) => console.error('Failed to fetch analytics:', err));
+  }, []);
 
   const handleTrackSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,36 +62,6 @@ export default function LandingPage() {
     const formattedId = ticketIdInput.trim().toUpperCase();
     router.push(`/track/${formattedId}`);
   };
-
-  const sampleRecentTickets = [
-    {
-      id: 'SUD-94821',
-      title: 'Severe Pothole on Main Arterial Road',
-      category: 'Roads',
-      urgency: 'High',
-      location: '5th Avenue & Oak Street, Ward 12',
-      status: 'In Progress',
-      timeAgo: '2 hours ago'
-    },
-    {
-      id: 'SUD-18402',
-      title: 'Major Water Main Leak Flooding Street',
-      category: 'Water',
-      urgency: 'High',
-      location: '742 Evergreen Terrace, Sector 4',
-      status: 'Submitted',
-      timeAgo: '4 hours ago'
-    },
-    {
-      id: 'SUD-50291',
-      title: 'Uncollected Waste & Overflowing Bins',
-      category: 'Sanitation',
-      urgency: 'Medium',
-      location: 'Central Market Square, Block B',
-      status: 'Classified',
-      timeAgo: '6 hours ago'
-    }
-  ];
 
   const departmentServices = [
     {
@@ -98,7 +87,7 @@ export default function LandingPage() {
     },
     {
       name: 'Electricity & Lighting',
-      desc: 'Dark streetlights, transformer outages & hazardous loose electrical wires.',
+      desc: 'Power outage triage, transformer repair & dangerous hanging wires.',
       icon: Zap,
       code: 'PWR',
       sla: '6-12 Hrs SLA'
@@ -106,17 +95,22 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-amber-500 selection:text-white">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-amber-500 selection:text-white relative overflow-hidden">
+      {/* Fixed Background Image - Indian Flag Artwork */}
+      <div
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat opacity-80 pointer-events-none z-0"
+        style={{ backgroundImage: `url('/login-bg.jpg')` }}
+      />
+      {/* Vignette & Contrast Overlay */}
+      <div className="fixed inset-0 bg-gradient-to-b from-slate-950/85 via-slate-950/65 to-slate-950/90 pointer-events-none z-0" />
+
+      {/* Ambient Lighting Glows */}
+      <div className="fixed top-10 right-10 w-96 h-96 bg-orange-500/15 rounded-full blur-3xl pointer-events-none z-0" />
+      <div className="fixed bottom-10 left-10 w-96 h-96 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none z-0" />
+
       <Navbar />
 
-      <main className="flex-1">
-        {/* Public Notice Ticker Banner */}
-        <div className="bg-gradient-to-r from-amber-500/10 via-blue-500/10 to-amber-500/10 border-b border-slate-800 py-2.5 px-4 text-xs font-medium text-slate-300 flex items-center justify-center gap-2 text-center">
-          <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping shrink-0" />
-          <span>
-            <strong className="text-amber-400 font-extrabold uppercase tracking-wide">Official Public Announcement:</strong> Monsoon Civic Care Helpline is operational 24/7. Call Toll-Free <strong className="text-white">1800-11-7834</strong> for immediate emergency assistance.
-          </span>
-        </div>
+      <main className="flex-1 relative z-10">
 
         {/* Hero Section */}
         <section className="relative py-16 md:py-24 border-b border-slate-800 overflow-hidden">
@@ -226,24 +220,32 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* National Governance Statistics Bar */}
+        {/* Live System Statistics Bar */}
         <section className="bg-slate-900/60 border-b border-slate-800 py-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center divide-x divide-slate-800">
               <div className="px-4">
-                <div className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">1,420+</div>
-                <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">Grievances Redressed</div>
+                <div className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+                  {analytics ? analytics.total_grievances : 18}
+                </div>
+                <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">Registered Grievances</div>
               </div>
               <div className="px-4">
-                <div className="text-3xl sm:text-4xl font-extrabold text-emerald-400 tracking-tight">98.4%</div>
-                <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">NLP Precision Score</div>
+                <div className="text-3xl sm:text-4xl font-extrabold text-emerald-400 tracking-tight">
+                  {analytics ? analytics.resolved_count : 3}
+                </div>
+                <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">Grievances Solved</div>
               </div>
               <div className="px-4">
-                <div className="text-3xl sm:text-4xl font-extrabold text-blue-400 tracking-tight">&lt; 24 Hrs</div>
-                <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">Avg SLA Resolution</div>
+                <div className="text-3xl sm:text-4xl font-extrabold text-blue-400 tracking-tight">
+                  {analytics ? `${analytics.resolution_rate_percent}%` : '16.7%'}
+                </div>
+                <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">Resolution Rate</div>
               </div>
               <div className="px-4">
-                <div className="text-3xl sm:text-4xl font-extrabold text-amber-400 tracking-tight">4 Core Bodies</div>
+                <div className="text-3xl sm:text-4xl font-extrabold text-amber-400 tracking-tight">
+                  {analytics ? Object.keys(analytics.by_category || {}).length : 5} Active
+                </div>
                 <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">Integrated Authorities</div>
               </div>
             </div>
@@ -348,61 +350,6 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-
-        {/* Public Grievance Transparency Feed */}
-        <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-800">
-              <div>
-                <h3 className="text-xl font-extrabold text-white flex items-center gap-2.5">
-                  <TrendingUp className="w-5 h-5 text-amber-400" />
-                  <span>Public Grievance Transparency Feed</span>
-                </h3>
-                <p className="text-xs text-slate-400 mt-1">
-                  Live public view of registered civic issues and assigned departmental actions
-                </p>
-              </div>
-
-              <Link
-                href="/admin/login"
-                className="text-xs font-bold text-amber-400 hover:text-amber-300 bg-slate-950 px-4 py-2.5 rounded-xl border border-slate-800 flex items-center gap-1.5 shrink-0 transition-colors"
-              >
-                <span>Officer Console Login</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {sampleRecentTickets.map((ticket) => (
-                <Link
-                  key={ticket.id}
-                  href={`/track/${ticket.id}`}
-                  className="bg-slate-950/80 border border-slate-800/80 rounded-2xl p-5 block hover:border-amber-500/50 hover:bg-slate-950 transition-all shadow-md group"
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="font-mono text-xs font-bold text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/30">
-                      {ticket.id}
-                    </span>
-                    <UrgencyBadge urgency={ticket.urgency} size="sm" />
-                  </div>
-
-                  <h4 className="font-bold text-white text-sm line-clamp-1 mb-2 group-hover:text-amber-300 transition-colors">{ticket.title}</h4>
-
-                  <div className="flex items-center text-xs text-slate-400 mb-3 space-x-1.5">
-                    <MapPin className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                    <span className="truncate">{ticket.location}</span>
-                  </div>
-
-                  <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between">
-                    <CategoryBadge category={ticket.category} size="sm" />
-                    <span className="text-[11px] font-bold text-slate-500">{ticket.timeAgo}</span>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-
       </main>
 
       <Footer />
