@@ -33,3 +33,45 @@ class GrievanceResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class OfficerCreate(BaseModel):
+    name: str
+    email: str
+    phone: Optional[str] = None
+    department: str
+    category: str
+    ward_zone: Optional[str] = "Central Zone"
+    password: str
+    officer_id: Optional[str] = None
+
+class OfficerResponse(BaseModel):
+    id: str
+    name: str
+    email: str
+    phone: Optional[str] = None
+    department: str
+    category: str
+    ward_zone: Optional[str] = None
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+class OfficerLogin(BaseModel):
+    officer_id: str
+    password: str
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+
+class OfficerAuthResponse(BaseModel):
+    id: str
+    name: str
+    email: str
+    phone: Optional[str] = None
+    department: str
+    category: str
+    ward_zone: Optional[str] = None
+    access_token: str
+    token_type: str = "bearer"

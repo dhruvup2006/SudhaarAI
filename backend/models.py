@@ -20,3 +20,16 @@ class Grievance(Base):
     ai_reasoning = Column(String, nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+
+class Officer(Base):
+    __tablename__ = "officers"
+
+    id = Column(String, primary_key=True, index=True) # e.g. OFF-8492
+    name = Column(String, nullable=False)
+    email = Column(String, nullable=False, unique=True, index=True)
+    phone = Column(String, nullable=True)
+    department = Column(String, nullable=False)
+    category = Column(String, nullable=False)
+    ward_zone = Column(String, nullable=True, default="Central Zone")
+    password = Column(String, nullable=False)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
