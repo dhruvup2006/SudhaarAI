@@ -23,8 +23,8 @@ def analyze_with_gemini(description: str, location: str = "") -> dict:
     if not api_key:
         return None
 
-    # Model endpoints to try (Gemini Flash model)
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
+    # Model endpoints to try
+    models_to_try = ["gemini-2.0-flash", "gemini-1.5-flash"]
     
     prompt = (
         "You are SudhaarAI, an advanced civic grievance triage AI agent.\n"
@@ -52,26 +52,30 @@ def analyze_with_gemini(description: str, location: str = "") -> dict:
         "generationConfig": {"temperature": 0.1, "responseMimeType": "application/json"}
     }
 
-    try:
-        data_bytes = json.dumps(req_payload).encode('utf-8')
-        req = urllib.request.Request(url, data=data_bytes, headers={'Content-Type': 'application/json'})
-        with urllib.request.urlopen(req, timeout=10) as response:
-            res_json = json.loads(response.read().decode('utf-8'))
-            candidate = res_json['candidates'][0]['content']['parts'][0]['text']
-            clean_text = re.sub(r'^```json\s*', '', candidate.strip())
-            clean_text = re.sub(r'\s*```$', '', clean_text)
-            parsed = json.loads(clean_text)
-            
-            if parsed.get("category") not in DEPARTMENT_MAP:
-                parsed["category"] = "General"
-            parsed["department"] = DEPARTMENT_MAP.get(parsed["category"], "General Municipal Admin")
-            if parsed.get("urgency") not in ["High", "Medium", "Low"]:
-                parsed["urgency"] = "Medium"
-            parsed["ai_confidence"] = float(parsed.get("ai_confidence", 0.92))
-            return parsed
-    except Exception as e:
-        print(f"[SudhaarAI] Gemini LLM direct call error/fallback: {e}")
-        return None
+    data_bytes = json.dumps(req_payload).encode('utf-8')
+
+    for model_name in models_to_try:
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={api_key}"
+        try:
+            req = urllib.request.Request(url, data=data_bytes, headers={'Content-Type': 'application/json'})
+            with urllib.request.urlopen(req, timeout=8) as response:
+                res_json = json.loads(response.read().decode('utf-8'))
+                candidate = res_json['candidates'][0]['content']['parts'][0]['text']
+                clean_text = re.sub(r'^```json\s*', '', candidate.strip())
+                clean_text = re.sub(r'\s*```$', '', clean_text)
+                parsed = json.loads(clean_text)
+                
+                if parsed.get("category") not in DEPARTMENT_MAP:
+                    parsed["category"] = "General"
+                parsed["department"] = DEPARTMENT_MAP.get(parsed["category"], "General Municipal Admin")
+                if parsed.get("urgency") not in ["High", "Medium", "Low"]:
+                    parsed["urgency"] = "Medium"
+                parsed["ai_confidence"] = float(parsed.get("ai_confidence", 0.92))
+                return parsed
+        except Exception as e:
+            continue
+
+    return None
 
 def classify_grievance(description: str, location: str = "") -> dict:
     """
