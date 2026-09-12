@@ -104,7 +104,7 @@ export default function TicketTrackPage({ params }: { params: Promise<{ id: stri
     router.push(`/track/${formatted}`);
   };
 
-  // 3-Step Department Timeline (REMOVED AI Classified Step 2 as requested)
+  // 3-Step Department Timeline
   const steps = [
     { title: 'Grievance Registered', key: 'Submitted', desc: 'Recorded in national portal database' },
     { title: 'Field Action In Progress', key: 'In Progress', desc: 'On-site inspection & repair team deployed' },
@@ -128,42 +128,42 @@ export default function TicketTrackPage({ params }: { params: Promise<{ id: stri
   };
 
   return (
-    <div className="min-h-screen bg-black text-slate-100 flex flex-col selection:bg-amber-500 selection:text-slate-950 relative overflow-hidden">
+    <div className="min-h-screen bg-[#0d1017] text-slate-100 flex flex-col selection:bg-rose-500 selection:text-white relative overflow-hidden font-sans">
       {/* Fixed Background Image - Indian Flag Artwork Preserved */}
       <div
         className="fixed inset-0 bg-cover bg-center bg-no-repeat opacity-75 pointer-events-none z-0"
         style={{ backgroundImage: `url('/login-bg.jpg')` }}
       />
       {/* Vignette & Contrast Overlay */}
-      <div className="fixed inset-0 bg-gradient-to-b from-black/90 via-black/80 to-black/95 pointer-events-none z-0" />
+      <div className="fixed inset-0 bg-gradient-to-b from-black/90 via-[#0d1017]/85 to-black/95 pointer-events-none z-0" />
 
-      {/* GDG VITC Ambient Glow Spheres */}
-      <div className="fixed top-12 right-12 w-96 h-96 bg-[#4285F4]/15 rounded-full blur-[120px] pointer-events-none z-0" />
-      <div className="fixed bottom-12 left-12 w-96 h-96 bg-[#EA4335]/15 rounded-full blur-[120px] pointer-events-none z-0" />
+      {/* Tricolor Ambient Glow Spheres (CONSTANT TRICOLOR BG) */}
+      <div className="fixed top-12 left-12 w-96 h-96 bg-rose-600/20 rounded-full blur-[140px] pointer-events-none z-0" />
+      <div className="fixed bottom-12 right-12 w-96 h-96 bg-amber-500/15 rounded-full blur-[140px] pointer-events-none z-0" />
 
       <Navbar />
 
       <main className="flex-1 py-10 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full space-y-6 relative z-10">
         
         {/* Search Bar Top Strip */}
-        <div className="w-full bg-black/85 backdrop-blur-2xl border border-zinc-800/90 rounded-3xl p-3 shadow-xl no-print">
+        <div className="w-full bg-[#0d1017]/95 backdrop-blur-2xl border border-rose-500/40 rounded-3xl p-3 shadow-xl shadow-rose-500/5 no-print">
           <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
             <div className="relative flex-1">
-              <Search className="w-4 h-4 text-sky-400 absolute left-4 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-rose-400 absolute left-4 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 value={searchIdInput}
                 onChange={(e) => setSearchIdInput(e.target.value)}
                 placeholder="Enter reference number (e.g. SUD-19002)..."
-                className="w-full pl-11 pr-4 py-3 bg-zinc-950 text-white border border-zinc-800 rounded-2xl font-mono text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-sky-500 uppercase tracking-wider transition-all placeholder-slate-500"
+                className="w-full pl-11 pr-4 py-3 bg-black/90 text-white border border-zinc-800 rounded-2xl font-mono text-xs font-semibold focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 uppercase tracking-wider transition-all placeholder-slate-500"
               />
             </div>
-            <InteractiveHoverButton
+            <button
               type="submit"
-              text="Track grievance"
-              variant="primary"
-              className="shrink-0"
-            />
+              className="px-6 py-3 rounded-2xl bg-gradient-to-r from-rose-600 via-orange-500 to-amber-500 hover:from-rose-500 hover:to-amber-400 text-white font-bold text-xs shadow-lg shadow-rose-500/25 transition-all active:scale-[0.98] shrink-0"
+            >
+              Track grievance
+            </button>
           </form>
         </div>
 
@@ -171,44 +171,44 @@ export default function TicketTrackPage({ params }: { params: Promise<{ id: stri
         <div className="flex items-center justify-between no-print">
           <Link
             href="/"
-            className="px-4 py-2 rounded-full bg-white text-zinc-950 hover:bg-zinc-100 text-xs font-semibold flex items-center space-x-2 transition-all shadow-md active:scale-[0.98]"
+            className="px-4 py-2 rounded-xl bg-zinc-950/80 hover:bg-zinc-900 border border-zinc-800 text-slate-300 hover:text-white text-xs font-semibold flex items-center space-x-2 transition-all shadow-md active:scale-[0.98]"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-4 h-4 text-rose-400" />
             <span>Return to home portal</span>
           </Link>
 
           <div className="flex items-center space-x-2">
             <button
               onClick={handlePrint}
-              className="px-4 py-2 rounded-full bg-white text-zinc-950 hover:bg-zinc-100 text-xs font-semibold flex items-center space-x-1.5 transition-all shadow-md active:scale-[0.98] cursor-pointer"
+              className="px-4 py-2 rounded-xl bg-zinc-950/80 hover:bg-zinc-900 border border-zinc-800 text-slate-300 hover:text-white text-xs font-semibold flex items-center space-x-1.5 transition-all shadow-md active:scale-[0.98] cursor-pointer"
             >
-              <Printer className="w-3.5 h-3.5" />
+              <Printer className="w-3.5 h-3.5 text-orange-400" />
               <span>Print receipt</span>
             </button>
             <button
               onClick={() => window.location.reload()}
-              className="px-4 py-2 rounded-full bg-white text-zinc-950 hover:bg-zinc-100 text-xs font-semibold flex items-center space-x-1.5 transition-all shadow-md active:scale-[0.98] cursor-pointer"
+              className="px-4 py-2 rounded-xl bg-zinc-950/80 hover:bg-zinc-900 border border-zinc-800 text-slate-300 hover:text-white text-xs font-semibold flex items-center space-x-1.5 transition-all shadow-md active:scale-[0.98] cursor-pointer"
             >
-              <RefreshCw className="w-3.5 h-3.5" />
+              <RefreshCw className="w-3.5 h-3.5 text-amber-400" />
               <span>Refresh status</span>
             </button>
           </div>
         </div>
 
         {loading ? (
-          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-12 text-center space-y-4 shadow-xl">
-            <RefreshCw className="w-8 h-8 text-sky-400 animate-spin mx-auto" />
+          <div className="bg-[#0d1017]/95 border border-rose-500/40 rounded-3xl p-12 text-center space-y-4 shadow-xl">
+            <RefreshCw className="w-8 h-8 text-rose-400 animate-spin mx-auto" />
             <p className="text-sm font-semibold text-slate-300">Connecting to Municipal Database Server...</p>
           </div>
         ) : error ? (
-          <div className="bg-zinc-900 border border-red-500/30 rounded-3xl p-10 text-center space-y-4 shadow-xl">
-            <AlertCircle className="w-12 h-12 text-red-500 mx-auto" />
+          <div className="bg-[#0d1017]/95 border border-rose-500/50 rounded-3xl p-10 text-center space-y-4 shadow-2xl">
+            <AlertCircle className="w-12 h-12 text-rose-500 mx-auto" />
             <h2 className="text-xl font-bold text-white">Grievance Record Not Found</h2>
             <p className="text-xs text-slate-400 max-w-md mx-auto">{error}</p>
             <div className="pt-2 flex justify-center gap-3">
               <Link
                 href="/report"
-                className="px-6 py-3 rounded-full bg-white hover:bg-zinc-100 text-zinc-950 font-semibold text-xs inline-block transition-all shadow-md active:scale-[0.98]"
+                className="px-6 py-3 rounded-xl bg-gradient-to-r from-rose-600 via-orange-500 to-amber-500 hover:from-rose-500 hover:to-amber-400 text-white font-bold text-xs inline-block transition-all shadow-lg shadow-rose-500/25 active:scale-[0.98]"
               >
                 Lodge a New Grievance
               </Link>
@@ -216,22 +216,22 @@ export default function TicketTrackPage({ params }: { params: Promise<{ id: stri
           </div>
         ) : ticket && (
           <div className="space-y-6">
-            {/* Header Ticket Card */}
-            <div className="bg-black/85 backdrop-blur-xl rounded-3xl p-6 sm:p-8 border border-zinc-800 shadow-2xl relative overflow-hidden">
-              <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-emerald-500 via-sky-500 to-indigo-500" />
+            {/* Header Ticket Card (Red-Orange Glowing Aesthetic) */}
+            <div className="bg-[#0d1017]/95 backdrop-blur-2xl rounded-3xl p-6 sm:p-8 border border-rose-500/60 shadow-[0_0_30px_rgba(244,63,94,0.25)] relative overflow-hidden space-y-5">
+              <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-rose-600 via-orange-500 to-amber-500" />
               
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-800 pb-5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-800/80 pb-5">
                 <div>
                   <div className="flex items-center space-x-3 mb-2">
-                    <span className="font-mono text-xl font-extrabold text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-xl border border-emerald-500/30">
+                    <span className="font-mono text-xl font-extrabold text-rose-400 bg-rose-500/10 px-3 py-1 rounded-xl border border-rose-500/30">
                       {ticket.id}
                     </span>
                     <button
                       onClick={handleCopyId}
-                      className="p-1.5 text-slate-400 hover:text-white rounded-lg bg-zinc-800 border border-zinc-700 transition-colors"
+                      className="p-1.5 text-slate-400 hover:text-white rounded-lg bg-zinc-900 border border-zinc-800 transition-colors"
                       title="Copy Reference ID"
                     >
-                      {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                      {copied ? <Check className="w-3.5 h-3.5 text-rose-400" /> : <Copy className="w-3.5 h-3.5" />}
                     </button>
                   </div>
                   <h1 className="text-2xl font-bold text-white tracking-tight">{ticket.title}</h1>
@@ -243,22 +243,22 @@ export default function TicketTrackPage({ params }: { params: Promise<{ id: stri
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-slate-300 pt-5">
-                <div className="flex items-center space-x-2.5 bg-black/60 p-3 rounded-xl border border-zinc-800">
-                  <MapPin className="w-4 h-4 text-emerald-400 shrink-0" />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-slate-300 pt-2">
+                <div className="flex items-center space-x-2.5 bg-black/80 p-3.5 rounded-xl border border-zinc-800">
+                  <MapPin className="w-4 h-4 text-rose-400 shrink-0" />
                   <span className="font-medium truncate">Location: {ticket.location}</span>
                 </div>
-                <div className="flex items-center space-x-2.5 bg-black/60 p-3 rounded-xl border border-zinc-800">
-                  <Building2 className="w-4 h-4 text-sky-400 shrink-0" />
+                <div className="flex items-center space-x-2.5 bg-black/80 p-3.5 rounded-xl border border-zinc-800">
+                  <Building2 className="w-4 h-4 text-orange-400 shrink-0" />
                   <span className="font-medium truncate">Nodal Authority: {ticket.department}</span>
                 </div>
               </div>
             </div>
 
             {/* Timeline UI (3 Steps) */}
-            <div className="bg-black/85 backdrop-blur-xl rounded-3xl p-6 sm:p-8 border border-zinc-800 shadow-xl space-y-6">
+            <div className="bg-[#0d1017]/95 backdrop-blur-2xl rounded-3xl p-6 sm:p-8 border border-rose-500/40 shadow-xl space-y-6">
               <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center space-x-2 border-b border-zinc-800 pb-3">
-                <Clock className="w-4 h-4 text-emerald-400" />
+                <Clock className="w-4 h-4 text-rose-400" />
                 <span>Department Action Timeline</span>
               </h3>
 
@@ -270,19 +270,19 @@ export default function TicketTrackPage({ params }: { params: Promise<{ id: stri
                       <div key={st.key} className="flex items-start space-x-4 relative">
                         {idx < steps.length - 1 && (
                           <div className={`absolute left-4 top-8 bottom-0 w-0.5 ${
-                            statusState === 'completed' ? 'bg-emerald-500' : 'bg-zinc-800'
+                            statusState === 'completed' ? 'bg-gradient-to-b from-rose-500 to-amber-500' : 'bg-zinc-800'
                           }`} />
                         )}
 
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs shrink-0 z-10 transition-all ${
                           statusState === 'completed' 
-                            ? 'bg-emerald-500 text-zinc-950 shadow-md' 
+                            ? 'bg-gradient-to-r from-rose-600 via-orange-500 to-amber-500 text-white shadow-md' 
                             : statusState === 'current'
-                            ? 'bg-sky-500 text-zinc-950 ring-4 ring-sky-500/20 shadow-lg'
-                            : 'bg-zinc-800 text-slate-400 border border-zinc-700'
+                            ? 'bg-rose-500 text-white ring-4 ring-rose-500/20 shadow-lg'
+                            : 'bg-zinc-900 text-slate-400 border border-zinc-800'
                         }`}>
                           {statusState === 'completed' ? (
-                            <CheckCircle2 className="w-5 h-5 text-zinc-950" />
+                            <CheckCircle2 className="w-5 h-5 text-white" />
                           ) : (
                             <span>{idx + 1}</span>
                           )}
@@ -291,12 +291,12 @@ export default function TicketTrackPage({ params }: { params: Promise<{ id: stri
                         <div className="pt-0.5">
                           <div className="flex items-center space-x-2.5">
                             <h4 className={`text-sm font-bold ${
-                              statusState === 'current' ? 'text-sky-400' : statusState === 'completed' ? 'text-white' : 'text-slate-400'
+                              statusState === 'current' ? 'text-rose-400' : statusState === 'completed' ? 'text-white' : 'text-slate-400'
                             }`}>
                               {st.title}
                             </h4>
                             {statusState === 'current' && (
-                              <span className="px-2 py-0.5 text-[10px] font-extrabold bg-sky-500/20 text-sky-300 border border-sky-500/40 rounded-full uppercase tracking-wider">
+                              <span className="px-2.5 py-0.5 text-[10px] font-extrabold bg-rose-500/20 text-rose-300 border border-rose-500/40 rounded-full uppercase tracking-wider">
                                 Current Status
                               </span>
                             )}
@@ -311,17 +311,17 @@ export default function TicketTrackPage({ params }: { params: Promise<{ id: stri
             </div>
 
             {/* Citizen Statement & Visual Evidence */}
-            <div className="bg-black/85 backdrop-blur-xl rounded-3xl p-6 sm:p-8 border border-zinc-800 shadow-xl space-y-4">
+            <div className="bg-[#0d1017]/95 backdrop-blur-2xl rounded-3xl p-6 sm:p-8 border border-rose-500/40 shadow-xl space-y-4">
               <h3 className="text-xs font-bold text-white uppercase tracking-wider border-b border-zinc-800 pb-2.5 flex items-center space-x-2">
-                <FileText className="w-4 h-4 text-emerald-400" />
+                <FileText className="w-4 h-4 text-rose-400" />
                 <span>Citizen Statement & Photo Evidence</span>
               </h3>
 
               {/* Show Original Regional Text if translated */}
               {ticket.original_text && ticket.original_text !== ticket.description && (
-                <div className="bg-emerald-500/10 border border-emerald-500/30 p-3.5 rounded-xl text-xs space-y-1">
-                  <span className="font-bold text-emerald-300 block">Original Spoken / Typed Text ({ticket.detected_language || 'regional'}):</span>
-                  <p className="text-emerald-100 font-medium">{ticket.original_text}</p>
+                <div className="bg-rose-500/10 border border-rose-500/30 p-3.5 rounded-xl text-xs space-y-1">
+                  <span className="font-bold text-rose-300 block">Original Spoken / Typed Text ({ticket.detected_language || 'regional'}):</span>
+                  <p className="text-rose-100 font-medium">{ticket.original_text}</p>
                 </div>
               )}
 
