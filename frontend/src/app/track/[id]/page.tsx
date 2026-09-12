@@ -42,6 +42,8 @@ interface GrievanceData {
   updated_at: string;
 }
 
+import { apiFetch } from '@/lib/api';
+
 export default function TicketTrackPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const ticketId = resolvedParams.id;
@@ -55,7 +57,7 @@ export default function TicketTrackPage({ params }: { params: Promise<{ id: stri
 
   useEffect(() => {
     let isMounted = true;
-    fetch(`http://127.0.0.1:8000/api/grievances/${ticketId}`)
+    apiFetch(`/api/grievances/${ticketId}`)
       .then(async (res) => {
         if (!res.ok) {
           if (res.status === 404) {

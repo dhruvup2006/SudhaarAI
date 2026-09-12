@@ -33,8 +33,9 @@ import {
   Hammer,
   Zap,
   ShieldAlert,
-  Info
+  Bot
 } from 'lucide-react';
+import { apiFetch, API_BASE_URL } from '@/lib/api';
 
 export default function RegisterGrievancePage() {
   const router = useRouter();
@@ -297,7 +298,7 @@ export default function RegisterGrievancePage() {
         photo_url: photoPreview || null
       };
 
-      const res = await fetch('http://127.0.0.1:8000/api/grievances', {
+      const res = await apiFetch('/api/grievances', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -311,7 +312,7 @@ export default function RegisterGrievancePage() {
       router.push(`/track/${data.id}`);
     } catch (err: any) {
       console.error(err);
-      setErrorMessage('Unable to connect to backend on http://127.0.0.1:8000. Make sure the backend server is running.');
+      setErrorMessage(`Unable to connect to backend on ${API_BASE_URL}. Make sure the backend server is running.`);
       setIsSubmitting(false);
     }
   };

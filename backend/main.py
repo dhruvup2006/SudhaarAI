@@ -209,7 +209,12 @@ def get_grievance_by_id(id: str, db: Session = Depends(get_db)):
     return grievance
 
 @app.patch("/api/grievances/{id}", response_model=schemas.GrievanceResponse)
-def update_grievance(id: str, payload: schemas.GrievanceUpdate, db: Session = Depends(get_db)):
+def update_grievance(
+    id: str, 
+    payload: schemas.GrievanceUpdate, 
+    db: Session = Depends(get_db),
+    current_officer: dict = Depends(get_current_officer)
+):
     ticket_id = id.upper()
     now = datetime.now(timezone.utc)
 
@@ -242,7 +247,11 @@ def update_grievance(id: str, payload: schemas.GrievanceUpdate, db: Session = De
     return grievance
 
 @app.delete("/api/grievances/{id}")
-def delete_grievance(id: str, db: Session = Depends(get_db)):
+def delete_grievance(
+    id: str, 
+    db: Session = Depends(get_db),
+    current_officer: dict = Depends(get_current_officer)
+):
     ticket_id = id.upper()
     if mongo_available and grievances_col is not None:
         try:

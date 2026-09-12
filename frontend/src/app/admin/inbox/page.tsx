@@ -23,6 +23,7 @@ import {
   Trash2,
   Inbox
 } from 'lucide-react';
+import { apiFetch } from '@/lib/api';
 import { Dock, DockIcon, DockItem, DockLabel } from '@/components/core/dock';
 
 interface Grievance {
@@ -82,7 +83,7 @@ export default function AdminInboxPage() {
       if (selectedUrgency !== 'All') queryParams.append('urgency', selectedUrgency);
       if (selectedStatus !== 'All') queryParams.append('status', selectedStatus);
 
-      const res = await fetch(`http://127.0.0.1:8000/api/grievances?${queryParams.toString()}`);
+      const res = await apiFetch(`/api/grievances?${queryParams.toString()}`);
       if (res.ok) {
         const data = await res.json();
         setGrievances(data);
@@ -112,7 +113,7 @@ export default function AdminInboxPage() {
     }
     setUpdatingStatus(true);
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/grievances/${ticketId}`, {
+      const res = await apiFetch(`/api/grievances/${ticketId}`, {
         method: 'DELETE',
       });
       if (res.ok) {
@@ -134,7 +135,7 @@ export default function AdminInboxPage() {
     }
     setUpdatingStatus(true);
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/grievances/${selectedTicket.id}`, {
+      const res = await apiFetch(`/api/grievances/${selectedTicket.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus })

@@ -15,6 +15,8 @@ import {
   CheckCircle2
 } from 'lucide-react';
 
+import { apiFetch } from '@/lib/api';
+
 interface AnalyticsData {
   total_grievances: number;
   resolved_count: number;
@@ -33,7 +35,7 @@ export default function AnalyticsPage() {
   const fetchAnalytics = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://127.0.0.1:8000/api/analytics');
+      const res = await apiFetch('/api/analytics');
       if (res.ok) {
         const json = await res.json();
         setData(json);

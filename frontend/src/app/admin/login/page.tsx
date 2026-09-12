@@ -24,6 +24,7 @@ import {
   BarChart3,
   Clock
 } from 'lucide-react';
+import { apiFetch } from '@/lib/api';
 
 export default function OfficerLoginPage() {
   const router = useRouter();
@@ -105,7 +106,7 @@ export default function OfficerLoginPage() {
 
       try {
         // Try backend login
-        const res = await fetch('http://127.0.0.1:8000/api/officers/login', {
+        const res = await apiFetch('/api/officers/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -216,7 +217,7 @@ export default function OfficerLoginPage() {
     const assignedId = regOfficerId.trim().toUpperCase() || `OFF-${Math.floor(10000 + Math.random() * 90000)}`;
 
     try {
-      const res = await fetch('http://127.0.0.1:8000/api/officers/register', {
+      const res = await apiFetch('/api/officers/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -287,7 +288,7 @@ export default function OfficerLoginPage() {
   };
 
   return (
-    <div className="min-h-screen lg:h-screen lg:max-h-screen bg-[#0e1117] text-slate-100 flex flex-col selection:bg-sky-500 selection:text-slate-950 relative overflow-hidden font-sans">
+    <div className="min-h-screen lg:h-screen lg:max-h-screen bg-[#0e1117] text-slate-100 flex flex-col selection:bg-rose-500 selection:text-slate-950 relative overflow-hidden font-sans">
       {/* Fixed Background Image - Indian Flag Artwork Preserved CONSTANT */}
       <div
         className="fixed inset-0 bg-cover bg-center bg-no-repeat opacity-60 pointer-events-none z-0"
@@ -297,15 +298,15 @@ export default function OfficerLoginPage() {
       <div className="fixed inset-0 bg-gradient-to-r from-[#0d1017] via-[#0d1017]/95 to-black/80 pointer-events-none z-0" />
 
       {/* GDG VITC Ambient Glow Spheres */}
-      <div className="fixed top-12 left-12 w-96 h-96 bg-[#4285F4]/15 rounded-full blur-[140px] pointer-events-none z-0" />
-      <div className="fixed bottom-12 right-12 w-96 h-96 bg-[#34A853]/15 rounded-full blur-[140px] pointer-events-none z-0" />
+      <div className="fixed top-12 left-12 w-96 h-96 bg-[#EA4335]/15 rounded-full blur-[140px] pointer-events-none z-0" />
+      <div className="fixed bottom-12 right-12 w-96 h-96 bg-[#FBBC04]/15 rounded-full blur-[140px] pointer-events-none z-0" />
 
       <Navbar />
 
       <main className="flex-1 flex items-center justify-center py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full relative z-10 overflow-hidden">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center w-full">
 
-          {/* LEFT SIDE: Form Block (Matching Reference Anywhere App Design) */}
+          {/* LEFT SIDE: Form Block (Matching Reference Anywhere App Design with Red-Orange Gradient) */}
           <div className="lg:col-span-7 xl:col-span-6 space-y-6 text-left max-w-xl mx-auto lg:mx-0 w-full">
             
             {/* Header Title & Subtitle Section */}
@@ -316,7 +317,7 @@ export default function OfficerLoginPage() {
               
               <h1 className="text-4xl sm:text-5xl font-black text-white tracking-tight leading-none">
                 {authMode === 'login' ? 'Officer Portal login' : 'Create new account'}
-                <span className="text-[#0088ff] inline-block ml-1">.</span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-500 to-amber-500 inline-block ml-1">.</span>
               </h1>
 
               <div className="pt-1 text-sm font-medium text-slate-300">
@@ -325,7 +326,7 @@ export default function OfficerLoginPage() {
                     <button
                       type="button"
                       onClick={() => { setAuthMode('register'); setErrorMessage(''); }}
-                      className="text-[#0088ff] font-bold hover:underline cursor-pointer"
+                      className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 to-amber-400 font-bold hover:underline cursor-pointer"
                     >
                       Register Now
                     </button>
@@ -335,7 +336,7 @@ export default function OfficerLoginPage() {
                     <button
                       type="button"
                       onClick={() => { setAuthMode('login'); setErrorMessage(''); }}
-                      className="text-[#0088ff] font-bold hover:underline cursor-pointer"
+                      className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 to-amber-400 font-bold hover:underline cursor-pointer"
                     >
                       Log In
                     </button>
@@ -372,7 +373,7 @@ export default function OfficerLoginPage() {
                     onClick={() => { setActiveTab('officer'); setErrorMessage(''); }}
                     className={`py-2 px-4 text-xs font-bold rounded-xl flex items-center justify-center space-x-2 transition-all cursor-pointer ${
                       activeTab === 'officer'
-                        ? 'bg-[#0088ff] text-white shadow-lg shadow-sky-500/20'
+                        ? 'bg-gradient-to-r from-rose-600 via-orange-500 to-amber-500 text-white shadow-lg shadow-rose-500/20'
                         : 'text-slate-400 hover:text-white'
                     }`}
                   >
@@ -385,7 +386,7 @@ export default function OfficerLoginPage() {
                     onClick={() => { setActiveTab('admin'); setErrorMessage(''); }}
                     className={`py-2 px-4 text-xs font-bold rounded-xl flex items-center justify-center space-x-2 transition-all cursor-pointer ${
                       activeTab === 'admin'
-                        ? 'bg-[#0088ff] text-white shadow-lg shadow-sky-500/20'
+                        ? 'bg-gradient-to-r from-rose-600 via-orange-500 to-amber-500 text-white shadow-lg shadow-rose-500/20'
                         : 'text-slate-400 hover:text-white'
                     }`}
                   >
@@ -398,7 +399,7 @@ export default function OfficerLoginPage() {
                   <>
                     {/* Department Select Field Box (Distinct Rounded Dark Input Style) */}
                     <div className={`bg-[#181b24] border rounded-2xl p-3 px-4 transition-all ${
-                      focusedField === 'dept' ? 'border-[#0088ff] ring-2 ring-[#0088ff]/30' : 'border-zinc-800'
+                      focusedField === 'dept' ? 'border-rose-500 ring-2 ring-rose-500/30' : 'border-zinc-800'
                     }`}>
                       <label className="block text-[10px] uppercase font-bold text-slate-400 tracking-wider">
                         Assigned Department
@@ -424,7 +425,7 @@ export default function OfficerLoginPage() {
 
                     {/* Officer ID Input Box */}
                     <div className={`bg-[#181b24] border rounded-2xl p-3 px-4 transition-all ${
-                      focusedField === 'officerId' ? 'border-[#0088ff] ring-2 ring-[#0088ff]/30' : 'border-zinc-800'
+                      focusedField === 'officerId' ? 'border-rose-500 ring-2 ring-rose-500/30' : 'border-zinc-800'
                     }`}>
                       <label className="block text-[10px] uppercase font-bold text-slate-400 tracking-wider">
                         Officer ID / E-mail
@@ -445,7 +446,7 @@ export default function OfficerLoginPage() {
 
                     {/* Password Input Box */}
                     <div className={`bg-[#181b24] border rounded-2xl p-3 px-4 transition-all ${
-                      focusedField === 'password' ? 'border-[#0088ff] ring-2 ring-[#0088ff]/30' : 'border-zinc-800'
+                      focusedField === 'password' ? 'border-rose-500 ring-2 ring-rose-500/30' : 'border-zinc-800'
                     }`}>
                       <label className="block text-[10px] uppercase font-bold text-slate-400 tracking-wider">
                         Password
@@ -474,7 +475,7 @@ export default function OfficerLoginPage() {
                   <>
                     {/* Admin ID Field Box */}
                     <div className={`bg-[#181b24] border rounded-2xl p-3 px-4 transition-all ${
-                      focusedField === 'adminId' ? 'border-[#0088ff] ring-2 ring-[#0088ff]/30' : 'border-zinc-800'
+                      focusedField === 'adminId' ? 'border-rose-500 ring-2 ring-rose-500/30' : 'border-zinc-800'
                     }`}>
                       <label className="block text-[10px] uppercase font-bold text-slate-400 tracking-wider">
                         Administrator ID
@@ -495,7 +496,7 @@ export default function OfficerLoginPage() {
 
                     {/* Admin Password Field Box */}
                     <div className={`bg-[#181b24] border rounded-2xl p-3 px-4 transition-all ${
-                      focusedField === 'adminPassword' ? 'border-[#0088ff] ring-2 ring-[#0088ff]/30' : 'border-zinc-800'
+                      focusedField === 'adminPassword' ? 'border-rose-500 ring-2 ring-rose-500/30' : 'border-zinc-800'
                     }`}>
                       <label className="block text-[10px] uppercase font-bold text-slate-400 tracking-wider">
                         Admin Master Key
@@ -522,7 +523,7 @@ export default function OfficerLoginPage() {
                   </>
                 )}
 
-                {/* Bottom Action Button Pair (Matching Reference Anywhere App Buttons) */}
+                {/* Bottom Action Button Pair (Matching Reference Anywhere App Buttons with Red-Orange Gradient Accent) */}
                 <div className="pt-2 flex flex-col sm:flex-row items-center gap-3">
                   <button
                     type="button"
@@ -535,7 +536,7 @@ export default function OfficerLoginPage() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full sm:w-auto flex-1 bg-[#0088ff] hover:bg-[#0077ee] text-white rounded-full py-3.5 px-8 font-bold text-xs sm:text-sm shadow-lg shadow-sky-500/25 transition-all active:scale-[0.98] cursor-pointer disabled:opacity-50 flex items-center justify-center space-x-2"
+                    className="w-full sm:w-auto flex-1 bg-gradient-to-r from-rose-600 via-orange-500 to-amber-500 hover:from-rose-500 hover:to-amber-400 text-white rounded-full py-3.5 px-8 font-bold text-xs sm:text-sm shadow-lg shadow-rose-500/25 transition-all active:scale-[0.98] cursor-pointer disabled:opacity-50 flex items-center justify-center space-x-2"
                   >
                     <span>{isSubmitting ? 'Authenticating...' : 'Sign In to Portal'}</span>
                     <ArrowRight className="w-4 h-4" />
@@ -549,7 +550,7 @@ export default function OfficerLoginPage() {
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className={`bg-[#181b24] border rounded-2xl p-3 px-4 transition-all ${
-                    focusedField === 'regName' ? 'border-[#0088ff] ring-2 ring-[#0088ff]/30' : 'border-zinc-800'
+                    focusedField === 'regName' ? 'border-rose-500 ring-2 ring-rose-500/30' : 'border-zinc-800'
                   }`}>
                     <label className="block text-[10px] uppercase font-bold text-slate-400 tracking-wider">
                       Officer Full Name
@@ -566,7 +567,7 @@ export default function OfficerLoginPage() {
                   </div>
 
                   <div className={`bg-[#181b24] border rounded-2xl p-3 px-4 transition-all ${
-                    focusedField === 'regEmail' ? 'border-[#0088ff] ring-2 ring-[#0088ff]/30' : 'border-zinc-800'
+                    focusedField === 'regEmail' ? 'border-rose-500 ring-2 ring-rose-500/30' : 'border-zinc-800'
                   }`}>
                     <label className="block text-[10px] uppercase font-bold text-slate-400 tracking-wider">
                       Official E-mail
@@ -584,7 +585,7 @@ export default function OfficerLoginPage() {
                 </div>
 
                 <div className={`bg-[#181b24] border rounded-2xl p-3 px-4 transition-all ${
-                  focusedField === 'regDept' ? 'border-[#0088ff] ring-2 ring-[#0088ff]/30' : 'border-zinc-800'
+                  focusedField === 'regDept' ? 'border-rose-500 ring-2 ring-rose-500/30' : 'border-zinc-800'
                 }`}>
                   <label className="block text-[10px] uppercase font-bold text-slate-400 tracking-wider">
                     Assigned Department
@@ -607,7 +608,7 @@ export default function OfficerLoginPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className={`bg-[#181b24] border rounded-2xl p-3 px-4 transition-all ${
-                    focusedField === 'regPassword' ? 'border-[#0088ff] ring-2 ring-[#0088ff]/30' : 'border-zinc-800'
+                    focusedField === 'regPassword' ? 'border-rose-500 ring-2 ring-rose-500/30' : 'border-zinc-800'
                   }`}>
                     <label className="block text-[10px] uppercase font-bold text-slate-400 tracking-wider">
                       Password
@@ -624,7 +625,7 @@ export default function OfficerLoginPage() {
                   </div>
 
                   <div className={`bg-[#181b24] border rounded-2xl p-3 px-4 transition-all ${
-                    focusedField === 'regConfirm' ? 'border-[#0088ff] ring-2 ring-[#0088ff]/30' : 'border-zinc-800'
+                    focusedField === 'regConfirm' ? 'border-rose-500 ring-2 ring-rose-500/30' : 'border-zinc-800'
                   }`}>
                     <label className="block text-[10px] uppercase font-bold text-slate-400 tracking-wider">
                       Confirm Password
@@ -654,7 +655,7 @@ export default function OfficerLoginPage() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full sm:w-auto flex-1 bg-[#0088ff] hover:bg-[#0077ee] text-white rounded-full py-3.5 px-8 font-bold text-xs sm:text-sm shadow-lg shadow-sky-500/25 transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center space-x-2"
+                    className="w-full sm:w-auto flex-1 bg-gradient-to-r from-rose-600 via-orange-500 to-amber-500 hover:from-rose-500 hover:to-amber-400 text-white rounded-full py-3.5 px-8 font-bold text-xs sm:text-sm shadow-lg shadow-rose-500/25 transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center space-x-2"
                   >
                     <span>{isSubmitting ? 'Creating Account...' : 'Create Account'}</span>
                     <ArrowRight className="w-4 h-4" />
@@ -666,12 +667,12 @@ export default function OfficerLoginPage() {
 
           </div>
 
-          {/* RIGHT SIDE: Visual Showcase with Curved Organic Separator Line (Matching Reference Image) */}
-          <div className="lg:col-span-5 xl:col-span-6 relative hidden lg:flex flex-col justify-between items-end h-full min-h-[440px] pointer-events-none">
+          {/* RIGHT SIDE: Bold Hindi Brand Title & Gradient Bullet Points Showcase */}
+          <div className="lg:col-span-5 xl:col-span-6 relative hidden lg:flex flex-col justify-center items-start h-full min-h-[440px] pl-16 lg:pl-24 space-y-6 text-left max-w-xl ml-auto">
             
             {/* Organic Curved Line Overlay */}
             <svg
-              className="absolute -left-16 top-0 bottom-0 h-full w-48 text-[#181b24]/40 pointer-events-none opacity-50"
+              className="absolute -left-12 top-0 bottom-0 h-full w-48 text-[#181b24]/40 pointer-events-none opacity-50"
               viewBox="0 0 200 800"
               fill="none"
               stroke="currentColor"
@@ -681,22 +682,30 @@ export default function OfficerLoginPage() {
               <path d="M 100 0 C 180 200, 20 400, 100 600 C 150 700, 80 800, 100 800" />
             </svg>
 
-            {/* Top Right Mini Feature Badge */}
-            <div className="bg-[#12151e]/80 backdrop-blur-xl border border-zinc-800/90 rounded-2xl p-4 max-w-xs space-y-2 shadow-2xl mr-4 mt-8 pointer-events-auto">
-              <div className="flex items-center space-x-2 text-xs font-bold text-white">
-                <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
-                <span>AI Automated Dispatch</span>
-              </div>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Empowering nodal municipal officers with real-time grievance translation, ward SLA analytics, and department field dispatch.
-              </p>
+            {/* Large Bold Hindi Title in Orange-Red Gradient */}
+            <div>
+              <h1 className="text-6xl sm:text-7xl lg:text-8xl font-black tracking-tight leading-none drop-shadow-xl">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-500 via-orange-500 to-amber-400">
+                  सुधार AI
+                </span>
+              </h1>
             </div>
 
-            {/* Bottom Right Brand Mark (Matching Reference Anywhere App Logo Mark) */}
-            <div className="mr-4 mb-4 flex items-center space-x-2 text-slate-400 font-mono text-2xl font-black tracking-tighter opacity-80">
-              <span className="text-white">.S</span>
-              <span className="text-[#0088ff]">AI</span>
-            </div>
+            {/* Gradient Bullet Points for Officer Benefits */}
+            <ul className="space-y-4 pt-1 text-sm sm:text-base text-slate-200 font-medium max-w-md">
+              <li className="flex items-start space-x-3.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-gradient-to-r from-rose-500 via-orange-500 to-amber-400 shrink-0 mt-1.5 shadow-[0_0_10px_rgba(244,63,94,0.6)]" />
+                <span>Automated AI translation for regional citizen complaints into official department records.</span>
+              </li>
+              <li className="flex items-start space-x-3.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-gradient-to-r from-rose-500 via-orange-500 to-amber-400 shrink-0 mt-1.5 shadow-[0_0_10px_rgba(244,63,94,0.6)]" />
+                <span>Smart category dispatch & automated priority SLA turnaround deadline tracking.</span>
+              </li>
+              <li className="flex items-start space-x-3.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-gradient-to-r from-rose-500 via-orange-500 to-amber-400 shrink-0 mt-1.5 shadow-[0_0_10px_rgba(244,63,94,0.6)]" />
+                <span>Real-time field resolution status updates and comprehensive ward-level analytics.</span>
+              </li>
+            </ul>
 
           </div>
 

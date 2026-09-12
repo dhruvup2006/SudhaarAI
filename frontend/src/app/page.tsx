@@ -22,11 +22,13 @@ import {
   Bot
 } from 'lucide-react';
 
+import { apiFetch } from '@/lib/api';
+
 interface AnalyticsData {
   total_grievances: number;
-  resolved_count: number;
-  in_progress_count: number;
-  pending_count: number;
+  resolved_grievances: number;
+  in_progress_grievances: number;
+  pending_grievances: number;
   resolution_rate_percent: number;
   by_category: Record<string, number>;
   by_urgency: Record<string, number>;
@@ -39,7 +41,7 @@ export default function LandingPage() {
   const router = useRouter();
 
   React.useEffect(() => {
-    fetch('http://127.0.0.1:8000/api/analytics')
+    apiFetch('/api/analytics')
       .then((res) => res.json())
       .then((data) => setAnalytics(data))
       .catch((err) => console.error('Failed to fetch analytics:', err));
@@ -112,10 +114,10 @@ export default function LandingPage() {
             
             {/* Animated TextRoll Heading */}
             <h1 className="font-hero-heading flex flex-col items-center gap-1 mb-6 text-center">
-              <TextRoll className="cursor-pointer text-white hover:text-emerald-400 transition-colors">
+              <TextRoll className="cursor-pointer text-white hover:text-rose-500 transition-colors">
                 Report civic issues.
               </TextRoll>
-              <TextRoll className="cursor-pointer text-zinc-300 hover:text-sky-400 transition-colors">
+              <TextRoll className="cursor-pointer text-zinc-300 hover:text-orange-500 transition-colors">
                 Track real solutions.
               </TextRoll>
             </h1>
@@ -162,7 +164,7 @@ export default function LandingPage() {
               </div>
               <div className="px-4">
                 <div className="text-3xl sm:text-4xl font-extrabold text-emerald-400 tracking-tight">
-                  {analytics ? analytics.resolved_count : 3}
+                  {analytics ? analytics.resolved_grievances : 3}
                 </div>
                 <div className="text-xs font-semibold text-slate-400 mt-1 uppercase tracking-wider">Grievances solved</div>
               </div>
