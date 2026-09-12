@@ -7,7 +7,6 @@ import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { CategoryBadge } from '@/components/CategoryBadge';
 import { UrgencyBadge } from '@/components/UrgencyBadge';
-import { InteractiveHoverButton } from '@/components/ui/interactive-hover-button';
 import { 
   Mic, 
   MicOff, 
@@ -108,13 +107,11 @@ export default function RegisterGrievancePage() {
           console.error('Speech recognition error:', event.error);
           setIsListening(false);
           clearInterval(timerIntervalRef.current);
-          if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+          if (event.error === 'not-allowed') {
             setMicPermissionState('denied');
-            setErrorMessage('Microphone access was denied. Please allow microphone permissions in your browser settings.');
-          } else if (event.error === 'no-speech') {
-            setErrorMessage('No speech detected. Please speak closer to your microphone.');
+            setErrorMessage('Microphone access denied. Please allow microphone permissions in your browser settings.');
           } else {
-            setErrorMessage(`Microphone error: ${event.error}. You can type your complaint below.`);
+            setErrorMessage(`Voice input issue (${event.error}). You can also type your description below.`);
           }
         };
 
@@ -130,41 +127,83 @@ export default function RegisterGrievancePage() {
 
     return () => {
       if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+      if (recognitionRef.current) {
+        try { recognitionRef.current.stop(); } catch (e) {}
+      }
     };
   }, [selectedLang]);
 
-  // Handle Mic Toggle
-  const toggleVoiceInput = async () => {
+  const toggleVoiceInput = () => {
     if (!recognitionRef.current) {
-      setErrorMessage('Voice recognition is not supported in your current browser. Please type your grievance in the text box below.');
+      setErrorMessage('Speech Recognition is not supported by this browser. Please type your grievance in the text box below.');
       return;
     }
 
     if (isListening) {
-      recognitionRef.current.stop();
+      try {
+        recognitionRef.current.stop();
+      } catch (e) {
+        console.error(e);
+      }
       setIsListening(false);
       clearInterval(timerIntervalRef.current);
     } else {
-      setMicPermissionState('requesting');
-      setErrorMessage('');
       try {
-        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-          await navigator.mediaDevices.getUserMedia({ audio: true });
-        }
+        setErrorMessage('');
+        setMicPermissionState('requesting');
         recognitionRef.current.lang = selectedLang;
         recognitionRef.current.start();
-      } catch (err: any) {
-        console.error('Mic permission denied:', err);
-        setMicPermissionState('denied');
-        setErrorMessage('Microphone permission denied. Please allow microphone access in your browser site settings.');
+      } catch (err) {
+        console.error('Start error:', err);
+        setIsListening(false);
       }
     }
   };
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        setErrorMessage('Image size exceeds 5MB limit.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhotoPreview(reader.result as string);
+        setErrorMessage('');
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleDetectLocation = () => {
+    if (!navigator.geolocation) {
+      setErrorMessage('Geolocation is not supported by your browser.');
+      return;
+    }
+    setIsLocating(true);
+    setErrorMessage('');
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        setLocation(`GPS: ${latitude.toFixed(5)}, ${longitude.toFixed(5)} (Near Municipal Zone)`);
+        setIsLocating(false);
+      },
+      (err) => {
+        console.error(err);
+        setLocation('Central Ward - Main City Zone');
+        setIsLocating(false);
+      },
+      { timeout: 8000 }
+    );
+  };
+
   const handleCopyText = () => {
-    navigator.clipboard.writeText(description);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    if (description) {
+      navigator.clipboard.writeText(description);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   const handleClearText = () => {
@@ -172,117 +211,47 @@ export default function RegisterGrievancePage() {
     setInterimTranscript('');
   };
 
-  // Reverse Geocoding + Geolocation Permission Handler
-  const handleDetectLocation = () => {
-    if (!navigator.geolocation) {
-      setErrorMessage('Geolocation is not supported by your browser.');
-      return;
-    }
-    
-    setIsLocating(true);
-    setErrorMessage('');
-
-    const options: PositionOptions = {
-      enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 0
-    };
-
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
-        const coordsStr = `GPS: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-
-        try {
-          const res = await fetch(
-            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`
-          );
-          if (res.ok) {
-            const data = await res.json();
-            const locality = data.locality || data.city || data.principalSubdivision || '';
-            const district = data.localityInfo?.administrative?.find((a: any) => a.adminLevel === 6 || a.adminLevel === 5)?.name || '';
-            const road = data.localityInfo?.informative?.find((i: any) => i.description === 'road' || i.name)?.name || '';
-            const state = data.principalSubdivision || '';
-            const country = data.countryName || '';
-
-            const parts = [road, locality, district, state, country].filter(Boolean);
-            const fullAddress = parts.length > 0 ? parts.join(', ') : `${locality}, ${state}`;
-
-            if (fullAddress.trim()) {
-              setLocation(`${fullAddress} (${coordsStr})`);
-            } else {
-              setLocation(coordsStr);
-            }
-          } else {
-            setLocation(coordsStr);
-          }
-        } catch (e) {
-          setLocation(coordsStr);
-        } finally {
-          setIsLocating(false);
-        }
-      },
-      (error) => {
-        setIsLocating(false);
-        if (error.code === error.PERMISSION_DENIED) {
-          setErrorMessage('Location access was denied. Please allow location permissions in your browser site settings and try again.');
-        } else if (error.code === error.POSITION_UNAVAILABLE) {
-          setErrorMessage('Location information is unavailable. Please enter your location address manually.');
-        } else if (error.code === error.TIMEOUT) {
-          setErrorMessage('Location request timed out. Please try clicking Auto-Detect GPS Location again.');
-        } else {
-          setErrorMessage('Could not detect location: ' + error.message);
-        }
-      },
-      options
-    );
+  const formatTimer = (totalSeconds: number) => {
+    const mins = Math.floor(totalSeconds / 60);
+    const secs = totalSeconds % 60;
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
 
-  const formatTimer = (secs: number) => {
-    const m = Math.floor(secs / 60);
-    const s = secs % 60;
-    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  // Realtime Client-Side Category Prediction Engine for UI Preview
+  const getLiveCategoryPreview = () => {
+    const text = (description + ' ' + location).toLowerCase();
+    if (!text.trim()) {
+      return { category: 'General', urgency: 'Low', department: 'General Municipal Admin' };
+    }
+    if (text.includes('water') || text.includes('pipe') || text.includes('leak') || text.includes('drain') || text.includes('sewage')) {
+      return { category: 'Water', urgency: text.includes('burst') || text.includes('flood') ? 'High' : 'Medium', department: 'Water Supply & Sewerage Board' };
+    }
+    if (text.includes('pothole') || text.includes('road') || text.includes('street') || text.includes('tar') || text.includes('bridge')) {
+      return { category: 'Roads', urgency: text.includes('hazard') || text.includes('deep') ? 'High' : 'Medium', department: 'Public Works Department (PWD)' };
+    }
+    if (text.includes('garbage') || text.includes('trash') || text.includes('waste') || text.includes('dump') || text.includes('smell')) {
+      return { category: 'Sanitation', urgency: text.includes('stinking') ? 'Medium' : 'Low', department: 'Department of Municipal Sanitation' };
+    }
+    if (text.includes('electric') || text.includes('power') || text.includes('wire') || text.includes('light') || text.includes('transformer')) {
+      return { category: 'Electricity', urgency: text.includes('spark') || text.includes('live') ? 'High' : 'Medium', department: 'State Electricity Distribution Corp' };
+    }
+    if (text.includes('manhole') || text.includes('tree') || text.includes('danger') || text.includes('fallen')) {
+      return { category: 'Public Safety', urgency: 'High', department: 'Disaster Response & Urban Safety' };
+    }
+    return { category: 'General', urgency: 'Low', department: 'General Municipal Admin' };
   };
 
-  const getLivePreview = () => {
-    const text = (description + ' ' + interimTranscript).toLowerCase();
-    if (text.includes('pothole') || text.includes('road') || text.includes('asphalt') || text.includes('street')) {
-      return { category: 'Roads', urgency: text.includes('massive') || text.includes('urgent') || text.includes('severe') ? 'High' : 'Medium', department: 'Public Works Dept (PWD)' };
-    }
-    if (text.includes('water') || text.includes('leak') || text.includes('pipe') || text.includes('drain') || text.includes('flood')) {
-      return { category: 'Water', urgency: text.includes('flooding') || text.includes('burst') ? 'High' : 'Medium', department: 'State Jal Board' };
-    }
-    if (text.includes('garbage') || text.includes('waste') || text.includes('trash') || text.includes('dump') || text.includes('smell')) {
-      return { category: 'Sanitation', urgency: 'Medium', department: 'Municipal Waste Mgmt' };
-    }
-    if (text.includes('electric') || text.includes('power') || text.includes('wire') || text.includes('pole') || text.includes('spark')) {
-      return { category: 'Electricity', urgency: text.includes('spark') || text.includes('wire') ? 'High' : 'Medium', department: 'State Electricity Board' };
-    }
-    return { category: 'General', urgency: 'Low', department: 'Civic Grievance Cell' };
-  };
+  const livePrediction = getLiveCategoryPreview();
 
-  const livePrediction = getLivePreview();
-
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPhotoPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (!description.trim()) {
-      setErrorMessage('Please describe the issue before submitting.');
+      setErrorMessage('Please describe your grievance before submitting.');
       setStep(1);
       return;
     }
     if (!location.trim()) {
-      setErrorMessage('Please provide a location address.');
+      setErrorMessage('Please enter or auto-detect the grievance location.');
       setStep(3);
       return;
     }
@@ -325,18 +294,18 @@ export default function RegisterGrievancePage() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-slate-100 flex flex-col selection:bg-emerald-500 selection:text-zinc-950 relative overflow-hidden font-sans">
+    <div className="min-h-screen bg-[#0d1017] text-slate-100 flex flex-col selection:bg-rose-500 selection:text-white relative overflow-hidden font-sans">
       {/* Fixed Background Image - Indian Flag Artwork Preserved CONSTANT */}
       <div
         className="fixed inset-0 bg-cover bg-center bg-no-repeat opacity-75 pointer-events-none z-0"
         style={{ backgroundImage: `url('/login-bg.jpg')` }}
       />
       {/* Vignette & Contrast Overlay */}
-      <div className="fixed inset-0 bg-gradient-to-b from-black/90 via-black/80 to-black/95 pointer-events-none z-0" />
+      <div className="fixed inset-0 bg-gradient-to-b from-black/90 via-[#0d1017]/85 to-black/95 pointer-events-none z-0" />
 
-      {/* GDG VITC Ambient Glow Spheres */}
-      <div className="fixed top-12 left-12 w-96 h-96 bg-[#34A853]/15 rounded-full blur-[140px] pointer-events-none z-0" />
-      <div className="fixed bottom-12 right-12 w-96 h-96 bg-[#4285F4]/15 rounded-full blur-[140px] pointer-events-none z-0" />
+      {/* Tricolor Ambient Glow Spheres (CONSTANT TRICOLOR BG) */}
+      <div className="fixed top-12 left-12 w-96 h-96 bg-rose-600/20 rounded-full blur-[140px] pointer-events-none z-0" />
+      <div className="fixed bottom-12 right-12 w-96 h-96 bg-amber-500/15 rounded-full blur-[140px] pointer-events-none z-0" />
 
       <Navbar />
 
@@ -346,8 +315,8 @@ export default function RegisterGrievancePage() {
         <div className="mb-8 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-mono text-emerald-400 font-bold mb-2">
-                <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+              <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-lg bg-rose-500/10 border border-rose-500/30 text-xs font-mono text-rose-400 font-bold mb-2">
+                <Sparkles className="w-3.5 h-3.5 text-rose-400" />
                 <span>Citizen Redressal Portal</span>
               </div>
               <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
@@ -359,14 +328,14 @@ export default function RegisterGrievancePage() {
             </div>
 
             <Link href="/" className="self-start sm:self-auto">
-              <span className="text-xs font-semibold text-slate-400 hover:text-white flex items-center space-x-1.5 bg-zinc-950/80 px-4 py-2 rounded-full border border-zinc-800 transition-colors">
+              <span className="text-xs font-semibold text-slate-300 hover:text-white flex items-center space-x-1.5 bg-zinc-950/80 px-4 py-2 rounded-xl border border-zinc-800 transition-colors shadow-sm">
                 <ArrowLeft className="w-3.5 h-3.5" />
                 <span>Return to Home</span>
               </span>
             </Link>
           </div>
 
-          {/* Wizard Step Progress Pills */}
+          {/* Wizard Step Progress Bar (Sleek Rectangular Cards - No Pills) */}
           <div className="grid grid-cols-3 gap-3 pt-2">
             {[
               { num: 1, title: '01. Statement', desc: 'Voice or text description' },
@@ -377,17 +346,17 @@ export default function RegisterGrievancePage() {
                 key={s.num}
                 type="button"
                 onClick={() => setStep(s.num)}
-                className={`p-3.5 rounded-2xl border text-left transition-all ${
+                className={`p-3.5 rounded-xl border text-left transition-all ${
                   step === s.num
-                    ? 'bg-zinc-900 border-emerald-500/80 ring-2 ring-emerald-500/20 text-white shadow-lg'
+                    ? 'bg-zinc-900/90 border-rose-500/80 ring-2 ring-rose-500/20 text-white shadow-lg shadow-rose-500/10'
                     : step > s.num
-                    ? 'bg-zinc-950/80 border-emerald-500/40 text-emerald-400'
-                    : 'bg-zinc-950/60 border-zinc-800 text-slate-400 opacity-80'
+                    ? 'bg-zinc-950/80 border-rose-500/40 text-rose-400'
+                    : 'bg-zinc-950/60 border-zinc-800/80 text-slate-400 opacity-80'
                 }`}
               >
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-extrabold font-mono tracking-wide">{s.title}</span>
-                  {step > s.num && <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />}
+                  {step > s.num && <CheckCircle2 className="w-4 h-4 text-rose-400 shrink-0" />}
                 </div>
                 <span className="text-[11px] text-slate-400 hidden sm:block mt-0.5">{s.desc}</span>
               </button>
@@ -398,13 +367,13 @@ export default function RegisterGrievancePage() {
         {/* 2-Column Responsive Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          {/* Left Main Form Container (8 Cols) */}
-          <div className="lg:col-span-8 bg-black/85 backdrop-blur-2xl border border-zinc-800/90 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden space-y-6">
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-emerald-500 via-teal-400 to-sky-500" />
+          {/* Left Main Form Glowing Red-Rose Card Container (8 Cols) */}
+          <div className="lg:col-span-8 bg-[#0d1017]/95 backdrop-blur-2xl border border-rose-500/60 shadow-[0_0_30px_rgba(244,63,94,0.25)] rounded-3xl p-6 sm:p-8 relative overflow-hidden space-y-6">
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-rose-600 via-orange-500 to-amber-500" />
 
             {/* Error Banner */}
             {errorMessage && (
-              <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-semibold flex items-center space-x-2.5 shadow-md">
+              <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-semibold flex items-center space-x-2.5 shadow-md">
                 <AlertCircle className="w-5 h-5 text-rose-400 shrink-0" />
                 <span>{errorMessage}</span>
               </div>
@@ -414,15 +383,15 @@ export default function RegisterGrievancePage() {
             {step === 1 && (
               <div className="space-y-6">
                 
-                {/* Category Quick Select Chips */}
+                {/* Category Quick Select Cards (Sleek Grid - No Pills) */}
                 <div className="space-y-2">
                   <label className="block text-xs font-bold uppercase tracking-wider text-slate-300">
                     Quick Select Issue Category
                   </label>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
                     {[
                       { name: 'Roads & Potholes', icon: Hammer, sample: 'Severe road pothole causing traffic obstruction on main road.' },
-                      { name: 'Water Supply & Leakage', icon: Droplet, sample: 'Clean drinking water pipe burst causing road flooding.' },
+                      { name: 'Water Supply', icon: Droplet, sample: 'Clean drinking water pipe burst causing road flooding.' },
                       { name: 'Sanitation & Waste', icon: Trash2, sample: 'Uncollected garbage pile causing foul smell in public area.' },
                       { name: 'Electricity & Power', icon: Zap, sample: 'Broken street light and loose power wire sparking.' },
                       { name: 'Public Safety', icon: ShieldAlert, sample: 'Hazardous open drain manhole near pedestrian walkway.' }
@@ -433,10 +402,12 @@ export default function RegisterGrievancePage() {
                           key={item.name}
                           type="button"
                           onClick={() => handleQuickCategorySelect(item.name, item.sample)}
-                          className="px-3 py-1.5 rounded-full bg-zinc-950 border border-zinc-800 hover:border-emerald-500/50 hover:bg-zinc-900 text-xs font-semibold text-slate-300 hover:text-white flex items-center space-x-1.5 transition-all cursor-pointer"
+                          className="p-3 rounded-xl bg-zinc-950 border border-zinc-800 hover:border-rose-500/50 hover:bg-zinc-900 text-xs font-semibold text-slate-300 hover:text-white flex items-center space-x-2 transition-all cursor-pointer shadow-sm group text-left"
                         >
-                          <IconComp className="w-3.5 h-3.5 text-emerald-400" />
-                          <span>{item.name}</span>
+                          <div className="p-1.5 rounded-lg bg-rose-500/10 text-rose-400 group-hover:bg-rose-500 group-hover:text-white transition-colors shrink-0">
+                            <IconComp className="w-4 h-4" />
+                          </div>
+                          <span className="truncate">{item.name}</span>
                         </button>
                       );
                     })}
@@ -444,10 +415,10 @@ export default function RegisterGrievancePage() {
                 </div>
 
                 {/* Voice Recorder AI Hub */}
-                <div className="p-6 rounded-2xl bg-zinc-950/80 border border-zinc-800 space-y-4 shadow-inner relative overflow-hidden">
+                <div className="p-6 rounded-2xl bg-zinc-950/90 border border-zinc-800/90 space-y-4 shadow-inner relative overflow-hidden">
                   <div className="flex items-center justify-between border-b border-zinc-800/80 pb-3">
                     <div className="flex items-center space-x-2">
-                      <Volume2 className="w-4 h-4 text-emerald-400" />
+                      <Volume2 className="w-4 h-4 text-rose-400" />
                       <span className="text-xs font-bold text-white uppercase tracking-wider">
                         Multi-Lingual Voice AI Input
                       </span>
@@ -458,9 +429,9 @@ export default function RegisterGrievancePage() {
                       <button
                         type="button"
                         onClick={() => setSelectedLang('en-IN')}
-                        className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all ${
+                        className={`px-3 py-1 rounded-lg text-[11px] font-bold transition-all ${
                           selectedLang === 'en-IN'
-                            ? 'bg-emerald-500 text-zinc-950 shadow-sm'
+                            ? 'bg-rose-500 text-white shadow-sm'
                             : 'text-slate-400 hover:text-white'
                         }`}
                       >
@@ -469,9 +440,9 @@ export default function RegisterGrievancePage() {
                       <button
                         type="button"
                         onClick={() => setSelectedLang('hi-IN')}
-                        className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all ${
+                        className={`px-3 py-1 rounded-lg text-[11px] font-bold transition-all ${
                           selectedLang === 'hi-IN'
-                            ? 'bg-emerald-500 text-zinc-950 shadow-sm'
+                            ? 'bg-rose-500 text-white shadow-sm'
                             : 'text-slate-400 hover:text-white'
                         }`}
                       >
@@ -485,10 +456,10 @@ export default function RegisterGrievancePage() {
                     <button
                       type="button"
                       onClick={toggleVoiceInput}
-                      className={`w-20 h-20 rounded-full flex items-center justify-center transition-all cursor-pointer relative shadow-xl ${
+                      className={`w-20 h-20 rounded-2xl flex items-center justify-center transition-all cursor-pointer relative shadow-xl ${
                         isListening
-                          ? 'bg-rose-500 text-white ring-8 ring-rose-500/20 animate-pulse'
-                          : 'bg-emerald-500 hover:bg-emerald-400 text-zinc-950 hover:scale-105'
+                          ? 'bg-rose-600 text-white ring-8 ring-rose-500/30 animate-pulse'
+                          : 'bg-gradient-to-r from-rose-600 via-orange-500 to-amber-500 hover:from-rose-500 hover:to-amber-400 text-white hover:scale-105 shadow-rose-500/20'
                       }`}
                     >
                       {isListening ? (
@@ -513,7 +484,7 @@ export default function RegisterGrievancePage() {
                 <div className="space-y-2 relative">
                   <div className="flex items-center justify-between">
                     <label className="block text-xs font-bold uppercase tracking-wider text-slate-300">
-                      Or Type Full Description <span className="text-emerald-400">*</span>
+                      Or Type Full Description <span className="text-rose-500">*</span>
                     </label>
                     <span className="text-[11px] font-mono text-slate-400">
                       {description.length} characters
@@ -525,7 +496,7 @@ export default function RegisterGrievancePage() {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="Describe the civic issue in detail (e.g. Broken water pipe overflowing near main market gate)..."
-                    className="w-full p-4 bg-zinc-950 text-white border border-zinc-800 rounded-2xl font-sans text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all placeholder-slate-600 shadow-inner"
+                    className="w-full p-4 bg-black/90 text-white border border-zinc-800 rounded-xl font-sans text-xs sm:text-sm focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 transition-all placeholder-slate-600 shadow-inner"
                   />
 
                   {description && (
@@ -535,7 +506,7 @@ export default function RegisterGrievancePage() {
                         onClick={handleCopyText}
                         className="px-3 py-1.5 bg-zinc-950 hover:bg-zinc-900 border border-zinc-800 rounded-xl text-xs font-semibold text-slate-300 hover:text-white flex items-center space-x-1 transition-colors"
                       >
-                        {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                        {copied ? <Check className="w-3.5 h-3.5 text-rose-400" /> : <Copy className="w-3.5 h-3.5" />}
                         <span>{copied ? 'Copied' : 'Copy'}</span>
                       </button>
                       <button
@@ -562,10 +533,10 @@ export default function RegisterGrievancePage() {
                       setErrorMessage('');
                       setStep(2);
                     }}
-                    className="w-full py-4 rounded-full bg-white hover:bg-zinc-100 text-zinc-950 font-semibold text-sm tracking-tight shadow-xl transition-all flex items-center justify-center space-x-2 cursor-pointer active:scale-[0.98]"
+                    className="w-full py-4 rounded-xl bg-gradient-to-r from-rose-600 via-orange-500 to-amber-500 hover:from-rose-500 hover:to-amber-400 text-white font-bold text-sm tracking-tight shadow-lg shadow-rose-500/25 transition-all flex items-center justify-center space-x-2 cursor-pointer active:scale-[0.98]"
                   >
                     <span>Proceed to Photo Evidence</span>
-                    <ArrowRight className="w-4 h-4 text-zinc-950" />
+                    <ArrowRight className="w-4 h-4 text-white" />
                   </button>
                 </div>
 
@@ -583,7 +554,7 @@ export default function RegisterGrievancePage() {
                   {/* Photo Drop Zone */}
                   <div 
                     onClick={() => fileInputRef.current?.click()}
-                    className="border-2 border-dashed border-zinc-700 hover:border-emerald-500/60 bg-zinc-950/60 p-8 rounded-2xl text-center space-y-3 cursor-pointer transition-all hover:bg-zinc-950/80 group"
+                    className="border-2 border-dashed border-zinc-700 hover:border-rose-500/60 bg-zinc-950/60 p-8 rounded-2xl text-center space-y-3 cursor-pointer transition-all hover:bg-zinc-950/80 group"
                   >
                     <input
                       type="file"
@@ -600,7 +571,7 @@ export default function RegisterGrievancePage() {
                           alt="Uploaded evidence"
                           className="w-full max-h-56 object-cover rounded-xl border border-zinc-800 shadow-md mx-auto"
                         />
-                        <p className="text-xs text-emerald-400 font-semibold flex items-center justify-center space-x-1">
+                        <p className="text-xs text-rose-400 font-semibold flex items-center justify-center space-x-1">
                           <Check className="w-4 h-4" />
                           <span>Photo attached successfully. Click to replace photo.</span>
                         </p>
@@ -608,7 +579,7 @@ export default function RegisterGrievancePage() {
                     ) : (
                       <>
                         <div className="w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800 text-slate-400 group-hover:text-white flex items-center justify-center mx-auto transition-colors">
-                          <Upload className="w-6 h-6 text-emerald-400" />
+                          <Upload className="w-6 h-6 text-rose-400" />
                         </div>
                         <div>
                           <p className="text-xs font-bold text-white">Click or drag photo evidence here</p>
@@ -623,14 +594,14 @@ export default function RegisterGrievancePage() {
                   <button
                     type="button"
                     onClick={() => setStep(1)}
-                    className="w-1/3 bg-zinc-900 hover:bg-zinc-800 text-slate-300 font-semibold py-3.5 rounded-full border border-zinc-700 text-xs tracking-tight cursor-pointer"
+                    className="w-1/3 bg-zinc-900 hover:bg-zinc-800 text-slate-300 font-semibold py-3.5 rounded-xl border border-zinc-700 text-xs tracking-tight cursor-pointer"
                   >
                     Back
                   </button>
                   <button
                     type="button"
                     onClick={() => setStep(3)}
-                    className="w-2/3 bg-white hover:bg-zinc-100 text-zinc-950 font-semibold py-3.5 rounded-full shadow-xl transition-all text-sm tracking-tight cursor-pointer active:scale-[0.98]"
+                    className="w-2/3 bg-gradient-to-r from-rose-600 via-orange-500 to-amber-500 hover:from-rose-500 hover:to-amber-400 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-rose-500/25 transition-all text-sm tracking-tight cursor-pointer active:scale-[0.98]"
                   >
                     Proceed to Location →
                   </button>
@@ -643,25 +614,25 @@ export default function RegisterGrievancePage() {
               <div className="space-y-6">
                 <div className="space-y-3">
                   <label className="block text-xs font-bold uppercase tracking-wider text-slate-300">
-                    Specify Grievance Location Address <span className="text-emerald-400">*</span>
+                    Specify Grievance Location Address <span className="text-rose-500">*</span>
                   </label>
 
                   <div className="flex gap-2">
                     <div className="relative flex-1">
-                      <MapPin className="w-4 h-4 text-emerald-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                      <MapPin className="w-4 h-4 text-rose-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                       <input
                         type="text"
                         value={location}
                         onChange={(e) => setLocation(e.target.value)}
                         placeholder="Type location address or click GPS Auto-Detect..."
-                        className="w-full pl-10 pr-4 py-3.5 bg-zinc-950 text-white placeholder-slate-500 text-xs sm:text-sm rounded-xl border border-zinc-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium transition-all"
+                        className="w-full pl-10 pr-4 py-3.5 bg-black/90 text-white placeholder-slate-500 text-xs sm:text-sm rounded-xl border border-zinc-800 focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 font-medium transition-all"
                       />
                     </div>
                     <button
                       type="button"
                       onClick={handleDetectLocation}
                       disabled={isLocating}
-                      className="px-4 py-3.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-emerald-400 text-xs font-semibold flex items-center space-x-1.5 transition-colors cursor-pointer shrink-0 disabled:opacity-50"
+                      className="px-4 py-3.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-rose-400 text-xs font-semibold flex items-center space-x-1.5 transition-colors cursor-pointer shrink-0 disabled:opacity-50"
                     >
                       {isLocating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Crosshair className="w-3.5 h-3.5" />}
                       <span className="hidden sm:inline">{isLocating ? 'Locating...' : 'GPS Auto-Detect'}</span>
@@ -679,7 +650,7 @@ export default function RegisterGrievancePage() {
                     type="button"
                     onClick={() => setStep(2)}
                     disabled={isSubmitting}
-                    className="w-1/3 bg-zinc-900 hover:bg-zinc-800 text-slate-300 font-semibold py-3.5 rounded-full border border-zinc-700 text-xs tracking-tight cursor-pointer disabled:opacity-50"
+                    className="w-1/3 bg-zinc-900 hover:bg-zinc-800 text-slate-300 font-semibold py-3.5 rounded-xl border border-zinc-700 text-xs tracking-tight cursor-pointer disabled:opacity-50"
                   >
                     Back
                   </button>
@@ -687,17 +658,17 @@ export default function RegisterGrievancePage() {
                     type="button"
                     onClick={handleSubmit}
                     disabled={isSubmitting}
-                    className="w-2/3 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold py-3.5 rounded-full shadow-lg shadow-emerald-500/20 transition-all text-sm tracking-tight cursor-pointer active:scale-[0.98] disabled:opacity-50 flex items-center justify-center space-x-2"
+                    className="w-2/3 bg-gradient-to-r from-rose-600 via-orange-500 to-amber-500 hover:from-rose-500 hover:to-amber-400 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-rose-500/25 transition-all text-sm tracking-tight cursor-pointer active:scale-[0.98] disabled:opacity-50 flex items-center justify-center space-x-2"
                   >
                     {isSubmitting ? (
                       <>
-                        <Loader2 className="w-4 h-4 animate-spin text-zinc-950" />
+                        <Loader2 className="w-4 h-4 animate-spin text-white" />
                         <span>Dispatching...</span>
                       </>
                     ) : (
                       <>
                         <span>Submit Grievance Report</span>
-                        <ArrowRight className="w-4 h-4 text-zinc-950" />
+                        <ArrowRight className="w-4 h-4 text-white" />
                       </>
                     )}
                   </button>
@@ -709,16 +680,16 @@ export default function RegisterGrievancePage() {
 
           {/* Right Live AI Classification Sidebar Card (4 Cols) */}
           <div className="lg:col-span-4 space-y-5">
-            <div className="bg-zinc-950/90 backdrop-blur-2xl border border-zinc-800 rounded-3xl p-6 shadow-2xl space-y-5 sticky top-24">
+            <div className="bg-[#0d1017]/95 backdrop-blur-2xl border border-rose-500/40 shadow-[0_0_20px_rgba(244,63,94,0.15)] rounded-3xl p-6 relative overflow-hidden space-y-5 sticky top-24">
               
               <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
                 <div className="flex items-center space-x-2">
-                  <Sparkles className="w-4 h-4 text-emerald-400" />
+                  <Sparkles className="w-4 h-4 text-rose-400" />
                   <h3 className="text-xs font-bold text-white uppercase tracking-wider">
                     Live AI Routing Preview
                   </h3>
                 </div>
-                <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded-full border border-emerald-800 font-bold">
+                <span className="text-[10px] font-mono text-rose-400 bg-rose-950/80 px-2.5 py-1 rounded-md border border-rose-800/80 font-bold">
                   Active
                 </span>
               </div>
@@ -735,7 +706,7 @@ export default function RegisterGrievancePage() {
                   <UrgencyBadge urgency={livePrediction.urgency} size="md" />
                 </div>
 
-                <div className="p-3.5 rounded-2xl bg-black border border-zinc-800 text-xs space-y-1">
+                <div className="p-3.5 rounded-xl bg-black border border-zinc-800 text-xs space-y-1">
                   <span className="text-slate-400 block font-medium">Assigned Authority:</span>
                   <span className="text-white font-bold block">{livePrediction.department}</span>
                 </div>
@@ -744,7 +715,7 @@ export default function RegisterGrievancePage() {
               {/* Citizen Help Tip Box */}
               <div className="pt-2 border-t border-zinc-800 space-y-2 text-xs text-slate-400">
                 <div className="flex items-center space-x-2 text-slate-300 font-semibold">
-                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                  <ShieldCheck className="w-4 h-4 text-rose-400" />
                   <span>Transparent Citizen Redressal</span>
                 </div>
                 <p className="text-[11px] leading-relaxed">
