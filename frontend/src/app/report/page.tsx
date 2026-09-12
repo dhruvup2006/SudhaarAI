@@ -5,8 +5,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
-import { CategoryBadge } from '@/components/CategoryBadge';
-import { UrgencyBadge } from '@/components/UrgencyBadge';
 import { 
   Mic, 
   MicOff, 
@@ -15,24 +13,14 @@ import {
   CheckCircle2, 
   AlertCircle, 
   Loader2, 
-  Building, 
-  Sparkles, 
   ArrowRight, 
   ArrowLeft,
   Volume2,
   Trash2,
   Copy,
   Check,
-  Globe,
-  FileText,
   Crosshair,
-  ShieldCheck,
-  Clock,
-  Droplet,
-  Hammer,
-  Zap,
-  ShieldAlert,
-  Bot
+  ShieldCheck
 } from 'lucide-react';
 import { apiFetch, API_BASE_URL } from '@/lib/api';
 
@@ -217,32 +205,6 @@ export default function RegisterGrievancePage() {
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
 
-  // Realtime Client-Side Category Prediction Engine for UI Preview
-  const getLiveCategoryPreview = () => {
-    const text = (description + ' ' + location).toLowerCase();
-    if (!text.trim()) {
-      return { category: 'General', urgency: 'Low', department: 'General Municipal Admin' };
-    }
-    if (text.includes('water') || text.includes('pipe') || text.includes('leak') || text.includes('drain') || text.includes('sewage')) {
-      return { category: 'Water', urgency: text.includes('burst') || text.includes('flood') ? 'High' : 'Medium', department: 'Water Supply & Sewerage Board' };
-    }
-    if (text.includes('pothole') || text.includes('road') || text.includes('street') || text.includes('tar') || text.includes('bridge')) {
-      return { category: 'Roads', urgency: text.includes('hazard') || text.includes('deep') ? 'High' : 'Medium', department: 'Public Works Department (PWD)' };
-    }
-    if (text.includes('garbage') || text.includes('trash') || text.includes('waste') || text.includes('dump') || text.includes('smell')) {
-      return { category: 'Sanitation', urgency: text.includes('stinking') ? 'Medium' : 'Low', department: 'Department of Municipal Sanitation' };
-    }
-    if (text.includes('electric') || text.includes('power') || text.includes('wire') || text.includes('light') || text.includes('transformer')) {
-      return { category: 'Electricity', urgency: text.includes('spark') || text.includes('live') ? 'High' : 'Medium', department: 'State Electricity Distribution Corp' };
-    }
-    if (text.includes('manhole') || text.includes('tree') || text.includes('danger') || text.includes('fallen')) {
-      return { category: 'Public Safety', urgency: 'High', department: 'Disaster Response & Urban Safety' };
-    }
-    return { category: 'General', urgency: 'Low', department: 'General Municipal Admin' };
-  };
-
-  const livePrediction = getLiveCategoryPreview();
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!description.trim()) {
@@ -261,7 +223,7 @@ export default function RegisterGrievancePage() {
 
     try {
       const payload = {
-        title: `Civic Report - ${livePrediction.category}`,
+        title: `Civic Report`,
         description: description.trim(),
         location: location.trim(),
         photo_url: photoPreview || null
@@ -286,13 +248,6 @@ export default function RegisterGrievancePage() {
     }
   };
 
-  // Quick Preset Add Helper
-  const handleQuickCategorySelect = (catName: string, sampleText: string) => {
-    if (!description.toLowerCase().includes(catName.toLowerCase())) {
-      setDescription((prev) => prev ? `${prev} ${sampleText}` : sampleText);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-[#0d1017] text-slate-100 flex flex-col selection:bg-rose-500 selection:text-white relative overflow-hidden font-sans">
       {/* Fixed Background Image - Indian Flag Artwork Preserved CONSTANT */}
@@ -309,16 +264,12 @@ export default function RegisterGrievancePage() {
 
       <Navbar />
 
-      <main className="flex-1 py-10 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto w-full relative z-10">
+      <main className="flex-1 py-10 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full relative z-10">
         
         {/* Portal Top Header & Multi-Step Wizard Indicator */}
         <div className="mb-8 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-lg bg-rose-500/10 border border-rose-500/30 text-xs font-mono text-rose-400 font-bold mb-2">
-                <Sparkles className="w-3.5 h-3.5 text-rose-400" />
-                <span>Citizen Redressal Portal</span>
-              </div>
               <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
                 Lodge a civic grievance
               </h1>
@@ -364,367 +315,283 @@ export default function RegisterGrievancePage() {
           </div>
         </div>
 
-        {/* 2-Column Responsive Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
-          {/* Left Main Form Glowing Red-Rose Card Container (8 Cols) */}
-          <div className="lg:col-span-8 bg-[#0d1017]/95 backdrop-blur-2xl border border-rose-500/60 shadow-[0_0_30px_rgba(244,63,94,0.25)] rounded-3xl p-6 sm:p-8 relative overflow-hidden space-y-6">
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-rose-600 via-orange-500 to-amber-500" />
+        {/* Centered Main Form Glowing Red-Rose Card Container */}
+        <div className="bg-[#0d1017]/95 backdrop-blur-2xl border border-rose-500/60 shadow-[0_0_30px_rgba(244,63,94,0.25)] rounded-3xl p-6 sm:p-8 relative overflow-hidden space-y-6">
+          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-rose-600 via-orange-500 to-amber-500" />
 
-            {/* Error Banner */}
-            {errorMessage && (
-              <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-semibold flex items-center space-x-2.5 shadow-md">
-                <AlertCircle className="w-5 h-5 text-rose-400 shrink-0" />
-                <span>{errorMessage}</span>
-              </div>
-            )}
+          {/* Error Banner */}
+          {errorMessage && (
+            <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-semibold flex items-center space-x-2.5 shadow-md">
+              <AlertCircle className="w-5 h-5 text-rose-400 shrink-0" />
+              <span>{errorMessage}</span>
+            </div>
+          )}
 
-            {/* STEP 1: VOICE / TEXT STATEMENT */}
-            {step === 1 && (
-              <div className="space-y-6">
-                
-                {/* Category Quick Select Cards (Sleek Grid - No Pills) */}
-                <div className="space-y-2">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-300">
-                    Quick Select Issue Category
-                  </label>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                    {[
-                      { name: 'Roads & Potholes', icon: Hammer, sample: 'Severe road pothole causing traffic obstruction on main road.' },
-                      { name: 'Water Supply', icon: Droplet, sample: 'Clean drinking water pipe burst causing road flooding.' },
-                      { name: 'Sanitation & Waste', icon: Trash2, sample: 'Uncollected garbage pile causing foul smell in public area.' },
-                      { name: 'Electricity & Power', icon: Zap, sample: 'Broken street light and loose power wire sparking.' },
-                      { name: 'Public Safety', icon: ShieldAlert, sample: 'Hazardous open drain manhole near pedestrian walkway.' }
-                    ].map((item) => {
-                      const IconComp = item.icon;
-                      return (
-                        <button
-                          key={item.name}
-                          type="button"
-                          onClick={() => handleQuickCategorySelect(item.name, item.sample)}
-                          className="p-3 rounded-xl bg-zinc-950 border border-zinc-800 hover:border-rose-500/50 hover:bg-zinc-900 text-xs font-semibold text-slate-300 hover:text-white flex items-center space-x-2 transition-all cursor-pointer shadow-sm group text-left"
-                        >
-                          <div className="p-1.5 rounded-lg bg-rose-500/10 text-rose-400 group-hover:bg-rose-500 group-hover:text-white transition-colors shrink-0">
-                            <IconComp className="w-4 h-4" />
-                          </div>
-                          <span className="truncate">{item.name}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Voice Recorder AI Hub */}
-                <div className="p-6 rounded-2xl bg-zinc-950/90 border border-zinc-800/90 space-y-4 shadow-inner relative overflow-hidden">
-                  <div className="flex items-center justify-between border-b border-zinc-800/80 pb-3">
-                    <div className="flex items-center space-x-2">
-                      <Volume2 className="w-4 h-4 text-rose-400" />
-                      <span className="text-xs font-bold text-white uppercase tracking-wider">
-                        Multi-Lingual Voice AI Input
-                      </span>
-                    </div>
-
-                    {/* Language Selector Switcher */}
-                    <div className="flex items-center space-x-1 bg-black p-1 rounded-xl border border-zinc-800">
-                      <button
-                        type="button"
-                        onClick={() => setSelectedLang('en-IN')}
-                        className={`px-3 py-1 rounded-lg text-[11px] font-bold transition-all ${
-                          selectedLang === 'en-IN'
-                            ? 'bg-rose-500 text-white shadow-sm'
-                            : 'text-slate-400 hover:text-white'
-                        }`}
-                      >
-                        English
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setSelectedLang('hi-IN')}
-                        className={`px-3 py-1 rounded-lg text-[11px] font-bold transition-all ${
-                          selectedLang === 'hi-IN'
-                            ? 'bg-rose-500 text-white shadow-sm'
-                            : 'text-slate-400 hover:text-white'
-                        }`}
-                      >
-                        हिंदी (Hindi)
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Mic Recorder Button */}
-                  <div className="flex flex-col items-center justify-center py-4 space-y-3">
-                    <button
-                      type="button"
-                      onClick={toggleVoiceInput}
-                      className={`w-20 h-20 rounded-2xl flex items-center justify-center transition-all cursor-pointer relative shadow-xl ${
-                        isListening
-                          ? 'bg-rose-600 text-white ring-8 ring-rose-500/30 animate-pulse'
-                          : 'bg-gradient-to-r from-rose-600 via-orange-500 to-amber-500 hover:from-rose-500 hover:to-amber-400 text-white hover:scale-105 shadow-rose-500/20'
-                      }`}
-                    >
-                      {isListening ? (
-                        <MicOff className="w-8 h-8" />
-                      ) : (
-                        <Mic className="w-8 h-8" />
-                      )}
-                    </button>
-
-                    <div className="text-center">
-                      <p className="text-xs font-bold text-white">
-                        {isListening ? `Recording... (${formatTimer(recordingSeconds)})` : 'Click microphone to speak your complaint'}
-                      </p>
-                      <p className="text-[11px] text-slate-400 mt-0.5">
-                        {isListening ? 'Speak clearly in your chosen language' : 'Automatic speech-to-text translation engine'}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Text Area Description Input */}
-                <div className="space-y-2 relative">
-                  <div className="flex items-center justify-between">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-300">
-                      Or Type Full Description <span className="text-rose-500">*</span>
-                    </label>
-                    <span className="text-[11px] font-mono text-slate-400">
-                      {description.length} characters
+          {/* STEP 1: VOICE / TEXT STATEMENT */}
+          {step === 1 && (
+            <div className="space-y-6">
+              
+              {/* Voice Recorder AI Hub */}
+              <div className="p-6 rounded-2xl bg-zinc-950/90 border border-zinc-800/90 space-y-4 shadow-inner relative overflow-hidden">
+                <div className="flex items-center justify-between border-b border-zinc-800/80 pb-3">
+                  <div className="flex items-center space-x-2">
+                    <Volume2 className="w-4 h-4 text-rose-400" />
+                    <span className="text-xs font-bold text-white uppercase tracking-wider">
+                      Multi-Lingual Voice AI Input
                     </span>
                   </div>
 
-                  <textarea
-                    rows={5}
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Describe the civic issue in detail (e.g. Broken water pipe overflowing near main market gate)..."
-                    className="w-full p-4 bg-black/90 text-white border border-zinc-800 rounded-xl font-sans text-xs sm:text-sm focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 transition-all placeholder-slate-600 shadow-inner"
-                  />
-
-                  {description && (
-                    <div className="flex items-center justify-end space-x-2 pt-1">
-                      <button
-                        type="button"
-                        onClick={handleCopyText}
-                        className="px-3 py-1.5 bg-zinc-950 hover:bg-zinc-900 border border-zinc-800 rounded-xl text-xs font-semibold text-slate-300 hover:text-white flex items-center space-x-1 transition-colors"
-                      >
-                        {copied ? <Check className="w-3.5 h-3.5 text-rose-400" /> : <Copy className="w-3.5 h-3.5" />}
-                        <span>{copied ? 'Copied' : 'Copy'}</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleClearText}
-                        className="px-3 py-1.5 bg-zinc-950 hover:bg-zinc-900 border border-zinc-800 rounded-xl text-xs font-semibold text-slate-300 hover:text-rose-400 flex items-center space-x-1 transition-colors"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                        <span>Clear</span>
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                {/* Continue Step 1 Button */}
-                <div className="pt-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (!description.trim()) {
-                        setErrorMessage('Please describe the issue before proceeding.');
-                        return;
-                      }
-                      setErrorMessage('');
-                      setStep(2);
-                    }}
-                    className="w-full py-4 rounded-xl bg-gradient-to-r from-rose-600 via-orange-500 to-amber-500 hover:from-rose-500 hover:to-amber-400 text-white font-bold text-sm tracking-tight shadow-lg shadow-rose-500/25 transition-all flex items-center justify-center space-x-2 cursor-pointer active:scale-[0.98]"
-                  >
-                    <span>Proceed to Photo Evidence</span>
-                    <ArrowRight className="w-4 h-4 text-white" />
-                  </button>
-                </div>
-
-              </div>
-            )}
-
-            {/* STEP 2: PHOTO ATTACHMENT */}
-            {step === 2 && (
-              <div className="space-y-6">
-                <div className="space-y-3">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-300">
-                    Attach Photo Evidence (Optional)
-                  </label>
-                  
-                  {/* Photo Drop Zone */}
-                  <div 
-                    onClick={() => fileInputRef.current?.click()}
-                    className="border-2 border-dashed border-zinc-700 hover:border-rose-500/60 bg-zinc-950/60 p-8 rounded-2xl text-center space-y-3 cursor-pointer transition-all hover:bg-zinc-950/80 group"
-                  >
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      onChange={handleFileUpload}
-                      accept="image/*"
-                      className="hidden"
-                    />
-                    
-                    {photoPreview ? (
-                      <div className="space-y-3">
-                        <img
-                          src={photoPreview}
-                          alt="Uploaded evidence"
-                          className="w-full max-h-56 object-cover rounded-xl border border-zinc-800 shadow-md mx-auto"
-                        />
-                        <p className="text-xs text-rose-400 font-semibold flex items-center justify-center space-x-1">
-                          <Check className="w-4 h-4" />
-                          <span>Photo attached successfully. Click to replace photo.</span>
-                        </p>
-                      </div>
-                    ) : (
-                      <>
-                        <div className="w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800 text-slate-400 group-hover:text-white flex items-center justify-center mx-auto transition-colors">
-                          <Upload className="w-6 h-6 text-rose-400" />
-                        </div>
-                        <div>
-                          <p className="text-xs font-bold text-white">Click or drag photo evidence here</p>
-                          <p className="text-[11px] text-slate-400 mt-0.5">JPG, PNG or WEBP (Max 5MB)</p>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-3 pt-2">
-                  <button
-                    type="button"
-                    onClick={() => setStep(1)}
-                    className="w-1/3 bg-zinc-900 hover:bg-zinc-800 text-slate-300 font-semibold py-3.5 rounded-xl border border-zinc-700 text-xs tracking-tight cursor-pointer"
-                  >
-                    Back
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setStep(3)}
-                    className="w-2/3 bg-gradient-to-r from-rose-600 via-orange-500 to-amber-500 hover:from-rose-500 hover:to-amber-400 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-rose-500/25 transition-all text-sm tracking-tight cursor-pointer active:scale-[0.98]"
-                  >
-                    Proceed to Location →
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* STEP 3: LOCATION & SUBMIT */}
-            {step === 3 && (
-              <div className="space-y-6">
-                <div className="space-y-3">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-300">
-                    Specify Grievance Location Address <span className="text-rose-500">*</span>
-                  </label>
-
-                  <div className="flex gap-2">
-                    <div className="relative flex-1">
-                      <MapPin className="w-4 h-4 text-rose-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                      <input
-                        type="text"
-                        value={location}
-                        onChange={(e) => setLocation(e.target.value)}
-                        placeholder="Type location address or click GPS Auto-Detect..."
-                        className="w-full pl-10 pr-4 py-3.5 bg-black/90 text-white placeholder-slate-500 text-xs sm:text-sm rounded-xl border border-zinc-800 focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 font-medium transition-all"
-                      />
-                    </div>
+                  {/* Language Selector Switcher */}
+                  <div className="flex items-center space-x-1 bg-black p-1 rounded-xl border border-zinc-800">
                     <button
                       type="button"
-                      onClick={handleDetectLocation}
-                      disabled={isLocating}
-                      className="px-4 py-3.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-rose-400 text-xs font-semibold flex items-center space-x-1.5 transition-colors cursor-pointer shrink-0 disabled:opacity-50"
+                      onClick={() => setSelectedLang('en-IN')}
+                      className={`px-3 py-1 rounded-lg text-[11px] font-bold transition-all ${
+                        selectedLang === 'en-IN'
+                          ? 'bg-rose-500 text-white shadow-sm'
+                          : 'text-slate-400 hover:text-white'
+                      }`}
                     >
-                      {isLocating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Crosshair className="w-3.5 h-3.5" />}
-                      <span className="hidden sm:inline">{isLocating ? 'Locating...' : 'GPS Auto-Detect'}</span>
+                      English
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedLang('hi-IN')}
+                      className={`px-3 py-1 rounded-lg text-[11px] font-bold transition-all ${
+                        selectedLang === 'hi-IN'
+                          ? 'bg-rose-500 text-white shadow-sm'
+                          : 'text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      हिंदी (Hindi)
                     </button>
                   </div>
                 </div>
 
-                {/* Terms Notice */}
-                <p className="text-[11px] text-slate-400 text-center leading-relaxed">
-                  By submitting this report, you certify that the grievance information is accurate and genuine for municipal resolution.
-                </p>
-
-                <div className="flex items-center space-x-3 pt-2">
+                {/* Mic Recorder Button */}
+                <div className="flex flex-col items-center justify-center py-4 space-y-3">
                   <button
                     type="button"
-                    onClick={() => setStep(2)}
-                    disabled={isSubmitting}
-                    className="w-1/3 bg-zinc-900 hover:bg-zinc-800 text-slate-300 font-semibold py-3.5 rounded-xl border border-zinc-700 text-xs tracking-tight cursor-pointer disabled:opacity-50"
+                    onClick={toggleVoiceInput}
+                    className={`w-20 h-20 rounded-2xl flex items-center justify-center transition-all cursor-pointer relative shadow-xl ${
+                      isListening
+                        ? 'bg-rose-600 text-white ring-8 ring-rose-500/30 animate-pulse'
+                        : 'bg-gradient-to-r from-rose-600 via-orange-500 to-amber-500 hover:from-rose-500 hover:to-amber-400 text-white hover:scale-105 shadow-rose-500/20'
+                    }`}
                   >
-                    Back
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleSubmit}
-                    disabled={isSubmitting}
-                    className="w-2/3 bg-gradient-to-r from-rose-600 via-orange-500 to-amber-500 hover:from-rose-500 hover:to-amber-400 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-rose-500/25 transition-all text-sm tracking-tight cursor-pointer active:scale-[0.98] disabled:opacity-50 flex items-center justify-center space-x-2"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin text-white" />
-                        <span>Dispatching...</span>
-                      </>
+                    {isListening ? (
+                      <MicOff className="w-8 h-8" />
                     ) : (
-                      <>
-                        <span>Submit Grievance Report</span>
-                        <ArrowRight className="w-4 h-4 text-white" />
-                      </>
+                      <Mic className="w-8 h-8" />
                     )}
                   </button>
-                </div>
-              </div>
-            )}
 
-          </div>
-
-          {/* Right Live AI Classification Sidebar Card (4 Cols) */}
-          <div className="lg:col-span-4 space-y-5">
-            <div className="bg-[#0d1017]/95 backdrop-blur-2xl border border-rose-500/40 shadow-[0_0_20px_rgba(244,63,94,0.15)] rounded-3xl p-6 relative overflow-hidden space-y-5 sticky top-24">
-              
-              <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
-                <div className="flex items-center space-x-2">
-                  <Sparkles className="w-4 h-4 text-rose-400" />
-                  <h3 className="text-xs font-bold text-white uppercase tracking-wider">
-                    Live AI Routing Preview
-                  </h3>
-                </div>
-                <span className="text-[10px] font-mono text-rose-400 bg-rose-950/80 px-2.5 py-1 rounded-md border border-rose-800/80 font-bold">
-                  Active
-                </span>
-              </div>
-
-              {/* Dynamic Category Badge */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-slate-400">Predicted Category:</span>
-                  <CategoryBadge category={livePrediction.category} size="md" />
-                </div>
-
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-slate-400">Target Priority SLA:</span>
-                  <UrgencyBadge urgency={livePrediction.urgency} size="md" />
-                </div>
-
-                <div className="p-3.5 rounded-xl bg-black border border-zinc-800 text-xs space-y-1">
-                  <span className="text-slate-400 block font-medium">Assigned Authority:</span>
-                  <span className="text-white font-bold block">{livePrediction.department}</span>
+                  <div className="text-center">
+                    <p className="text-xs font-bold text-white">
+                      {isListening ? `Recording... (${formatTimer(recordingSeconds)})` : 'Click microphone to speak your complaint'}
+                    </p>
+                    <p className="text-[11px] text-slate-400 mt-0.5">
+                      {isListening ? 'Speak clearly in your chosen language' : 'Automatic speech-to-text translation engine'}
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              {/* Citizen Help Tip Box */}
-              <div className="pt-2 border-t border-zinc-800 space-y-2 text-xs text-slate-400">
-                <div className="flex items-center space-x-2 text-slate-300 font-semibold">
-                  <ShieldCheck className="w-4 h-4 text-rose-400" />
-                  <span>Transparent Citizen Redressal</span>
+              {/* Text Area Description Input */}
+              <div className="space-y-2 relative">
+                <div className="flex items-center justify-between">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-300">
+                    Or Type Full Description <span className="text-rose-500">*</span>
+                  </label>
+                  <span className="text-[11px] font-mono text-slate-400">
+                    {description.length} characters
+                  </span>
                 </div>
-                <p className="text-[11px] leading-relaxed">
-                  Upon submission, a unique reference ID (e.g. SUD-XXXXX) will be generated to track live repairs.
-                </p>
+
+                <textarea
+                  rows={5}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Describe the civic issue in detail (e.g. Broken water pipe overflowing near main market gate)..."
+                  className="w-full p-4 bg-black/90 text-white border border-zinc-800 rounded-xl font-sans text-xs sm:text-sm focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 transition-all placeholder-slate-600 shadow-inner"
+                />
+
+                {description && (
+                  <div className="flex items-center justify-end space-x-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={handleCopyText}
+                      className="px-3 py-1.5 bg-zinc-950 hover:bg-zinc-900 border border-zinc-800 rounded-xl text-xs font-semibold text-slate-300 hover:text-white flex items-center space-x-1 transition-colors"
+                    >
+                      {copied ? <Check className="w-3.5 h-3.5 text-rose-400" /> : <Copy className="w-3.5 h-3.5" />}
+                      <span>{copied ? 'Copied' : 'Copy'}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleClearText}
+                      className="px-3 py-1.5 bg-zinc-950 hover:bg-zinc-900 border border-zinc-800 rounded-xl text-xs font-semibold text-slate-300 hover:text-rose-400 flex items-center space-x-1 transition-colors"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Clear</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Continue Step 1 Button */}
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!description.trim()) {
+                      setErrorMessage('Please describe the issue before proceeding.');
+                      return;
+                    }
+                    setErrorMessage('');
+                    setStep(2);
+                  }}
+                  className="w-full py-4 rounded-xl bg-gradient-to-r from-rose-600 via-orange-500 to-amber-500 hover:from-rose-500 hover:to-amber-400 text-white font-bold text-sm tracking-tight shadow-lg shadow-rose-500/25 transition-all flex items-center justify-center space-x-2 cursor-pointer active:scale-[0.98]"
+                >
+                  <span>Proceed to Photo Evidence</span>
+                  <ArrowRight className="w-4 h-4 text-white" />
+                </button>
               </div>
 
             </div>
-          </div>
+          )}
+
+          {/* STEP 2: PHOTO ATTACHMENT */}
+          {step === 2 && (
+            <div className="space-y-6">
+              <div className="space-y-3">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300">
+                  Attach Photo Evidence (Optional)
+                </label>
+                
+                {/* Photo Drop Zone */}
+                <div 
+                  onClick={() => fileInputRef.current?.click()}
+                  className="border-2 border-dashed border-zinc-700 hover:border-rose-500/60 bg-zinc-950/60 p-8 rounded-2xl text-center space-y-3 cursor-pointer transition-all hover:bg-zinc-950/80 group"
+                >
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileUpload}
+                    accept="image/*"
+                    className="hidden"
+                  />
+                  
+                  {photoPreview ? (
+                    <div className="space-y-3">
+                      <img
+                        src={photoPreview}
+                        alt="Uploaded evidence"
+                        className="w-full max-h-56 object-cover rounded-xl border border-zinc-800 shadow-md mx-auto"
+                      />
+                      <p className="text-xs text-rose-400 font-semibold flex items-center justify-center space-x-1">
+                        <Check className="w-4 h-4" />
+                        <span>Photo attached successfully. Click to replace photo.</span>
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800 text-slate-400 group-hover:text-white flex items-center justify-center mx-auto transition-colors">
+                        <Upload className="w-6 h-6 text-rose-400" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-white">Click or drag photo evidence here</p>
+                        <p className="text-[11px] text-slate-400 mt-0.5">JPG, PNG or WEBP (Max 5MB)</p>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setStep(1)}
+                  className="w-1/3 bg-zinc-900 hover:bg-zinc-800 text-slate-300 font-semibold py-3.5 rounded-xl border border-zinc-700 text-xs tracking-tight cursor-pointer"
+                >
+                  Back
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setStep(3)}
+                  className="w-2/3 bg-gradient-to-r from-rose-600 via-orange-500 to-amber-500 hover:from-rose-500 hover:to-amber-400 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-rose-500/25 transition-all text-sm tracking-tight cursor-pointer active:scale-[0.98]"
+                >
+                  Proceed to Location →
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* STEP 3: LOCATION & SUBMIT */}
+          {step === 3 && (
+            <div className="space-y-6">
+              <div className="space-y-3">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300">
+                  Specify Grievance Location Address <span className="text-rose-500">*</span>
+                </label>
+
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <MapPin className="w-4 h-4 text-rose-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
+                      placeholder="Type location address or click GPS Auto-Detect..."
+                      className="w-full pl-10 pr-4 py-3.5 bg-black/90 text-white placeholder-slate-500 text-xs sm:text-sm rounded-xl border border-zinc-800 focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 font-medium transition-all"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleDetectLocation}
+                    disabled={isLocating}
+                    className="px-4 py-3.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-rose-400 text-xs font-semibold flex items-center space-x-1.5 transition-colors cursor-pointer shrink-0 disabled:opacity-50"
+                  >
+                    {isLocating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Crosshair className="w-3.5 h-3.5" />}
+                    <span className="hidden sm:inline">{isLocating ? 'Locating...' : 'GPS Auto-Detect'}</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Terms Notice */}
+              <p className="text-[11px] text-slate-400 text-center leading-relaxed">
+                By submitting this report, you certify that the grievance information is accurate and genuine for municipal resolution.
+              </p>
+
+              <div className="flex items-center space-x-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setStep(2)}
+                  disabled={isSubmitting}
+                  className="w-1/3 bg-zinc-900 hover:bg-zinc-800 text-slate-300 font-semibold py-3.5 rounded-xl border border-zinc-700 text-xs tracking-tight cursor-pointer disabled:opacity-50"
+                >
+                  Back
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSubmit}
+                  disabled={isSubmitting}
+                  className="w-2/3 bg-gradient-to-r from-rose-600 via-orange-500 to-amber-500 hover:from-rose-500 hover:to-amber-400 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-rose-500/25 transition-all text-sm tracking-tight cursor-pointer active:scale-[0.98] disabled:opacity-50 flex items-center justify-center space-x-2"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin text-white" />
+                      <span>Dispatching...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Submit Grievance Report</span>
+                      <ArrowRight className="w-4 h-4 text-white" />
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          )}
 
         </div>
 
