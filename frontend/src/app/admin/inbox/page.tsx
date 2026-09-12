@@ -20,8 +20,10 @@ import {
   Building,
   Sparkles,
   ImageOff,
-  Trash2
+  Trash2,
+  Inbox
 } from 'lucide-react';
+import { Dock, DockIcon, DockItem, DockLabel } from '@/components/core/dock';
 
 interface Grievance {
   id: string;
@@ -153,40 +155,59 @@ export default function AdminInboxPage() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* Header Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-black/85 backdrop-blur-2xl border border-zinc-800/90 p-6 sm:p-7 rounded-3xl shadow-xl">
         <div>
-          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-extrabold uppercase tracking-wider mb-2">
+          <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-zinc-900 border border-zinc-800 font-mono text-xs text-amber-400 font-bold mb-2">
             <Building className="w-3.5 h-3.5 text-amber-400" />
             <span>Nodal Officer Dispatch Desk</span>
           </div>
-          <h1 className="text-2xl font-extrabold text-white tracking-tight">Department Grievance Queue</h1>
-          <p className="text-xs text-slate-400 mt-1">Centralized incoming complaints prioritized by AI SLA rules and automated multi-lingual keyword analysis.</p>
+          <h1 className="text-2xl font-extrabold text-white tracking-tight">Department grievance queue</h1>
+          <p className="text-xs sm:text-sm text-slate-300 mt-1">Centralized incoming complaints prioritized by AI SLA rules and automated multi-lingual keyword analysis.</p>
         </div>
 
         <button
           onClick={fetchGrievances}
-          className="px-5 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 text-xs font-extrabold flex items-center space-x-2 self-start sm:self-auto shadow-md transition-all cursor-pointer"
+          className="px-6 py-3 rounded-full bg-white hover:bg-zinc-100 text-zinc-950 text-xs font-semibold tracking-tight flex items-center space-x-2 self-start sm:self-auto shadow-lg transition-all cursor-pointer active:scale-[0.98]"
         >
-          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          <span>Refresh Database Queue</span>
+          <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+          <span>Refresh database queue</span>
         </button>
       </div>
 
-      {/* Officer Department Lock Notice Banner */}
-      {userSession?.role === 'officer' && (
-        <div className="bg-amber-500/10 border border-amber-500/30 p-4 rounded-2xl flex items-center justify-between text-xs text-amber-300 font-bold shadow-md">
-          <div className="flex items-center space-x-2.5">
-            <Building className="w-4 h-4 text-amber-400 shrink-0" />
-            <span>Assigned Department Filter: Displaying grievances routed to <strong>{userSession.category}</strong> ({userSession.department}) only.</span>
-          </div>
-          <span className="px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 text-[10px] uppercase font-extrabold border border-amber-500/40">
-            Officer Department View
-          </span>
-        </div>
-      )}
+
+      {/* Apple-Style Dock Status Toolbar */}
+      <div className="flex items-center justify-start py-4 overflow-visible relative z-20">
+        <Dock className="h-16 bg-black/85 backdrop-blur-2xl border-zinc-800/90 shadow-xl px-4 py-2 gap-3 rounded-full border overflow-visible">
+          {[
+            { id: 'All', label: 'All Complaints', icon: Inbox, color: 'text-zinc-300' },
+            { id: 'Submitted', label: 'Pending Review', icon: Clock, color: 'text-orange-400' },
+            { id: 'In Progress', label: 'In Progress', icon: RefreshCw, color: 'text-sky-400' },
+            { id: 'Resolved', label: 'Resolved', icon: CheckCircle2, color: 'text-emerald-400' }
+          ].map((tab) => {
+            const isSelected = selectedStatus === tab.id;
+            const IconComponent = tab.icon;
+            return (
+              <DockItem
+                key={tab.id}
+                onClick={() => setSelectedStatus(tab.id)}
+                className={
+                  isSelected
+                    ? 'bg-white text-zinc-950 border-white shadow-lg'
+                    : 'bg-zinc-900 border-zinc-800 hover:border-zinc-700'
+                }
+              >
+                <DockLabel position="top">{tab.label}</DockLabel>
+                <DockIcon>
+                  <IconComponent className={`w-5 h-5 ${isSelected ? 'text-zinc-950 font-bold' : tab.color}`} />
+                </DockIcon>
+              </DockItem>
+            );
+          })}
+        </Dock>
+      </div>
 
       {/* Filter Control Bar */}
-      <div className="bg-slate-900 border border-slate-800 p-4 rounded-2xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 shadow-lg">
+      <div className="bg-zinc-900 border border-zinc-800 p-4 rounded-2xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 shadow-lg">
         {/* Search */}
         <div className="relative">
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -195,7 +216,7 @@ export default function AdminInboxPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search Reference ID or keyword..."
-            className="w-full pl-10 pr-4 py-2.5 bg-slate-950 text-white placeholder-slate-500 text-xs rounded-xl border border-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono transition-all"
+            className="w-full pl-10 pr-4 py-2.5 bg-black text-white placeholder-slate-500 text-xs rounded-xl border border-zinc-800 focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono transition-all"
           />
         </div>
 
@@ -205,18 +226,18 @@ export default function AdminInboxPage() {
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
             disabled={userSession?.role === 'officer'}
-            className={`w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 appearance-none font-semibold transition-all ${
+            className={`w-full px-3.5 py-2.5 text-xs rounded-xl border border-zinc-800 focus:outline-none focus:ring-2 focus:ring-amber-500 appearance-none font-semibold transition-all ${
               userSession?.role === 'officer' 
-                ? 'bg-slate-950/90 text-amber-300 cursor-not-allowed opacity-90' 
-                : 'bg-slate-950 text-white cursor-pointer'
+                ? 'bg-black/90 text-amber-300 cursor-not-allowed opacity-90' 
+                : 'bg-black text-white cursor-pointer'
             }`}
           >
-            <option value="All" className="bg-slate-900 text-slate-300">All Department Categories</option>
-            <option value="Roads" className="bg-slate-900 text-white">Public Works (Roads)</option>
-            <option value="Water" className="bg-slate-900 text-white">Jal Board (Water)</option>
-            <option value="Sanitation" className="bg-slate-900 text-white">Sanitation & Waste</option>
-            <option value="Electricity" className="bg-slate-900 text-white">Electricity & Power</option>
-            <option value="Public Safety" className="bg-slate-900 text-white">Public Safety</option>
+            <option value="All" className="bg-zinc-900 text-slate-300">All Department Categories</option>
+            <option value="Roads" className="bg-zinc-900 text-white">Public Works (Roads)</option>
+            <option value="Water" className="bg-zinc-900 text-white">Jal Board (Water)</option>
+            <option value="Sanitation" className="bg-zinc-900 text-white">Sanitation & Waste</option>
+            <option value="Electricity" className="bg-zinc-900 text-white">Electricity & Power</option>
+            <option value="Public Safety" className="bg-zinc-900 text-white">Public Safety</option>
           </select>
           <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
         </div>
@@ -226,12 +247,12 @@ export default function AdminInboxPage() {
           <select
             value={selectedUrgency}
             onChange={(e) => setSelectedUrgency(e.target.value)}
-            className="w-full px-3.5 py-2.5 bg-slate-950 text-white text-xs rounded-xl border border-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 appearance-none font-medium transition-all cursor-pointer"
+            className="w-full px-3.5 py-2.5 bg-black text-white text-xs rounded-xl border border-zinc-800 focus:outline-none focus:ring-2 focus:ring-amber-500 appearance-none font-medium transition-all cursor-pointer"
           >
-            <option value="All" className="bg-slate-900 text-slate-300">All Priority Levels</option>
-            <option value="High" className="bg-slate-900 text-white">High Priority SLA</option>
-            <option value="Medium" className="bg-slate-900 text-white">Medium Priority SLA</option>
-            <option value="Low" className="bg-slate-900 text-white">Low Priority SLA</option>
+            <option value="All" className="bg-zinc-900 text-slate-300">All Priority Levels</option>
+            <option value="High" className="bg-zinc-900 text-white">High Priority SLA</option>
+            <option value="Medium" className="bg-zinc-900 text-white">Medium Priority SLA</option>
+            <option value="Low" className="bg-zinc-900 text-white">Low Priority SLA</option>
           </select>
           <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
         </div>
@@ -241,24 +262,24 @@ export default function AdminInboxPage() {
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="w-full px-3.5 py-2.5 bg-slate-950 text-white text-xs rounded-xl border border-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 appearance-none font-medium transition-all cursor-pointer"
+            className="w-full px-3.5 py-2.5 bg-black text-white text-xs rounded-xl border border-zinc-800 focus:outline-none focus:ring-2 focus:ring-amber-500 appearance-none font-medium transition-all cursor-pointer"
           >
-            <option value="All" className="bg-slate-900 text-slate-300">All Status Flags</option>
-            <option value="Submitted" className="bg-slate-900 text-white">Submitted (Pending Review)</option>
-            <option value="Classified" className="bg-slate-900 text-white">AI Classified</option>
-            <option value="In Progress" className="bg-slate-900 text-white">Field Work In Progress</option>
-            <option value="Resolved" className="bg-slate-900 text-white">Resolved & Verified</option>
+            <option value="All" className="bg-zinc-900 text-slate-300">All Status Flags</option>
+            <option value="Submitted" className="bg-zinc-900 text-white">Submitted (Pending Review)</option>
+            <option value="Classified" className="bg-zinc-900 text-white">AI Classified</option>
+            <option value="In Progress" className="bg-zinc-900 text-white">Field Work In Progress</option>
+            <option value="Resolved" className="bg-zinc-900 text-white">Resolved & Verified</option>
           </select>
           <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
         </div>
       </div>
 
       {/* Data Table */}
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-xl">
+      <div className="bg-zinc-900 border border-zinc-800 rounded-3xl overflow-hidden shadow-xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-950 text-[11px] font-extrabold text-amber-400 uppercase tracking-widest border-b border-slate-800">
+              <tr className="bg-black text-[11px] font-extrabold text-amber-400 uppercase tracking-widest border-b border-zinc-800">
                 <th className="py-4 px-5">Reference ID</th>
                 <th className="py-4 px-5">Grievance Summary</th>
                 <th className="py-4 px-5">Priority SLA</th>
@@ -268,18 +289,35 @@ export default function AdminInboxPage() {
                 <th className="py-4 px-5 text-right">Officer Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/80 text-xs">
+            <tbody className="divide-y divide-zinc-800/80 text-xs">
               {loading ? (
-                <tr>
-                  <td colSpan={7} className="py-16 text-center text-slate-400 font-medium">
-                    <RefreshCw className="w-7 h-7 animate-spin mx-auto text-amber-400 mb-3" />
-                    Connecting to municipal database queue...
-                  </td>
-                </tr>
+                Array.from({ length: 5 }).map((_, i) => (
+                  <tr key={i} className="animate-pulse">
+                    <td className="py-4 px-5"><div className="h-4 bg-zinc-800 rounded w-20" /></td>
+                    <td className="py-4 px-5"><div className="h-4 bg-zinc-800 rounded w-48 mb-1.5" /><div className="h-3 bg-zinc-800/60 rounded w-32" /></td>
+                    <td className="py-4 px-5"><div className="h-6 bg-zinc-800 rounded-md w-24" /></td>
+                    <td className="py-4 px-5"><div className="h-6 bg-zinc-800 rounded-md w-24" /></td>
+                    <td className="py-4 px-5"><div className="h-4 bg-zinc-800 rounded w-36" /></td>
+                    <td className="py-4 px-5"><div className="h-6 bg-zinc-800 rounded-full w-24" /></td>
+                    <td className="py-4 px-5"><div className="h-8 bg-zinc-800 rounded-lg w-28 ml-auto" /></td>
+                  </tr>
+                ))
               ) : displayedGrievances.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-16 text-center text-slate-400 font-medium">
-                    No grievance records match current filter parameters.
+                  <td colSpan={7} className="py-16 text-center space-y-3">
+                    <p className="text-sm font-semibold text-slate-200">No matching grievances found</p>
+                    <p className="text-xs text-slate-400 max-w-sm mx-auto">No pending complaints match your active department, status, or search filters.</p>
+                    <button
+                      onClick={() => {
+                        setSearch('');
+                        setSelectedCategory('All');
+                        setSelectedUrgency('All');
+                        setSelectedStatus('All');
+                      }}
+                      className="mt-2 px-4 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-amber-400 border border-zinc-700 text-xs font-semibold inline-flex items-center space-x-1.5 transition-all cursor-pointer"
+                    >
+                      <span>Clear all filters</span>
+                    </button>
                   </td>
                 </tr>
               ) : (
@@ -287,13 +325,13 @@ export default function AdminInboxPage() {
                   <tr
                     key={item.id}
                     onClick={() => setSelectedTicket(item)}
-                    className="hover:bg-slate-850/60 cursor-pointer transition-colors"
+                    className="hover:bg-zinc-800/60 cursor-pointer transition-colors"
                   >
-                    <td className="py-4 px-5 font-mono font-extrabold text-amber-400 whitespace-nowrap">
+                    <td className="py-4 px-5 font-mono font-semibold text-amber-400 whitespace-nowrap">
                       {item.id}
                     </td>
                     <td className="py-4 px-5 max-w-xs">
-                      <p className="font-bold text-white truncate">{item.title}</p>
+                      <p className="font-semibold text-white truncate">{item.title}</p>
                       <p className="text-[11px] text-slate-400 truncate mt-0.5">{item.location}</p>
                     </td>
                     <td className="py-4 px-5 whitespace-nowrap">
@@ -306,12 +344,12 @@ export default function AdminInboxPage() {
                       {item.department}
                     </td>
                     <td className="py-4 px-5 whitespace-nowrap">
-                      <span className={`px-2.5 py-1 text-[11px] font-bold rounded-full border ${
+                      <span className={`text-xs font-semibold ${
                         item.status === 'Resolved'
-                          ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+                          ? 'text-emerald-400'
                           : item.status === 'In Progress'
-                          ? 'bg-blue-500/20 text-blue-300 border-blue-500/30'
-                          : 'bg-amber-500/20 text-amber-300 border-amber-500/30'
+                          ? 'text-sky-400'
+                          : 'text-amber-400'
                       }`}>
                         {item.status}
                       </span>
@@ -322,10 +360,10 @@ export default function AdminInboxPage() {
                           e.stopPropagation();
                           setSelectedTicket(item);
                         }}
-                        className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold text-xs flex items-center space-x-1.5 ml-auto transition-all"
+                        className="px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white font-semibold text-xs flex items-center space-x-1.5 ml-auto transition-all"
                       >
                         <Eye className="w-3.5 h-3.5 text-amber-400" />
-                        <span>Inspect Ticket</span>
+                        <span>Inspect ticket</span>
                       </button>
                     </td>
                   </tr>
@@ -334,17 +372,29 @@ export default function AdminInboxPage() {
             </tbody>
           </table>
         </div>
+
+        {/* Table Footer & Pagination Bar */}
+        <div className="p-4 bg-black border-t border-zinc-800 flex items-center justify-between text-xs text-slate-400 font-medium">
+          <span>
+            Showing <strong className="text-white">{displayedGrievances.length}</strong> grievance record{displayedGrievances.length !== 1 ? 's' : ''}
+          </span>
+          <div className="flex items-center space-x-2">
+            <span className="px-2.5 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-slate-300">
+              Page 1 of 1
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Ticket Detail Modal */}
       {selectedTicket && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-          <div className="bg-slate-900 border border-slate-800 max-w-2xl w-full rounded-3xl p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto text-white shadow-2xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+          <div className="bg-zinc-900 border border-zinc-800 max-w-2xl w-full rounded-3xl p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto text-white shadow-2xl relative">
             
             {/* Close Button */}
             <button
               onClick={() => setSelectedTicket(null)}
-              className="absolute top-6 right-6 p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
+              className="absolute top-6 right-6 p-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-slate-400 hover:text-white transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -376,7 +426,7 @@ export default function AdminInboxPage() {
                 </div>
               )}
 
-              <p className="text-xs text-slate-200 bg-slate-950 p-4 rounded-2xl border border-slate-800 leading-relaxed whitespace-pre-line">
+              <p className="text-xs text-slate-200 bg-black p-4 rounded-2xl border border-zinc-800 leading-relaxed whitespace-pre-line">
                 {selectedTicket.description}
               </p>
 
@@ -386,10 +436,10 @@ export default function AdminInboxPage() {
                   <img
                     src={selectedTicket.photo_url}
                     alt="Citizen evidence"
-                    className="w-full max-h-56 object-cover rounded-2xl border border-slate-800 shadow-md"
+                    className="w-full max-h-56 object-cover rounded-2xl border border-zinc-800 shadow-md"
                   />
                 ) : (
-                  <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 text-slate-400 text-xs font-medium flex items-center space-x-2.5">
+                  <div className="p-4 rounded-2xl bg-black/80 border border-zinc-800 text-slate-400 text-xs font-medium flex items-center space-x-2.5">
                     <ImageOff className="w-5 h-5 text-slate-500 shrink-0" />
                     <span>No photo evidence uploaded by citizen</span>
                   </div>
@@ -398,7 +448,7 @@ export default function AdminInboxPage() {
             </div>
 
             {/* Status Update Control */}
-            <div className="pt-4 border-t border-slate-800 space-y-3">
+            <div className="pt-4 border-t border-zinc-800 space-y-3">
               <label className="block text-xs font-bold text-white uppercase tracking-wider">
                 Update Official Grievance Workflow Status
               </label>
@@ -407,7 +457,7 @@ export default function AdminInboxPage() {
                   value={selectedTicket.status}
                   onChange={(e) => handleUpdateStatus(e.target.value)}
                   disabled={updatingStatus}
-                  className="flex-1 px-4 py-3 bg-slate-950 text-white text-xs font-bold rounded-xl border border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer"
+                  className="flex-1 px-4 py-3 bg-black text-white text-xs font-bold rounded-xl border border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer"
                 >
                   <option value="Submitted">Submitted (Pending Review)</option>
                   <option value="Classified">Classified (AI Assigned)</option>

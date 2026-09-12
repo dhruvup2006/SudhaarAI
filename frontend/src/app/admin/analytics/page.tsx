@@ -52,28 +52,28 @@ export default function AnalyticsPage() {
   return (
     <div className="space-y-8 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-black/85 backdrop-blur-2xl border border-zinc-800/90 p-6 sm:p-7 rounded-3xl shadow-xl">
         <div>
-          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-extrabold uppercase tracking-wider mb-2">
+          <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-zinc-900 border border-zinc-800 font-mono text-xs text-amber-400 font-bold mb-2">
             <Building className="w-3.5 h-3.5 text-amber-400" />
             <span>State Municipal Analytics Console</span>
           </div>
-          <h1 className="text-2xl font-extrabold text-white tracking-tight">Municipal Grievance Intelligence</h1>
-          <p className="text-xs text-slate-400 mt-1">Real-time performance metrics, category distribution, and SLA resolution turnaround rates.</p>
+          <h1 className="text-2xl font-extrabold text-white tracking-tight">Municipal grievance intelligence</h1>
+          <p className="text-xs sm:text-sm text-slate-300 mt-1">Real-time performance metrics, category distribution, and SLA resolution turnaround rates.</p>
         </div>
 
         <button
           onClick={fetchAnalytics}
-          className="px-5 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 text-xs font-extrabold flex items-center space-x-2 self-start sm:self-auto shadow-md transition-all cursor-pointer"
+          className="bg-white hover:bg-zinc-100 text-zinc-950 px-6 py-3 rounded-full text-xs font-semibold tracking-tight flex items-center space-x-2 self-start sm:self-auto shadow-lg transition-all cursor-pointer active:scale-[0.98]"
         >
-          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          <span>Refresh Analytics</span>
+          <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+          <span>Refresh analytics</span>
         </button>
       </div>
 
       {/* Top 4 Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-3 shadow-xl relative overflow-hidden">
+        <div className="bg-black/85 backdrop-blur-2xl border border-zinc-800/90 hover:border-amber-500/40 rounded-3xl p-6 space-y-3 shadow-xl transition-all">
           <div className="flex items-center justify-between text-slate-400 text-xs font-extrabold uppercase tracking-wider">
             <span>Total Grievances</span>
             <BarChart3 className="w-4 h-4 text-amber-400" />
@@ -82,7 +82,7 @@ export default function AnalyticsPage() {
           <p className="text-[11px] text-slate-400 font-semibold">Registered in Database</p>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-3 shadow-xl relative overflow-hidden">
+        <div className="bg-black/85 backdrop-blur-2xl border border-zinc-800/90 hover:border-emerald-500/40 rounded-3xl p-6 space-y-3 shadow-xl transition-all">
           <div className="flex items-center justify-between text-slate-400 text-xs font-extrabold uppercase tracking-wider">
             <span>Resolution SLA Rate</span>
             <TrendingUp className="w-4 h-4 text-emerald-400" />
@@ -91,7 +91,7 @@ export default function AnalyticsPage() {
           <p className="text-[11px] text-emerald-300 font-bold">Standard Target &gt; 80%</p>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-3 shadow-xl relative overflow-hidden">
+        <div className="bg-black/85 backdrop-blur-2xl border border-zinc-800/90 hover:border-blue-500/40 rounded-3xl p-6 space-y-3 shadow-xl transition-all">
           <div className="flex items-center justify-between text-slate-400 text-xs font-extrabold uppercase tracking-wider">
             <span>Active Field Tasks</span>
             <Clock className="w-4 h-4 text-blue-400" />
@@ -100,7 +100,7 @@ export default function AnalyticsPage() {
           <p className="text-[11px] text-slate-400 font-semibold">Work Orders Dispatched</p>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-3 shadow-xl relative overflow-hidden">
+        <div className="bg-black/85 backdrop-blur-2xl border border-zinc-800/90 hover:border-red-500/40 rounded-3xl p-6 space-y-3 shadow-xl transition-all">
           <div className="flex items-center justify-between text-slate-400 text-xs font-extrabold uppercase tracking-wider">
             <span>Critical Priority</span>
             <AlertTriangle className="w-4 h-4 text-red-400" />
@@ -113,8 +113,8 @@ export default function AnalyticsPage() {
       {/* Visual Progress Breakdown Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Category Distribution */}
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-7 space-y-5 shadow-xl">
-          <h3 className="text-sm font-extrabold text-white uppercase tracking-wider flex items-center space-x-2 border-b border-slate-800 pb-4">
+        <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-7 space-y-5 shadow-xl">
+          <h3 className="text-sm font-extrabold text-white uppercase tracking-wider flex items-center space-x-2 border-b border-zinc-800 pb-4">
             <Building className="w-4 h-4 text-amber-400" />
             <span>Complaints by Department Category</span>
           </h3>
@@ -125,7 +125,7 @@ export default function AnalyticsPage() {
               const max = data?.total_grievances || 6;
               const percent = Math.round((count / max) * 100);
 
-              let barColor = "bg-slate-700";
+              let barColor = "bg-zinc-700";
               if (cat === 'Water') barColor = "bg-blue-500";
               if (cat === 'Roads') barColor = "bg-amber-500";
               if (cat === 'Sanitation') barColor = "bg-emerald-500";
@@ -138,7 +138,7 @@ export default function AnalyticsPage() {
                     <span className="text-slate-200">{cat} Department</span>
                     <span className="text-slate-400 font-mono">{count} tickets ({percent}%)</span>
                   </div>
-                  <div className="h-3 w-full bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                  <div className="h-3 w-full bg-black rounded-full overflow-hidden border border-zinc-800">
                     <div
                       className={`h-full ${barColor} transition-all duration-500 rounded-full`}
                       style={{ width: `${percent}%` }}
@@ -151,8 +151,8 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Urgency & Status Distribution */}
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-7 space-y-5 shadow-xl">
-          <h3 className="text-sm font-extrabold text-white uppercase tracking-wider flex items-center space-x-2 border-b border-slate-800 pb-4">
+        <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-7 space-y-5 shadow-xl">
+          <h3 className="text-sm font-extrabold text-white uppercase tracking-wider flex items-center space-x-2 border-b border-zinc-800 pb-4">
             <PieChart className="w-4 h-4 text-amber-400" />
             <span>Priority & Workflow Breakdown</span>
           </h3>
@@ -179,7 +179,7 @@ export default function AnalyticsPage() {
             <div>
               <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Workflow Resolution Progress</h4>
               <div className="grid grid-cols-3 gap-3">
-                <div className="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 text-center">
+                <div className="p-3.5 rounded-2xl bg-black border border-zinc-800 text-center">
                   <div className="text-2xl font-extrabold text-white">{data?.by_status?.Classified || 0}</div>
                   <div className="text-[10px] font-bold text-slate-400">Classified</div>
                 </div>

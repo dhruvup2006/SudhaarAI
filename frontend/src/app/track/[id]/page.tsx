@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useEffect, useState, use } from 'react';
+import React, { useEffect, useState, use, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { CategoryBadge } from '@/components/CategoryBadge';
 import { UrgencyBadge } from '@/components/UrgencyBadge';
+import { InteractiveHoverButton } from '@/components/ui/interactive-hover-button';
 import { 
   CheckCircle2, 
   Clock, 
@@ -15,12 +16,9 @@ import {
   Copy, 
   Check, 
   ArrowLeft, 
-  ShieldCheck, 
   AlertCircle,
   RefreshCw,
   Printer,
-  Building,
-  Sparkles,
   Search,
   FileText,
   ImageOff
@@ -55,29 +53,36 @@ export default function TicketTrackPage({ params }: { params: Promise<{ id: stri
   const [copied, setCopied] = useState(false);
   const [searchIdInput, setSearchIdInput] = useState('');
 
-  const fetchTicket = async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const res = await fetch(`http://127.0.0.1:8000/api/grievances/${ticketId}`);
-      if (!res.ok) {
-        if (res.status === 404) {
-          throw new Error(`Grievance record "${ticketId}" was not found in the database.`);
-        }
-        throw new Error('Failed to load ticket details from server.');
-      }
-      const data = await res.json();
-      setTicket(data);
-    } catch (err: any) {
-      console.error(err);
-      setError(err.message || 'Unable to connect to backend.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchTicket();
+    let isMounted = true;
+    fetch(`http://127.0.0.1:8000/api/grievances/${ticketId}`)
+      .then(async (res) => {
+        if (!res.ok) {
+          if (res.status === 404) {
+            throw new Error(`Grievance record "${ticketId}" was not found in the database.`);
+          }
+          throw new Error('Failed to load ticket details from server.');
+        }
+        return res.json();
+      })
+      .then((data) => {
+        if (isMounted) {
+          setTicket(data);
+          setError('');
+          setLoading(false);
+        }
+      })
+      .catch((err: unknown) => {
+        if (isMounted) {
+          console.error(err);
+          const msg = err instanceof Error ? err.message : 'Unable to connect to backend.';
+          setError(msg);
+          setLoading(false);
+        }
+      });
+    return () => {
+      isMounted = false;
+    };
   }, [ticketId]);
 
   const handleCopyId = () => {
@@ -121,76 +126,87 @@ export default function TicketTrackPage({ params }: { params: Promise<{ id: stri
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-amber-500 selection:text-white">
+    <div className="min-h-screen bg-black text-slate-100 flex flex-col selection:bg-amber-500 selection:text-slate-950 relative overflow-hidden">
+      {/* Fixed Background Image - Indian Flag Artwork Preserved */}
+      <div
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat opacity-75 pointer-events-none z-0"
+        style={{ backgroundImage: `url('/login-bg.jpg')` }}
+      />
+      {/* Vignette & Contrast Overlay */}
+      <div className="fixed inset-0 bg-gradient-to-b from-black/90 via-black/80 to-black/95 pointer-events-none z-0" />
+
+      {/* GDG VITC Ambient Glow Spheres */}
+      <div className="fixed top-12 right-12 w-96 h-96 bg-[#4285F4]/15 rounded-full blur-[120px] pointer-events-none z-0" />
+      <div className="fixed bottom-12 left-12 w-96 h-96 bg-[#EA4335]/15 rounded-full blur-[120px] pointer-events-none z-0" />
+
       <Navbar />
 
-      <main className="flex-1 py-10 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full space-y-6">
+      <main className="flex-1 py-10 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full space-y-6 relative z-10">
         
-        {/* Top Search & Track Input Bar */}
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-lg">
-          <form onSubmit={handleSearchSubmit} className="flex flex-col sm:flex-row items-center gap-3">
-            <div className="relative flex-1 w-full">
-              <Search className="w-4 h-4 text-amber-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+        {/* Search Bar Top Strip */}
+        <div className="w-full bg-black/85 backdrop-blur-2xl border border-zinc-800/90 rounded-3xl p-3 shadow-xl no-print">
+          <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
+            <div className="relative flex-1">
+              <Search className="w-4 h-4 text-sky-400 absolute left-4 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 value={searchIdInput}
                 onChange={(e) => setSearchIdInput(e.target.value)}
-                placeholder="Enter Grievance Reference ID (e.g. SUD-19002)..."
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-950 text-white placeholder-slate-500 text-xs rounded-xl border border-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono tracking-wider uppercase"
+                placeholder="Enter reference number (e.g. SUD-19002)..."
+                className="w-full pl-11 pr-4 py-3 bg-zinc-950 text-white border border-zinc-800 rounded-2xl font-mono text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-sky-500 uppercase tracking-wider transition-all placeholder-slate-500"
               />
             </div>
-            <button
+            <InteractiveHoverButton
               type="submit"
-              className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-extrabold text-xs transition-all flex items-center justify-center space-x-1.5 shrink-0 cursor-pointer shadow-md"
-            >
-              <Search className="w-3.5 h-3.5 text-slate-950" />
-              <span>Track Grievance</span>
-            </button>
+              text="Track grievance"
+              variant="primary"
+              className="shrink-0"
+            />
           </form>
         </div>
 
         {/* Navigation & Action Controls Bar */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between no-print">
           <Link
             href="/"
-            className="text-xs font-bold text-slate-300 hover:text-white flex items-center space-x-2 transition-colors"
+            className="px-4 py-2 rounded-full bg-white text-zinc-950 hover:bg-zinc-100 text-xs font-semibold flex items-center space-x-2 transition-all shadow-md active:scale-[0.98]"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Return to Home Portal</span>
+            <span>Return to home portal</span>
           </Link>
 
           <div className="flex items-center space-x-2">
             <button
               onClick={handlePrint}
-              className="text-xs font-bold text-slate-200 hover:text-white flex items-center space-x-1.5 bg-slate-900 px-3.5 py-2 rounded-xl border border-slate-800 shadow-sm transition-colors cursor-pointer"
+              className="px-4 py-2 rounded-full bg-white text-zinc-950 hover:bg-zinc-100 text-xs font-semibold flex items-center space-x-1.5 transition-all shadow-md active:scale-[0.98] cursor-pointer"
             >
               <Printer className="w-3.5 h-3.5" />
-              <span>Print Record</span>
+              <span>Print receipt</span>
             </button>
             <button
-              onClick={fetchTicket}
-              className="text-xs font-bold text-amber-400 hover:text-amber-300 flex items-center space-x-1.5 bg-amber-500/10 px-3.5 py-2 rounded-xl border border-amber-500/30 shadow-sm transition-colors cursor-pointer"
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 rounded-full bg-white text-zinc-950 hover:bg-zinc-100 text-xs font-semibold flex items-center space-x-1.5 transition-all shadow-md active:scale-[0.98] cursor-pointer"
             >
               <RefreshCw className="w-3.5 h-3.5" />
-              <span>Refresh Status</span>
+              <span>Refresh status</span>
             </button>
           </div>
         </div>
 
         {loading ? (
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-12 text-center space-y-4 shadow-xl">
-            <RefreshCw className="w-8 h-8 text-amber-400 animate-spin mx-auto" />
+          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-12 text-center space-y-4 shadow-xl">
+            <RefreshCw className="w-8 h-8 text-sky-400 animate-spin mx-auto" />
             <p className="text-sm font-semibold text-slate-300">Connecting to Municipal Database Server...</p>
           </div>
         ) : error ? (
-          <div className="bg-slate-900 border border-red-500/30 rounded-3xl p-10 text-center space-y-4 shadow-xl">
+          <div className="bg-zinc-900 border border-red-500/30 rounded-3xl p-10 text-center space-y-4 shadow-xl">
             <AlertCircle className="w-12 h-12 text-red-500 mx-auto" />
             <h2 className="text-xl font-bold text-white">Grievance Record Not Found</h2>
             <p className="text-xs text-slate-400 max-w-md mx-auto">{error}</p>
             <div className="pt-2 flex justify-center gap-3">
               <Link
                 href="/report"
-                className="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs inline-block transition-colors shadow-md"
+                className="px-6 py-3 rounded-full bg-white hover:bg-zinc-100 text-zinc-950 font-semibold text-xs inline-block transition-all shadow-md active:scale-[0.98]"
               >
                 Lodge a New Grievance
               </Link>
@@ -199,18 +215,18 @@ export default function TicketTrackPage({ params }: { params: Promise<{ id: stri
         ) : ticket && (
           <div className="space-y-6">
             {/* Header Ticket Card */}
-            <div className="bg-slate-900/90 backdrop-blur-xl rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-2xl relative overflow-hidden">
-              <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-amber-500 via-orange-500 to-emerald-500" />
+            <div className="bg-black/85 backdrop-blur-xl rounded-3xl p-6 sm:p-8 border border-zinc-800 shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-emerald-500 via-sky-500 to-indigo-500" />
               
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-800 pb-5">
                 <div>
                   <div className="flex items-center space-x-3 mb-2">
-                    <span className="font-mono text-xl font-extrabold text-amber-400 bg-amber-500/10 px-3 py-1 rounded-xl border border-amber-500/30">
+                    <span className="font-mono text-xl font-extrabold text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-xl border border-emerald-500/30">
                       {ticket.id}
                     </span>
                     <button
                       onClick={handleCopyId}
-                      className="p-1.5 text-slate-400 hover:text-white rounded-lg bg-slate-800 border border-slate-700 transition-colors"
+                      className="p-1.5 text-slate-400 hover:text-white rounded-lg bg-zinc-800 border border-zinc-700 transition-colors"
                       title="Copy Reference ID"
                     >
                       {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
@@ -226,21 +242,21 @@ export default function TicketTrackPage({ params }: { params: Promise<{ id: stri
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-slate-300 pt-5">
-                <div className="flex items-center space-x-2.5 bg-slate-950/60 p-3 rounded-xl border border-slate-800">
-                  <MapPin className="w-4 h-4 text-amber-400 shrink-0" />
+                <div className="flex items-center space-x-2.5 bg-black/60 p-3 rounded-xl border border-zinc-800">
+                  <MapPin className="w-4 h-4 text-emerald-400 shrink-0" />
                   <span className="font-medium truncate">Location: {ticket.location}</span>
                 </div>
-                <div className="flex items-center space-x-2.5 bg-slate-950/60 p-3 rounded-xl border border-slate-800">
-                  <Building2 className="w-4 h-4 text-amber-400 shrink-0" />
+                <div className="flex items-center space-x-2.5 bg-black/60 p-3 rounded-xl border border-zinc-800">
+                  <Building2 className="w-4 h-4 text-sky-400 shrink-0" />
                   <span className="font-medium truncate">Nodal Authority: {ticket.department}</span>
                 </div>
               </div>
             </div>
 
-            {/* Timeline UI (3 Steps - AI Classified Removed) */}
-            <div className="bg-slate-900/90 backdrop-blur-xl rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-xl space-y-6">
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center space-x-2 border-b border-slate-800 pb-3">
-                <Clock className="w-4 h-4 text-amber-400" />
+            {/* Timeline UI (3 Steps) */}
+            <div className="bg-black/85 backdrop-blur-xl rounded-3xl p-6 sm:p-8 border border-zinc-800 shadow-xl space-y-6">
+              <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center space-x-2 border-b border-zinc-800 pb-3">
+                <Clock className="w-4 h-4 text-emerald-400" />
                 <span>Department Action Timeline</span>
               </h3>
 
@@ -252,19 +268,19 @@ export default function TicketTrackPage({ params }: { params: Promise<{ id: stri
                       <div key={st.key} className="flex items-start space-x-4 relative">
                         {idx < steps.length - 1 && (
                           <div className={`absolute left-4 top-8 bottom-0 w-0.5 ${
-                            statusState === 'completed' ? 'bg-emerald-500' : 'bg-slate-800'
+                            statusState === 'completed' ? 'bg-emerald-500' : 'bg-zinc-800'
                           }`} />
                         )}
 
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs shrink-0 z-10 transition-all ${
                           statusState === 'completed' 
-                            ? 'bg-emerald-500 text-slate-950 shadow-md' 
+                            ? 'bg-emerald-500 text-zinc-950 shadow-md' 
                             : statusState === 'current'
-                            ? 'bg-amber-500 text-slate-950 ring-4 ring-amber-500/20 shadow-lg'
-                            : 'bg-slate-800 text-slate-400 border border-slate-700'
+                            ? 'bg-sky-500 text-zinc-950 ring-4 ring-sky-500/20 shadow-lg'
+                            : 'bg-zinc-800 text-slate-400 border border-zinc-700'
                         }`}>
                           {statusState === 'completed' ? (
-                            <CheckCircle2 className="w-5 h-5 text-slate-950" />
+                            <CheckCircle2 className="w-5 h-5 text-zinc-950" />
                           ) : (
                             <span>{idx + 1}</span>
                           )}
@@ -273,12 +289,12 @@ export default function TicketTrackPage({ params }: { params: Promise<{ id: stri
                         <div className="pt-0.5">
                           <div className="flex items-center space-x-2.5">
                             <h4 className={`text-sm font-bold ${
-                              statusState === 'current' ? 'text-amber-400' : statusState === 'completed' ? 'text-white' : 'text-slate-400'
+                              statusState === 'current' ? 'text-sky-400' : statusState === 'completed' ? 'text-white' : 'text-slate-400'
                             }`}>
                               {st.title}
                             </h4>
                             {statusState === 'current' && (
-                              <span className="px-2 py-0.5 text-[10px] font-extrabold bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-full uppercase tracking-wider">
+                              <span className="px-2 py-0.5 text-[10px] font-extrabold bg-sky-500/20 text-sky-300 border border-sky-500/40 rounded-full uppercase tracking-wider">
                                 Current Status
                               </span>
                             )}
@@ -293,23 +309,23 @@ export default function TicketTrackPage({ params }: { params: Promise<{ id: stri
             </div>
 
             {/* Citizen Statement & Visual Evidence */}
-            <div className="bg-slate-900/90 backdrop-blur-xl rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-xl space-y-4">
-              <h3 className="text-xs font-bold text-white uppercase tracking-wider border-b border-slate-800 pb-2.5 flex items-center space-x-2">
-                <FileText className="w-4 h-4 text-amber-400" />
+            <div className="bg-black/85 backdrop-blur-xl rounded-3xl p-6 sm:p-8 border border-zinc-800 shadow-xl space-y-4">
+              <h3 className="text-xs font-bold text-white uppercase tracking-wider border-b border-zinc-800 pb-2.5 flex items-center space-x-2">
+                <FileText className="w-4 h-4 text-emerald-400" />
                 <span>Citizen Statement & Photo Evidence</span>
               </h3>
 
               {/* Show Original Regional Text if translated */}
               {ticket.original_text && ticket.original_text !== ticket.description && (
-                <div className="bg-amber-500/10 border border-amber-500/30 p-3.5 rounded-xl text-xs space-y-1">
-                  <span className="font-bold text-amber-300 block">Original Spoken / Typed Text ({ticket.detected_language || 'regional'}):</span>
-                  <p className="text-amber-100 font-medium">{ticket.original_text}</p>
+                <div className="bg-emerald-500/10 border border-emerald-500/30 p-3.5 rounded-xl text-xs space-y-1">
+                  <span className="font-bold text-emerald-300 block">Original Spoken / Typed Text ({ticket.detected_language || 'regional'}):</span>
+                  <p className="text-emerald-100 font-medium">{ticket.original_text}</p>
                 </div>
               )}
 
               <div>
                 <span className="text-[11px] text-slate-400 font-semibold block mb-1">Translated Description (English):</span>
-                <p className="text-xs text-slate-200 leading-relaxed whitespace-pre-line bg-slate-950 p-4 rounded-xl border border-slate-800 font-medium">
+                <p className="text-xs text-slate-200 leading-relaxed whitespace-pre-line bg-black p-4 rounded-xl border border-zinc-800 font-medium">
                   {ticket.description}
                 </p>
               </div>
@@ -320,10 +336,10 @@ export default function TicketTrackPage({ params }: { params: Promise<{ id: stri
                   <img
                     src={ticket.photo_url}
                     alt="Ticket Evidence"
-                    className="w-full max-h-80 object-cover rounded-xl border border-slate-800 shadow-md"
+                    className="w-full max-h-80 object-cover rounded-xl border border-zinc-800 shadow-md"
                   />
                 ) : (
-                  <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 text-slate-400 text-xs font-medium flex items-center space-x-2.5">
+                  <div className="p-4 rounded-xl bg-black/80 border border-zinc-800 text-slate-400 text-xs font-medium flex items-center space-x-2.5">
                     <ImageOff className="w-5 h-5 text-slate-500 shrink-0" />
                     <span>No photo evidence was attached by citizen.</span>
                   </div>

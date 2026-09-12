@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Settings, Shield, Sliders, Save, Check, Sparkles, Cpu, Zap, Activity } from 'lucide-react';
+import { Save, Check, Sparkles, Cpu, Zap, Activity } from 'lucide-react';
+import { InteractiveHoverButton } from '@/components/ui/interactive-hover-button';
 
 export default function SettingsPage() {
   const [confidenceThreshold, setConfidenceThreshold] = useState(75);
@@ -17,49 +18,49 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-black/85 backdrop-blur-2xl border border-zinc-800/90 p-6 sm:p-7 rounded-3xl shadow-xl">
         <div>
-          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-extrabold uppercase tracking-wider mb-2">
+          <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-zinc-950 border border-zinc-800 font-mono text-xs text-amber-400 font-bold mb-2">
             <Sparkles className="w-3.5 h-3.5 text-amber-400" />
             <span>Direct AI Semantic Triage</span>
           </div>
-          <h1 className="text-2xl font-extrabold text-white tracking-tight">AI Department Routing & SLA Rules</h1>
-          <p className="text-xs text-slate-400 mt-1">Direct natural language understanding engine. Analyzes grievances contextually without relying on static keyword lists.</p>
+          <h1 className="text-2xl font-extrabold text-white tracking-tight">AI department routing & SLA rules</h1>
+          <p className="text-xs sm:text-sm text-slate-300 mt-1">Direct natural language understanding engine. Analyzes grievances contextually without relying on static keyword lists.</p>
         </div>
       </div>
 
-      <form onSubmit={handleSave} className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6 shadow-xl relative overflow-hidden">
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 to-orange-500" />
+      <form onSubmit={handleSave} className="bg-black/85 backdrop-blur-2xl border border-zinc-800/90 rounded-3xl p-6 sm:p-8 space-y-6 shadow-xl relative overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#4285F4] via-[#EA4335] via-[#FBBC04] to-[#34A853]" />
 
         {/* AI Engine Status Header */}
-        <div className="p-4 bg-slate-950/80 border border-amber-500/20 rounded-2xl flex items-center justify-between">
+        <div className="p-4 bg-zinc-950/80 border border-amber-500/20 rounded-2xl flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
               <Cpu className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <span className="text-sm font-bold text-white">Direct AI Contextual Triage</span>
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
+                <span className="text-sm font-semibold text-white">Direct AI Contextual Triage</span>
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
                   <Activity className="w-3 h-3 mr-1 animate-pulse" /> Active
                 </span>
               </div>
               <p className="text-xs text-slate-400 mt-0.5">Automated zero-shot semantic intent evaluation & situational urgency routing</p>
             </div>
           </div>
-          <span className="hidden sm:inline-flex text-[11px] font-mono font-semibold px-3 py-1 bg-slate-900 border border-slate-800 text-slate-300 rounded-lg">
+          <span className="hidden sm:inline-flex text-[11px] font-mono font-medium px-3 py-1 bg-zinc-950 border border-zinc-800 text-slate-300 rounded-lg">
             No Manual Keywords Needed
           </span>
         </div>
 
         {/* Threshold Slider */}
-        <div className="space-y-4 border-b border-slate-800 pb-6">
+        <div className="space-y-4 border-b border-zinc-800 pb-6">
           <div className="flex items-center justify-between">
             <div>
-              <label className="text-sm font-bold text-white uppercase tracking-wider">Minimum AI Confidence Score</label>
+              <label className="text-sm font-semibold text-white">Minimum AI confidence score</label>
               <p className="text-xs text-slate-400 mt-1">Grievances scoring below this threshold default to manual officer triage queue.</p>
             </div>
-            <span className="px-3.5 py-1.5 bg-amber-500/10 text-amber-400 font-mono font-extrabold text-xs rounded-xl border border-amber-500/30">
+            <span className="px-3.5 py-1.5 bg-amber-500/10 text-amber-400 font-mono font-bold text-xs rounded-xl border border-amber-500/30">
               {confidenceThreshold}%
             </span>
           </div>
@@ -70,14 +71,14 @@ export default function SettingsPage() {
             max={95}
             value={confidenceThreshold}
             onChange={(e) => setConfidenceThreshold(Number(e.target.value))}
-            className="w-full h-2.5 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-amber-500 border border-slate-800"
+            className="w-full h-2.5 bg-zinc-950 rounded-lg appearance-none cursor-pointer accent-amber-500 border border-zinc-800"
           />
         </div>
 
         {/* Urgency Sensitivity Mode */}
-        <div className="space-y-4 border-b border-slate-800 pb-6">
+        <div className="space-y-4 border-b border-zinc-800 pb-6">
           <div>
-            <label className="text-sm font-bold text-white uppercase tracking-wider">Direct AI Hazard & Urgency Sensitivity</label>
+            <label className="text-sm font-semibold text-white">Direct AI hazard & urgency sensitivity</label>
             <p className="text-xs text-slate-400 mt-1">Controls how aggressively the AI evaluates situational safety risks and structural hazards.</p>
           </div>
 
@@ -94,7 +95,7 @@ export default function SettingsPage() {
                 className={`p-3.5 text-left rounded-2xl border transition-all cursor-pointer ${
                   urgencyMode === mode.id
                     ? 'bg-amber-500/10 border-amber-500/50 text-white shadow-md'
-                    : 'bg-slate-950 text-slate-400 border-slate-800 hover:border-slate-700'
+                    : 'bg-zinc-950 text-slate-400 border-zinc-800 hover:border-zinc-700'
                 }`}
               >
                 <div className="flex items-center justify-between">
@@ -110,7 +111,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Auto Escalation Timer */}
-        <div className="space-y-4 border-b border-slate-800 pb-6">
+        <div className="space-y-4 border-b border-zinc-800 pb-6">
           <div>
             <label className="text-sm font-bold text-white uppercase tracking-wider">High Priority Auto-Escalation SLA (Hours)</label>
             <p className="text-xs text-slate-400 mt-1">Hours before unattended high-urgency complaints trigger SMS alerts to ward nodal supervisors.</p>
@@ -122,10 +123,10 @@ export default function SettingsPage() {
                 key={hours}
                 type="button"
                 onClick={() => setAutoEscalateHours(hours)}
-                className={`px-4 py-2.5 rounded-xl text-xs font-extrabold border transition-all cursor-pointer ${
+                className={`px-4 py-2.5 rounded-full text-xs font-extrabold border transition-all cursor-pointer ${
                   autoEscalateHours === hours 
-                    ? 'bg-amber-500 text-slate-950 border-amber-400 shadow-md' 
-                    : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
+                    ? 'bg-amber-500 text-slate-950 border-amber-400 shadow-md scale-105' 
+                    : 'bg-zinc-950 text-slate-300 border-zinc-800 hover:border-zinc-700'
                 }`}
               >
                 {hours} Hours SLA
@@ -143,13 +144,11 @@ export default function SettingsPage() {
             </span>
           )}
 
-          <button
+          <InteractiveHoverButton
             type="submit"
-            className="px-7 py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-extrabold text-xs transition-all flex items-center space-x-2 shadow-md cursor-pointer ml-auto"
-          >
-            <Save className="w-4 h-4 text-slate-950" />
-            <span>Save AI Engine Settings</span>
-          </button>
+            text="Save AI engine settings"
+            className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold ml-auto"
+          />
         </div>
       </form>
     </div>

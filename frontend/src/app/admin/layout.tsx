@@ -11,8 +11,6 @@ import {
   Menu,
   X,
   Building,
-  Shield,
-  UserCheck,
   Building2,
   ExternalLink
 } from 'lucide-react';
@@ -75,60 +73,67 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-amber-500 selection:text-white">
-      
-      {/* 1. DEPARTMENT OFFICER VIEW: Clean Full-Width Header (NO Left Sidepanel Sidebar) */}
+    <div className="min-h-screen bg-black text-slate-100 flex flex-col sm:flex-row relative selection:bg-amber-500 selection:text-slate-950 overflow-x-hidden">
+      {/* Fixed Background Image - Indian Flag Artwork Preserved */}
+      <div
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat opacity-75 pointer-events-none z-0"
+        style={{ backgroundImage: `url('/login-bg.jpg')` }}
+      />
+      {/* Contrast Overlay */}
+      <div className="fixed inset-0 bg-gradient-to-b from-black/90 via-black/80 to-black/95 pointer-events-none z-0" />
+
+      {/* GDG VITC Ambient Glow Spheres */}
+      <div className="fixed top-12 right-12 w-96 h-96 bg-[#4285F4]/15 rounded-full blur-[120px] pointer-events-none z-0" />
+      <div className="fixed bottom-12 left-12 w-96 h-96 bg-[#EA4335]/15 rounded-full blur-[120px] pointer-events-none z-0" />
+
+      {/* 1. DEPARTMENT OFFICER VIEW: Clean Full-Width Header */}
       {isOfficer ? (
-        <div className="flex-1 flex flex-col min-h-screen">
+        <div className="flex-1 flex flex-col min-h-screen relative z-10">
           {/* Executive Officer Header Bar */}
-          <header className="bg-slate-900 border-b border-slate-800 px-6 py-4 sticky top-0 z-40 shadow-xl">
+          <header className="bg-black/85 backdrop-blur-2xl border-b border-zinc-800/90 px-6 py-4 sticky top-0 z-40 shadow-xl">
             <div className="max-w-7xl mx-auto flex items-center justify-between">
               
               {/* Brand & Department Badge */}
               <div className="flex items-center space-x-4">
                 <Link href="/" className="flex items-center space-x-3 group">
-                  <div className="w-11 h-11 rounded-xl bg-slate-950 p-1 border border-slate-700/80 shadow-md flex items-center justify-center shrink-0 group-hover:border-amber-500/50 transition-all">
-                    <img src="/logo.png" alt="सुधार-AI Logo" className="w-full h-full object-contain" />
-                  </div>
                   <div>
-                    <span className="text-xl font-extrabold tracking-tight text-white">सुधार <span className="text-amber-400">AI</span></span>
-                    <span className="block text-[10px] text-amber-400 font-extrabold uppercase tracking-wider">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-xl font-bold tracking-tight text-white">सुधार <span className="text-amber-500">AI</span></span>
+                    </div>
+                    <span className="block text-xs text-slate-400 font-medium">
                       {userSession.category ? `${userSession.category} Department Portal` : 'Department Officer Desk'}
                     </span>
                   </div>
                 </Link>
 
-                <div className="hidden sm:block h-6 w-px bg-slate-800" />
+                <div className="hidden sm:block h-6 w-px bg-zinc-800" />
 
-                <div className="hidden md:inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold uppercase tracking-wider">
-                  <Building className="w-3.5 h-3.5 text-amber-400" />
+                <div className="hidden md:inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-zinc-950 border border-zinc-800 text-slate-300 text-xs font-medium">
+                  <Building className="w-3.5 h-3.5 text-slate-400" />
                   <span>{userSession.department}</span>
                 </div>
               </div>
 
               {/* Right User Actions */}
               <div className="flex items-center space-x-3 sm:space-x-4">
-                <div className="flex items-center space-x-3 bg-slate-950 px-3.5 py-1.5 rounded-xl border border-slate-800">
-                  <div className="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center justify-center font-extrabold text-[11px]">
-                    {userSession.category ? userSession.category.substring(0, 3).toUpperCase() : 'OFF'}
-                  </div>
+                <div className="flex items-center space-x-3 bg-zinc-950 px-3.5 py-1.5 rounded-full border border-zinc-800">
                   <div className="text-left hidden sm:block">
-                    <p className="text-xs font-bold text-white leading-none">Officer ({userSession.officerId})</p>
-                    <p className="text-[10px] text-slate-400 font-medium leading-tight mt-0.5">{userSession.category} Department</p>
+                    <p className="text-xs font-semibold text-slate-200 leading-none">Officer ({userSession.officerId})</p>
+                    <p className="text-[10px] text-slate-400 font-normal leading-tight mt-0.5">{userSession.category} Dept</p>
                   </div>
                 </div>
 
                 <Link
                   href="/"
-                  className="text-xs font-bold px-3 py-2 rounded-xl bg-slate-950 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 transition-colors flex items-center space-x-1 hidden sm:flex"
+                  className="text-xs font-semibold px-3.5 py-2 rounded-full bg-zinc-950 hover:bg-zinc-900 text-slate-300 hover:text-white border border-zinc-800 transition-colors flex items-center space-x-1 hidden sm:flex"
                 >
                   <span>Public Portal</span>
-                  <ExternalLink className="w-3.5 h-3.5 text-amber-400" />
+                  <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
                 </Link>
 
                 <button
                   onClick={handleLogout}
-                  className="px-3.5 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer"
+                  className="px-4 py-2 rounded-full bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer"
                 >
                   <LogOut className="w-4 h-4" />
                   <span className="hidden sm:inline">Sign Out</span>
@@ -145,117 +150,71 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
       ) : (
         /* 2. SYSTEM ADMIN VIEW: Full Sidebar Layout ONLY for Admin */
-        <div className="flex-1 flex flex-col md:flex-row min-h-screen">
-          {/* Mobile Top Bar */}
-          <div className="md:hidden bg-slate-900 text-white px-4 py-3 border-b border-slate-800 flex items-center justify-between sticky top-0 z-50">
-            <div className="flex items-center space-x-2.5">
-              <div className="w-8 h-8 rounded-lg bg-slate-950 p-1 border border-slate-700 shrink-0">
-                <img src="/logo.png" alt="SudhaarAI Logo" className="w-full h-full object-contain" />
-              </div>
-              <span className="font-bold text-white text-sm">SudhaarAI <span className="text-amber-400 text-xs">Admin</span></span>
-            </div>
+        <div className="flex-1 flex flex-col sm:flex-row min-h-screen relative z-10">
+          {/* Mobile Top Navigation */}
+          <div className="sm:hidden bg-black/90 border-b border-zinc-800 p-4 flex items-center justify-between sticky top-0 z-40 backdrop-blur-xl">
+            <Link href="/" className="flex items-center space-x-2">
+              <span className="text-lg font-bold text-white">सुधार <span className="text-amber-500">AI</span></span>
+            </Link>
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="p-2 text-slate-300 hover:text-white rounded-lg bg-slate-800"
+              className="p-2 text-slate-300 hover:text-white bg-zinc-950 rounded-lg border border-zinc-800"
             >
               {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
 
-          {/* Admin Sidepanel Sidebar */}
-          <aside className={`fixed inset-y-0 left-0 z-40 w-64 bg-slate-900 border-r border-slate-800 transform ${
+          {/* Sidebar Panel */}
+          <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-black/95 border-r border-zinc-800/90 transform transition-transform duration-200 ease-in-out sm:translate-x-0 sm:static backdrop-blur-2xl flex flex-col ${
             sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-          } md:translate-x-0 transition-transform duration-200 ease-in-out flex flex-col justify-between text-white shadow-2xl`}>
-            <div className="p-6 space-y-6">
-              {/* Logo Brand Header */}
-              <Link href="/" className="flex items-center space-x-3.5">
-                <div className="w-11 h-11 rounded-xl bg-slate-950 p-1 border border-slate-700 shadow-md flex items-center justify-center shrink-0">
-                  <img src="/logo.png" alt="सुधार-AI Logo" className="w-full h-full object-contain" />
-                </div>
+          }`}>
+            <div className="p-6 border-b border-zinc-800/90">
+              <Link href="/" className="flex items-center space-x-3 group">
                 <div>
-                  <span className="text-lg font-extrabold text-white tracking-tight">सुधार <span className="text-amber-400">AI</span></span>
-                  <p className="text-[10px] text-amber-400 font-bold uppercase tracking-wider">
-                    Central Admin Console
-                  </p>
+                  <span className="text-lg font-bold tracking-tight text-white">सुधार <span className="text-amber-500">AI</span></span>
+                  <span className="block text-[10px] text-amber-400 uppercase font-mono font-bold">Admin Console</span>
                 </div>
               </Link>
-
-              {/* Navigation Links */}
-              <nav className="space-y-1 pt-4">
-                <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-3.5 mb-2">
-                  System Admin Control
-                </div>
-                {navItems.map((item) => {
-                  const active = pathname === item.href;
-                  const Icon = item.icon;
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={() => setSidebarOpen(false)}
-                      className={`flex items-center justify-between px-4 py-3 rounded-xl text-xs font-bold transition-all ${
-                        active 
-                          ? 'bg-amber-500 text-slate-950 shadow-md font-extrabold' 
-                          : 'text-slate-300 hover:text-white hover:bg-slate-800'
-                      }`}
-                    >
-                      <div className="flex items-center space-x-3">
-                        <Icon className="w-4 h-4" />
-                        <span>{item.label}</span>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </nav>
             </div>
 
-            {/* Admin Profile Card */}
-            <div className="p-4 border-t border-slate-800 bg-slate-950/80">
-              <div className="flex items-center space-x-3">
-                <div className="w-9 h-9 rounded-xl bg-purple-500/20 text-purple-300 border border-purple-500/40 flex items-center justify-center font-extrabold text-xs shrink-0">
-                  ADM
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-bold text-white truncate">System Administrator</p>
-                  <p className="text-[10px] text-amber-400 truncate">Central Municipal Command</p>
-                </div>
-                <button 
-                  onClick={handleLogout} 
-                  title="Sign Out" 
-                  className="p-2 text-slate-400 hover:text-red-400 rounded-xl hover:bg-slate-800 transition-colors cursor-pointer"
-                >
-                  <LogOut className="w-4 h-4" />
-                </button>
-              </div>
+            {/* Nav Menu */}
+            <nav className="flex-1 p-4 space-y-1.5">
+              {navItems.map((item) => {
+                const IconComp = item.icon;
+                const isActive = pathname === item.href;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setSidebarOpen(false)}
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-2xl font-semibold text-xs transition-all ${
+                      isActive
+                        ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30'
+                        : 'text-slate-400 hover:text-white hover:bg-zinc-950/60'
+                    }`}
+                  >
+                    <IconComp className={`w-4 h-4 ${isActive ? 'text-amber-400' : 'text-slate-400'}`} />
+                    <span>{item.label}</span>
+                  </Link>
+                );
+              })}
+            </nav>
+
+            <div className="p-4 border-t border-zinc-800/90">
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center justify-center space-x-2 px-4 py-2.5 rounded-full bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 font-bold text-xs transition-all cursor-pointer"
+              >
+                <LogOut className="w-4 h-4" />
+                <span>Sign Out</span>
+              </button>
             </div>
           </aside>
 
-          {/* Main Content Container for System Admin */}
-          <div className="flex-1 md:ml-64 flex flex-col min-h-screen">
-            <header className="sticky top-0 z-30 bg-slate-900 border-b border-slate-800 px-6 py-4 flex items-center justify-between shadow-md">
-              <div className="flex items-center space-x-3">
-                <Building className="w-5 h-5 text-amber-400" />
-                <h2 className="text-base font-extrabold text-white capitalize tracking-tight">
-                  {pathname.split('/').pop() || 'Dashboard'}
-                </h2>
-                <span className="text-xs font-medium text-slate-400 hidden sm:inline">• Central Municipal Command</span>
-              </div>
-
-              <div className="flex items-center space-x-3">
-                <Link
-                  href="/"
-                  className="text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-950 hover:bg-slate-800 text-amber-400 border border-slate-800 transition-colors flex items-center gap-1.5"
-                >
-                  <span>Public Portal</span>
-                  <span>↗</span>
-                </Link>
-              </div>
-            </header>
-
-            <main className="flex-1 p-6 sm:p-8">
-              {children}
-            </main>
-          </div>
+          {/* Main Dashboard Content */}
+          <main className="flex-1 p-6 sm:p-8 max-w-7xl mx-auto w-full">
+            {children}
+          </main>
         </div>
       )}
     </div>
