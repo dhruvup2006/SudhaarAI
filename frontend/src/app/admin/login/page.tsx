@@ -311,10 +311,6 @@ export default function OfficerLoginPage() {
             
             {/* Header Title & Subtitle Section */}
             <div className="space-y-2">
-              <span className="text-xs font-extrabold uppercase tracking-widest text-slate-400 font-mono">
-                MUNICIPAL OFFICER DESK
-              </span>
-              
               <h1 className="text-4xl sm:text-5xl font-black text-white tracking-tight leading-none">
                 {authMode === 'login' ? 'Officer Portal login' : 'Create new account'}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-500 to-amber-500 inline-block ml-1">.</span>

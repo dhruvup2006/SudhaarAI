@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { PlusCircle, Search, LayoutDashboard, Menu, X, PhoneCall, Home, Inbox, BarChart3 } from 'lucide-react';
+import { PlusCircle, Search, LayoutDashboard, Menu, X, Home, Inbox, BarChart3 } from 'lucide-react';
 import { Dock, DockIcon, DockItem, DockLabel } from '@/components/core/dock';
 
 export const Navbar: React.FC = () => {
@@ -66,14 +66,6 @@ export const Navbar: React.FC = () => {
               </DockItem>
             </Link>
           </Dock>
-        </div>
-
-        {/* Action CTA Button */}
-        <div className="hidden md:flex items-center space-x-3 shrink-0">
-          <div className="flex items-center space-x-1.5 text-[11px] font-mono text-slate-400 bg-zinc-950/80 px-3 py-1.5 rounded-full border border-zinc-800">
-            <PhoneCall className="w-3 h-3 text-emerald-400" />
-            <span>1800-11-SUDHAAR</span>
-          </div>
         </div>
 
         {/* Mobile Menu Toggle */}
