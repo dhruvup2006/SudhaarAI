@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
+import { cn } from '@/lib/utils';
 import { 
   Mic, 
   MicOff, 
@@ -20,7 +21,12 @@ import {
   Copy,
   Check,
   Crosshair,
-  ShieldCheck
+  Brain,
+  Database,
+  Palette,
+  Zap,
+  ShieldCheck,
+  FileText
 } from 'lucide-react';
 import { apiFetch, API_BASE_URL } from '@/lib/api';
 
@@ -250,6 +256,7 @@ export default function RegisterGrievancePage() {
 
   return (
     <div className="min-h-screen bg-[#0d1017] text-slate-100 flex flex-col selection:bg-rose-500 selection:text-white relative overflow-hidden font-sans">
+      {/* CONSTANT TRICOLOR BACKGROUND SETUP */}
       {/* Fixed Background Image - Indian Flag Artwork Preserved CONSTANT */}
       <div
         className="fixed inset-0 bg-cover bg-center bg-no-repeat opacity-75 pointer-events-none z-0"
@@ -261,338 +268,416 @@ export default function RegisterGrievancePage() {
       {/* Tricolor Ambient Glow Spheres (CONSTANT TRICOLOR BG) */}
       <div className="fixed top-12 left-12 w-96 h-96 bg-rose-600/20 rounded-full blur-[140px] pointer-events-none z-0" />
       <div className="fixed bottom-12 right-12 w-96 h-96 bg-amber-500/15 rounded-full blur-[140px] pointer-events-none z-0" />
+      <div className="fixed top-1/2 right-1/4 w-80 h-80 bg-emerald-600/15 rounded-full blur-[140px] pointer-events-none z-0" />
 
       <Navbar />
 
-      <main className="flex-1 py-10 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full relative z-10">
+      <main className="flex-1 py-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto w-full relative z-10 space-y-16">
         
-        {/* Portal Top Header & Multi-Step Wizard Indicator */}
-        <div className="mb-8 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-                Lodge a civic grievance
-              </h1>
-              <p className="text-xs sm:text-sm text-slate-300 mt-1">
-                Multi-lingual voice AI, automated category classification & direct municipal SLA dispatch.
-              </p>
+        {/* FEATURE VELOCITY STYLE HEADER */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-neutral-800/80 pb-10">
+          <div className="space-y-4">
+            <div className="flex items-center space-x-2 text-rose-500 text-xs font-mono uppercase tracking-widest font-bold">
+              <Zap className="size-4 animate-pulse" />
+              <span>SudhaarAI High-Velocity Engine</span>
             </div>
-
-            <Link href="/" className="self-start sm:self-auto">
-              <span className="text-xs font-semibold text-slate-300 hover:text-white flex items-center space-x-1.5 bg-zinc-950/80 px-4 py-2 rounded-xl border border-zinc-800 transition-colors shadow-sm">
-                <ArrowLeft className="w-3.5 h-3.5" />
-                <span>Return to Home</span>
+            <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-white tracking-tighter uppercase leading-none">
+              High Velocity
+              <br />
+              <span className="bg-gradient-to-r from-rose-500 via-orange-400 to-amber-400 bg-clip-text text-transparent">
+                Civic Dispatch.
+              </span>
+            </h1>
+          </div>
+          <div className="flex flex-col items-start md:items-end space-y-4">
+            <Link href="/">
+              <span className="text-xs font-mono font-semibold text-slate-300 hover:text-white flex items-center space-x-2 bg-neutral-950/80 px-5 py-2.5 rounded-xl border border-neutral-800 hover:border-rose-500/50 transition-all shadow-sm">
+                <ArrowLeft className="size-3.5" />
+                <span>RETURN TO HOME</span>
               </span>
             </Link>
-          </div>
-
-          {/* Wizard Step Progress Bar (Sleek Rectangular Cards - No Pills) */}
-          <div className="grid grid-cols-3 gap-3 pt-2">
-            {[
-              { num: 1, title: '01. Statement', desc: 'Voice or text description' },
-              { num: 2, title: '02. Photo Evidence', desc: 'Upload photo (optional)' },
-              { num: 3, title: '03. Location & Dispatch', desc: 'GPS & municipal SLA' }
-            ].map((s) => (
-              <button
-                key={s.num}
-                type="button"
-                onClick={() => setStep(s.num)}
-                className={`p-3.5 rounded-xl border text-left transition-all ${
-                  step === s.num
-                    ? 'bg-zinc-900/90 border-rose-500/80 ring-2 ring-rose-500/20 text-white shadow-lg shadow-rose-500/10'
-                    : step > s.num
-                    ? 'bg-zinc-950/80 border-rose-500/40 text-rose-400'
-                    : 'bg-zinc-950/60 border-zinc-800/80 text-slate-400 opacity-80'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-extrabold font-mono tracking-wide">{s.title}</span>
-                  {step > s.num && <CheckCircle2 className="w-4 h-4 text-rose-400 shrink-0" />}
-                </div>
-                <span className="text-[11px] text-slate-400 hidden sm:block mt-0.5">{s.desc}</span>
-              </button>
-            ))}
+            <p className="max-w-xs text-slate-400 font-mono text-xs leading-relaxed uppercase tracking-widest">
+              Multi-lingual voice AI & automated municipal SLA dispatch.
+            </p>
           </div>
         </div>
 
-        {/* Centered Main Form Glowing Red-Rose Card Container */}
-        <div className="bg-[#0d1017]/95 backdrop-blur-2xl border border-rose-500/60 shadow-[0_0_30px_rgba(244,63,94,0.25)] rounded-3xl p-6 sm:p-8 relative overflow-hidden space-y-6">
-          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-rose-600 via-orange-500 to-amber-500" />
+        {/* FEATURE VELOCITY INTERACTIVE STEP CARDS GRID */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[
+            {
+              stepNum: 1,
+              title: "Neural Link",
+              label: "01. Statement & AI Speech",
+              color: "from-rose-500/30",
+              icon: Brain,
+              desc: "Voice AI transcription or text grievance input"
+            },
+            {
+              stepNum: 2,
+              title: "Data Core",
+              label: "02. Visual Evidence",
+              color: "from-amber-500/30",
+              icon: Database,
+              desc: "Attach photo evidence for instant verification"
+            },
+            {
+              stepNum: 3,
+              title: "Fluid UI",
+              label: "03. Location & Dispatch",
+              color: "from-emerald-500/30",
+              icon: MapPin,
+              desc: "GPS location tagging and SLA routing"
+            },
+          ].map((card) => {
+            const isActive = step === card.stepNum;
+            const isDone = step > card.stepNum;
+            return (
+              <button
+                key={card.stepNum}
+                type="button"
+                onClick={() => setStep(card.stepNum)}
+                className={cn(
+                  "group text-left relative bg-neutral-950/90 border rounded-2xl p-6 sm:p-8 overflow-hidden transition-all duration-500 cursor-pointer backdrop-blur-xl",
+                  isActive
+                    ? "border-rose-500 ring-2 ring-rose-500/30 shadow-[0_0_30px_rgba(244,63,94,0.2)]"
+                    : isDone
+                    ? "border-rose-500/40 opacity-90"
+                    : "border-neutral-800/80 hover:border-neutral-700 opacity-70 hover:opacity-100"
+                )}
+              >
+                <div
+                  className={cn(
+                    "absolute inset-0 bg-gradient-to-br to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none",
+                    card.color,
+                    isActive && "opacity-100"
+                  )}
+                />
+                <div className="relative z-10 space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div className={cn(
+                      "size-12 rounded-2xl flex items-center justify-center transition-colors",
+                      isActive ? "bg-rose-500 text-white" : "bg-white/10 text-white"
+                    )}>
+                      <card.icon className="size-6" />
+                    </div>
+                    {isDone && (
+                      <span className="flex items-center space-x-1 text-xs font-mono text-rose-400 bg-rose-500/10 px-2.5 py-1 rounded-md border border-rose-500/20">
+                        <CheckCircle2 className="size-3.5" />
+                        <span>DONE</span>
+                      </span>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <span className="text-[10px] font-mono text-slate-400 uppercase tracking-[0.25em]">
+                      {card.label}
+                    </span>
+                    <h3 className="text-xl sm:text-2xl font-black text-white uppercase tracking-tighter">
+                      {card.title}
+                    </h3>
+                    <p className="text-xs font-mono text-slate-400 leading-normal">
+                      {card.desc}
+                    </p>
+                  </div>
+                </div>
+              </button>
+            );
+          })}
+        </div>
 
-          {/* Error Banner */}
-          {errorMessage && (
-            <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-semibold flex items-center space-x-2.5 shadow-md">
-              <AlertCircle className="w-5 h-5 text-rose-400 shrink-0" />
-              <span>{errorMessage}</span>
-            </div>
-          )}
+        {/* MAIN FEATURE VELOCITY FORM CONTAINER */}
+        <div className="relative bg-neutral-950/95 border border-neutral-800/90 rounded-3xl p-6 sm:p-10 md:p-12 overflow-hidden shadow-2xl backdrop-blur-2xl">
+          {/* Subtle Grid Pattern Overlay */}
+          <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,#252525_0px_1px,transparent_1px_8px)] mask-[radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)] pointer-events-none" />
+          
+          {/* Top Tricolor Accent Line */}
+          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-orange-500 via-white to-emerald-500 z-10" />
 
-          {/* STEP 1: VOICE / TEXT STATEMENT */}
-          {step === 1 && (
-            <div className="space-y-6">
-              
-              {/* Voice Recorder AI Hub */}
-              <div className="p-6 rounded-2xl bg-zinc-950/90 border border-zinc-800/90 space-y-4 shadow-inner relative overflow-hidden">
-                <div className="flex items-center justify-between border-b border-zinc-800/80 pb-3">
-                  <div className="flex items-center space-x-2">
-                    <Volume2 className="w-4 h-4 text-rose-400" />
-                    <span className="text-xs font-bold text-white uppercase tracking-wider">
-                      Multi-Lingual Voice AI Input
+          <div className="relative z-10 space-y-8">
+
+            {/* Error Banner */}
+            {errorMessage && (
+              <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-semibold flex items-center space-x-2.5 shadow-md">
+                <AlertCircle className="size-5 text-rose-400 shrink-0" />
+                <span>{errorMessage}</span>
+              </div>
+            )}
+
+            {/* STEP 1: VOICE / TEXT STATEMENT */}
+            {step === 1 && (
+              <div className="space-y-8">
+                
+                {/* Voice Recorder AI Hub */}
+                <div className="p-6 sm:p-8 rounded-2xl bg-neutral-900/80 border border-neutral-800 space-y-6 shadow-inner relative overflow-hidden">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-800/80 pb-4">
+                    <div className="flex items-center space-x-2">
+                      <Volume2 className="size-5 text-rose-400" />
+                      <span className="text-xs font-mono font-bold text-white uppercase tracking-widest">
+                        Neural Voice AI Input Module
+                      </span>
+                    </div>
+
+                    {/* Language Switcher */}
+                    <div className="flex items-center space-x-1 bg-black p-1.5 rounded-xl border border-neutral-800 self-start sm:self-auto">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedLang('en-IN')}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all ${
+                          selectedLang === 'en-IN'
+                            ? 'bg-rose-500 text-white shadow-sm'
+                            : 'text-slate-400 hover:text-white'
+                        }`}
+                      >
+                        English
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedLang('hi-IN')}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all ${
+                          selectedLang === 'hi-IN'
+                            ? 'bg-rose-500 text-white shadow-sm'
+                            : 'text-slate-400 hover:text-white'
+                        }`}
+                      >
+                        हिंदी (Hindi)
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Mic Button */}
+                  <div className="flex flex-col items-center justify-center py-6 space-y-4">
+                    <button
+                      type="button"
+                      onClick={toggleVoiceInput}
+                      className={`size-24 rounded-2xl flex items-center justify-center transition-all cursor-pointer relative shadow-xl ${
+                        isListening
+                          ? 'bg-rose-600 text-white ring-8 ring-rose-500/30 animate-pulse'
+                          : 'bg-gradient-to-r from-rose-600 via-orange-500 to-amber-500 hover:scale-105 text-white shadow-rose-500/20'
+                      }`}
+                    >
+                      {isListening ? (
+                        <MicOff className="size-10" />
+                      ) : (
+                        <Mic className="size-10" />
+                      )}
+                    </button>
+
+                    <div className="text-center space-y-1">
+                      <p className="text-xs font-mono font-bold uppercase tracking-wider text-white">
+                        {isListening ? `Recording Active (${formatTimer(recordingSeconds)})` : 'Click Microphone to Voice Record'}
+                      </p>
+                      <p className="text-xs font-mono text-slate-400">
+                        {isListening ? 'Speak clearly in your selected language' : 'AI Speech-to-Text with automatic translation engine'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Text Description */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-mono font-bold uppercase tracking-widest text-slate-300">
+                      Grievance Description <span className="text-rose-500">*</span>
+                    </label>
+                    <span className="text-[11px] font-mono text-slate-500">
+                      {description.length} CHARS
                     </span>
                   </div>
 
-                  {/* Language Selector Switcher */}
-                  <div className="flex items-center space-x-1 bg-black p-1 rounded-xl border border-zinc-800">
-                    <button
-                      type="button"
-                      onClick={() => setSelectedLang('en-IN')}
-                      className={`px-3 py-1 rounded-lg text-[11px] font-bold transition-all ${
-                        selectedLang === 'en-IN'
-                          ? 'bg-rose-500 text-white shadow-sm'
-                          : 'text-slate-400 hover:text-white'
-                      }`}
-                    >
-                      English
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedLang('hi-IN')}
-                      className={`px-3 py-1 rounded-lg text-[11px] font-bold transition-all ${
-                        selectedLang === 'hi-IN'
-                          ? 'bg-rose-500 text-white shadow-sm'
-                          : 'text-slate-400 hover:text-white'
-                      }`}
-                    >
-                      हिंदी (Hindi)
-                    </button>
-                  </div>
+                  <textarea
+                    rows={6}
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Describe the civic issue in detail (e.g., Overflowing sewage pipe near Market Road gate)..."
+                    className="w-full p-4 bg-black/80 text-white border border-neutral-800 rounded-xl font-mono text-xs sm:text-sm focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 transition-all placeholder-slate-600"
+                  />
+
+                  {description && (
+                    <div className="flex items-center justify-end space-x-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={handleCopyText}
+                        className="px-3 py-1.5 bg-neutral-900 hover:bg-neutral-800 border border-neutral-700 rounded-lg text-xs font-mono text-slate-300 hover:text-white flex items-center space-x-1.5 transition-colors"
+                      >
+                        {copied ? <Check className="size-3.5 text-rose-400" /> : <Copy className="size-3.5" />}
+                        <span>{copied ? 'COPIED' : 'COPY'}</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleClearText}
+                        className="px-3 py-1.5 bg-neutral-900 hover:bg-neutral-800 border border-neutral-700 rounded-lg text-xs font-mono text-slate-300 hover:text-rose-400 flex items-center space-x-1.5 transition-colors"
+                      >
+                        <Trash2 className="size-3.5" />
+                        <span>CLEAR</span>
+                      </button>
+                    </div>
+                  )}
                 </div>
 
-                {/* Mic Recorder Button */}
-                <div className="flex flex-col items-center justify-center py-4 space-y-3">
+                {/* Next Button */}
+                <div className="pt-4">
                   <button
                     type="button"
-                    onClick={toggleVoiceInput}
-                    className={`w-20 h-20 rounded-2xl flex items-center justify-center transition-all cursor-pointer relative shadow-xl ${
-                      isListening
-                        ? 'bg-rose-600 text-white ring-8 ring-rose-500/30 animate-pulse'
-                        : 'bg-gradient-to-r from-rose-600 via-orange-500 to-amber-500 hover:from-rose-500 hover:to-amber-400 text-white hover:scale-105 shadow-rose-500/20'
-                    }`}
+                    onClick={() => {
+                      if (!description.trim()) {
+                        setErrorMessage('Please describe the issue before proceeding.');
+                        return;
+                      }
+                      setErrorMessage('');
+                      setStep(2);
+                    }}
+                    className="w-full py-4 rounded-xl bg-gradient-to-r from-rose-600 via-orange-500 to-amber-500 hover:from-rose-500 hover:to-amber-400 text-white font-mono font-extrabold text-sm uppercase tracking-wider shadow-lg shadow-rose-500/20 transition-all flex items-center justify-center space-x-3 cursor-pointer active:scale-[0.99]"
                   >
-                    {isListening ? (
-                      <MicOff className="w-8 h-8" />
-                    ) : (
-                      <Mic className="w-8 h-8" />
-                    )}
+                    <span>PROCEED TO PHOTO EVIDENCE</span>
+                    <ArrowRight className="size-4 text-white" />
                   </button>
+                </div>
 
-                  <div className="text-center">
-                    <p className="text-xs font-bold text-white">
-                      {isListening ? `Recording... (${formatTimer(recordingSeconds)})` : 'Click microphone to speak your complaint'}
-                    </p>
-                    <p className="text-[11px] text-slate-400 mt-0.5">
-                      {isListening ? 'Speak clearly in your chosen language' : 'Automatic speech-to-text translation engine'}
-                    </p>
+              </div>
+            )}
+
+            {/* STEP 2: PHOTO ATTACHMENT */}
+            {step === 2 && (
+              <div className="space-y-8">
+                <div className="space-y-4">
+                  <label className="block text-xs font-mono font-bold uppercase tracking-widest text-slate-300">
+                    Attach Photo Evidence (Optional)
+                  </label>
+                  
+                  {/* Photo Drop Zone */}
+                  <div 
+                    onClick={() => fileInputRef.current?.click()}
+                    className="border-2 border-dashed border-neutral-700 hover:border-rose-500/80 bg-black/60 p-10 rounded-2xl text-center space-y-4 cursor-pointer transition-all hover:bg-black/80 group"
+                  >
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleFileUpload}
+                      accept="image/*"
+                      className="hidden"
+                    />
+                    
+                    {photoPreview ? (
+                      <div className="space-y-4">
+                        <img
+                          src={photoPreview}
+                          alt="Uploaded evidence"
+                          className="w-full max-h-64 object-cover rounded-xl border border-neutral-800 shadow-xl mx-auto"
+                        />
+                        <p className="text-xs font-mono text-rose-400 font-bold flex items-center justify-center space-x-2">
+                          <Check className="size-4" />
+                          <span>PHOTO ATTACHED SUCCESSFULLY. CLICK TO REPLACE.</span>
+                        </p>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="size-14 rounded-2xl bg-neutral-900 border border-neutral-800 text-slate-400 group-hover:text-white flex items-center justify-center mx-auto transition-colors">
+                          <Upload className="size-7 text-rose-400" />
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-xs font-mono font-bold text-white uppercase tracking-wider">
+                            CLICK OR DRAG PHOTO EVIDENCE HERE
+                          </p>
+                          <p className="text-[11px] font-mono text-slate-500">
+                            SUPPORTED FORMATS: JPG, PNG, WEBP (MAX 5MB)
+                          </p>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
-              </div>
 
-              {/* Text Area Description Input */}
-              <div className="space-y-2 relative">
-                <div className="flex items-center justify-between">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-300">
-                    Or Type Full Description <span className="text-rose-500">*</span>
+                <div className="flex items-center space-x-4 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setStep(1)}
+                    className="w-1/3 bg-neutral-900 hover:bg-neutral-800 text-slate-300 font-mono font-bold py-4 rounded-xl border border-neutral-700 text-xs uppercase tracking-wider cursor-pointer transition-colors"
+                  >
+                    BACK
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setStep(3)}
+                    className="w-2/3 bg-gradient-to-r from-rose-600 via-orange-500 to-amber-500 hover:from-rose-500 hover:to-amber-400 text-white font-mono font-extrabold py-4 rounded-xl shadow-lg shadow-rose-500/20 transition-all text-xs uppercase tracking-wider cursor-pointer active:scale-[0.99] flex items-center justify-center space-x-2"
+                  >
+                    <span>PROCEED TO LOCATION</span>
+                    <ArrowRight className="size-4 text-white" />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* STEP 3: LOCATION & SUBMIT */}
+            {step === 3 && (
+              <div className="space-y-8">
+                <div className="space-y-4">
+                  <label className="block text-xs font-mono font-bold uppercase tracking-widest text-slate-300">
+                    Grievance Location Address <span className="text-rose-500">*</span>
                   </label>
-                  <span className="text-[11px] font-mono text-slate-400">
-                    {description.length} characters
+
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="relative flex-1">
+                      <MapPin className="size-4 text-rose-400 absolute left-4 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="text"
+                        value={location}
+                        onChange={(e) => setLocation(e.target.value)}
+                        placeholder="Type location address or auto-detect with GPS..."
+                        className="w-full pl-11 pr-4 py-4 bg-black/80 text-white placeholder-slate-600 text-xs sm:text-sm rounded-xl border border-neutral-800 focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 font-mono transition-all"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleDetectLocation}
+                      disabled={isLocating}
+                      className="px-5 py-4 rounded-xl bg-neutral-900 hover:bg-neutral-800 border border-neutral-700 text-rose-400 text-xs font-mono font-bold flex items-center justify-center space-x-2 transition-colors cursor-pointer shrink-0 disabled:opacity-50"
+                    >
+                      {isLocating ? <Loader2 className="size-4 animate-spin" /> : <Crosshair className="size-4" />}
+                      <span>{isLocating ? 'LOCATING...' : 'GPS AUTO-DETECT'}</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Info Note */}
+                <div className="p-4 rounded-xl bg-neutral-900/60 border border-neutral-800 text-slate-400 text-xs font-mono leading-relaxed flex items-center space-x-3">
+                  <ShieldCheck className="size-5 text-emerald-400 shrink-0" />
+                  <span>
+                    Your report will be automatically categorized, geotagged, and assigned to the local municipal authority SLA queue.
                   </span>
                 </div>
 
-                <textarea
-                  rows={5}
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Describe the civic issue in detail (e.g. Broken water pipe overflowing near main market gate)..."
-                  className="w-full p-4 bg-black/90 text-white border border-zinc-800 rounded-xl font-sans text-xs sm:text-sm focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 transition-all placeholder-slate-600 shadow-inner"
-                />
-
-                {description && (
-                  <div className="flex items-center justify-end space-x-2 pt-1">
-                    <button
-                      type="button"
-                      onClick={handleCopyText}
-                      className="px-3 py-1.5 bg-zinc-950 hover:bg-zinc-900 border border-zinc-800 rounded-xl text-xs font-semibold text-slate-300 hover:text-white flex items-center space-x-1 transition-colors"
-                    >
-                      {copied ? <Check className="w-3.5 h-3.5 text-rose-400" /> : <Copy className="w-3.5 h-3.5" />}
-                      <span>{copied ? 'Copied' : 'Copy'}</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleClearText}
-                      className="px-3 py-1.5 bg-zinc-950 hover:bg-zinc-900 border border-zinc-800 rounded-xl text-xs font-semibold text-slate-300 hover:text-rose-400 flex items-center space-x-1 transition-colors"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                      <span>Clear</span>
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {/* Continue Step 1 Button */}
-              <div className="pt-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (!description.trim()) {
-                      setErrorMessage('Please describe the issue before proceeding.');
-                      return;
-                    }
-                    setErrorMessage('');
-                    setStep(2);
-                  }}
-                  className="w-full py-4 rounded-xl bg-gradient-to-r from-rose-600 via-orange-500 to-amber-500 hover:from-rose-500 hover:to-amber-400 text-white font-bold text-sm tracking-tight shadow-lg shadow-rose-500/25 transition-all flex items-center justify-center space-x-2 cursor-pointer active:scale-[0.98]"
-                >
-                  <span>Proceed to Photo Evidence</span>
-                  <ArrowRight className="w-4 h-4 text-white" />
-                </button>
-              </div>
-
-            </div>
-          )}
-
-          {/* STEP 2: PHOTO ATTACHMENT */}
-          {step === 2 && (
-            <div className="space-y-6">
-              <div className="space-y-3">
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300">
-                  Attach Photo Evidence (Optional)
-                </label>
-                
-                {/* Photo Drop Zone */}
-                <div 
-                  onClick={() => fileInputRef.current?.click()}
-                  className="border-2 border-dashed border-zinc-700 hover:border-rose-500/60 bg-zinc-950/60 p-8 rounded-2xl text-center space-y-3 cursor-pointer transition-all hover:bg-zinc-950/80 group"
-                >
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleFileUpload}
-                    accept="image/*"
-                    className="hidden"
-                  />
-                  
-                  {photoPreview ? (
-                    <div className="space-y-3">
-                      <img
-                        src={photoPreview}
-                        alt="Uploaded evidence"
-                        className="w-full max-h-56 object-cover rounded-xl border border-zinc-800 shadow-md mx-auto"
-                      />
-                      <p className="text-xs text-rose-400 font-semibold flex items-center justify-center space-x-1">
-                        <Check className="w-4 h-4" />
-                        <span>Photo attached successfully. Click to replace photo.</span>
-                      </p>
-                    </div>
-                  ) : (
-                    <>
-                      <div className="w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800 text-slate-400 group-hover:text-white flex items-center justify-center mx-auto transition-colors">
-                        <Upload className="w-6 h-6 text-rose-400" />
-                      </div>
-                      <div>
-                        <p className="text-xs font-bold text-white">Click or drag photo evidence here</p>
-                        <p className="text-[11px] text-slate-400 mt-0.5">JPG, PNG or WEBP (Max 5MB)</p>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setStep(1)}
-                  className="w-1/3 bg-zinc-900 hover:bg-zinc-800 text-slate-300 font-semibold py-3.5 rounded-xl border border-zinc-700 text-xs tracking-tight cursor-pointer"
-                >
-                  Back
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setStep(3)}
-                  className="w-2/3 bg-gradient-to-r from-rose-600 via-orange-500 to-amber-500 hover:from-rose-500 hover:to-amber-400 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-rose-500/25 transition-all text-sm tracking-tight cursor-pointer active:scale-[0.98]"
-                >
-                  Proceed to Location →
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* STEP 3: LOCATION & SUBMIT */}
-          {step === 3 && (
-            <div className="space-y-6">
-              <div className="space-y-3">
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300">
-                  Specify Grievance Location Address <span className="text-rose-500">*</span>
-                </label>
-
-                <div className="flex gap-2">
-                  <div className="relative flex-1">
-                    <MapPin className="w-4 h-4 text-rose-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                    <input
-                      type="text"
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
-                      placeholder="Type location address or click GPS Auto-Detect..."
-                      className="w-full pl-10 pr-4 py-3.5 bg-black/90 text-white placeholder-slate-500 text-xs sm:text-sm rounded-xl border border-zinc-800 focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 font-medium transition-all"
-                    />
-                  </div>
+                <div className="flex items-center space-x-4 pt-4">
                   <button
                     type="button"
-                    onClick={handleDetectLocation}
-                    disabled={isLocating}
-                    className="px-4 py-3.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-rose-400 text-xs font-semibold flex items-center space-x-1.5 transition-colors cursor-pointer shrink-0 disabled:opacity-50"
+                    onClick={() => setStep(2)}
+                    disabled={isSubmitting}
+                    className="w-1/3 bg-neutral-900 hover:bg-neutral-800 text-slate-300 font-mono font-bold py-4 rounded-xl border border-neutral-700 text-xs uppercase tracking-wider cursor-pointer disabled:opacity-50 transition-colors"
                   >
-                    {isLocating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Crosshair className="w-3.5 h-3.5" />}
-                    <span className="hidden sm:inline">{isLocating ? 'Locating...' : 'GPS Auto-Detect'}</span>
+                    BACK
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSubmit}
+                    disabled={isSubmitting}
+                    className="w-2/3 bg-gradient-to-r from-rose-600 via-orange-500 to-amber-500 hover:from-rose-500 hover:to-amber-400 text-white font-mono font-extrabold py-4 rounded-xl shadow-lg shadow-rose-500/25 transition-all text-xs uppercase tracking-wider cursor-pointer active:scale-[0.99] disabled:opacity-50 flex items-center justify-center space-x-2"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="size-4 animate-spin text-white" />
+                        <span>DISPATCHING REPORT...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>SUBMIT GRIEVANCE REPORT</span>
+                        <ArrowRight className="size-4 text-white" />
+                      </>
+                    )}
                   </button>
                 </div>
               </div>
+            )}
 
-              {/* Terms Notice */}
-              <p className="text-[11px] text-slate-400 text-center leading-relaxed">
-                By submitting this report, you certify that the grievance information is accurate and genuine for municipal resolution.
-              </p>
-
-              <div className="flex items-center space-x-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setStep(2)}
-                  disabled={isSubmitting}
-                  className="w-1/3 bg-zinc-900 hover:bg-zinc-800 text-slate-300 font-semibold py-3.5 rounded-xl border border-zinc-700 text-xs tracking-tight cursor-pointer disabled:opacity-50"
-                >
-                  Back
-                </button>
-                <button
-                  type="button"
-                  onClick={handleSubmit}
-                  disabled={isSubmitting}
-                  className="w-2/3 bg-gradient-to-r from-rose-600 via-orange-500 to-amber-500 hover:from-rose-500 hover:to-amber-400 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-rose-500/25 transition-all text-sm tracking-tight cursor-pointer active:scale-[0.98] disabled:opacity-50 flex items-center justify-center space-x-2"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin text-white" />
-                      <span>Dispatching...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>Submit Grievance Report</span>
-                      <ArrowRight className="w-4 h-4 text-white" />
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-          )}
-
+          </div>
         </div>
 
       </main>
